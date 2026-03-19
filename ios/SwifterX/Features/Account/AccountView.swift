@@ -1,7 +1,10 @@
 import SwiftUI
+import FirebaseAuth
 
 struct AccountView: View {
     @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var authManager: AuthManager
+    @EnvironmentObject private var profileManager: UserProfileManager
     @State private var showPersonalInfo = false
     @State private var showLogOutAlert  = false
     @State private var showHelpSheet    = false
@@ -9,6 +12,17 @@ struct AccountView: View {
     @State private var showDeleteAlert  = false
     @State private var inboxMessagesOn  = true
     @State private var notificationsOn  = false
+
+    private var displayName: String {
+        profileManager.profile?.name.isEmpty == false
+            ? profileManager.profile!.name
+            : (authManager.displayName ?? "User")
+    }
+    private var initials: String {
+        let parts = displayName.split(separator: " ")
+        let letters = parts.prefix(2).compactMap { $0.first }.map { String($0) }
+        return letters.joined().uppercased().isEmpty ? "U" : letters.joined().uppercased()
+    }
 
     let quickActions: [(title: String, icon: String, color: Color)] = [
         ("Favourite\nServices", "heart.fill",       Color(hex: "#093dc2")),
@@ -27,16 +41,16 @@ struct AccountView: View {
                         .fill(.black)
                         .frame(width: 57, height: 57)
                         .overlay(
-                            Text("JD")
-                                .font(.system(size: 24, weight: .bold))
+                            Text(initials)
+                                .font(.system(size: 22, weight: .bold))
                                 .foregroundStyle(.white)
                         )
 
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Hi, John Doe")
+                        Text("Hi, \(displayName)")
                             .font(.system(size: 28, weight: .bold))
                             .foregroundStyle(.black)
-                        Text("Verified user")
+                        Text(authManager.userEmail ?? "")
                             .font(.system(size: 12, weight: .light))
                             .foregroundStyle(.black)
                     }
@@ -150,7 +164,12 @@ struct AccountView: View {
         .alert("Delete Account?", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) {}
             Button("Delete", role: .destructive) {
-                withAnimation { appState.screen = .login }
+                Task {
+                    if let uid = authManager.userUID {
+                        try? await profileManager.deleteProfile(uid: uid)
+                    }
+                    try? await Auth.auth().currentUser?.delete()
+                }
             }
         } message: {
             Text("This will permanently delete your account and all data. This cannot be undone.")
@@ -158,7 +177,8 @@ struct AccountView: View {
         .alert("Log Out?", isPresented: $showLogOutAlert) {
             Button("Cancel", role: .cancel) {}
             Button("Log Out", role: .destructive) {
-                withAnimation { appState.screen = .login }
+                try? authManager.signOut()
+                // AppRootView's onChange(of: isSignedIn) handles the navigation
             }
         } message: {
             Text("Are you sure you want to log out?")
@@ -253,4 +273,6 @@ private struct ChevronRow: View {
 #Preview {
     NavigationStack { AccountView() }
         .environmentObject(AppState())
+        .environmentObject(AuthManager())
+        .environmentObject(UserProfileManager())
 }

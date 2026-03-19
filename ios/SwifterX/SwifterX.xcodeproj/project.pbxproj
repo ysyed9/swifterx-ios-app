@@ -28,8 +28,11 @@
 		4AAD036D2F6A72AB00E18C05 /* Recommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A880A0B2F6A6E0F00EBEE3D /* Recommendation.swift */; };
 		4AAD036E2F6A72AB00E18C05 /* ServiceCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A880A0C2F6A6E0F00EBEE3D /* ServiceCategory.swift */; };
 		4AAD039C2F6A760700E18C05 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAD03852F6A75EA00E18C05 /* LoginView.swift */; };
+		4AB987352F6BC45C0083F30E /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 4AB987342F6BC45C0083F30E /* Algorithms */; };
+		4AB987382F6BC61E0083F30E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 4AB987372F6BC61E0083F30E /* FirebaseAnalytics */; };
 		AA000001000000000000AA01 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000AA00 /* SplashView.swift */; };
 		AA000001000000000000AA02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A880A112F6A6E0F00EBEE3D /* Assets.xcassets */; };
+		FF000001000000000000AA01 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FF000001000000000000AA00 /* GoogleService-Info.plist */; };
 		AA000002000000000000BB01 /* SelectServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000002000000000000BB00 /* SelectServicesView.swift */; };
 		AA000003000000000000CC01 /* OrdersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000003000000000000CC00 /* OrdersView.swift */; };
 		AA000004000000000000DD01 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000004000000000000DD00 /* AccountView.swift */; };
@@ -41,6 +44,11 @@
 		CC000001000000000000AA01 /* ServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000001000000000000AA00 /* ServicesView.swift */; };
 		CC000002000000000000BB01 /* OrderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000002000000000000BB00 /* OrderDetailView.swift */; };
 		DD000001000000000000AA01 /* RoleSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD000001000000000000AA00 /* RoleSelectView.swift */; };
+		EE000001000000000000AA01 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000001000000000000AA00 /* AuthManager.swift */; };
+		EE000002000000000000BB01 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000002000000000000BB00 /* UserProfile.swift */; };
+		EE000003000000000000CC01 /* UserProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000003000000000000CC00 /* UserProfileManager.swift */; };
+		EE000004000000000000DD01 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000004000000000000DD00 /* APIClient.swift */; };
+		EE000005000000000000EE01 /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000005000000000000EE00 /* MockAPIClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +75,7 @@
 		4A880A0C2F6A6E0F00EBEE3D /* ServiceCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategory.swift; sourceTree = "<group>"; };
 		4A880A102F6A6E0F00EBEE3D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4A880A112F6A6E0F00EBEE3D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FF000001000000000000AA00 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4AAD03722F6A75EA00E18C05 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		4AAD03732F6A75EA00E18C05 /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
 		4AAD03742F6A75EA00E18C05 /* SwifterXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwifterXApp.swift; sourceTree = "<group>"; };
@@ -105,6 +114,11 @@
 		CC000001000000000000AA00 /* ServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesView.swift; sourceTree = "<group>"; };
 		CC000002000000000000BB00 /* OrderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailView.swift; sourceTree = "<group>"; };
 		DD000001000000000000AA00 /* RoleSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleSelectView.swift; sourceTree = "<group>"; };
+		EE000001000000000000AA00 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		EE000002000000000000BB00 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		EE000003000000000000CC00 /* UserProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileManager.swift; sourceTree = "<group>"; };
+		EE000004000000000000DD00 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		EE000005000000000000EE00 /* MockAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAPIClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +126,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AB987382F6BC61E0083F30E /* FirebaseAnalytics in Frameworks */,
+				4AB987352F6BC45C0083F30E /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,6 +256,7 @@
 			isa = PBXGroup;
 			children = (
 				4A880A112F6A6E0F00EBEE3D /* Assets.xcassets */,
+				FF000001000000000000AA00 /* GoogleService-Info.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -424,6 +441,7 @@
 				4A8809FF2F6A6E0F00EBEE3D /* DesignSystem */,
 				4A880A012F6A6E0F00EBEE3D /* Docs */,
 				4A880A0F2F6A6E0F00EBEE3D /* Features */,
+				EE000010AAAABBBBCCCC0001 /* Services */,
 				4A880A102F6A6E0F00EBEE3D /* README.md */,
 				4A880A122F6A6E0F00EBEE3D /* Resources */,
 				B00000000000000000000040 /* Products */,
@@ -444,6 +462,42 @@
 				CC000001000000000000AA00 /* ServicesView.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		EE000010AAAABBBBCCCC0001 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				EE000011AAAABBBBCCCC0001 /* Auth */,
+				EE000012AAAABBBBCCCC0001 /* User */,
+				EE000013AAAABBBBCCCC0001 /* API */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		EE000011AAAABBBBCCCC0001 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				EE000001000000000000AA00 /* AuthManager.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		EE000012AAAABBBBCCCC0001 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				EE000002000000000000BB00 /* UserProfile.swift */,
+				EE000003000000000000CC00 /* UserProfileManager.swift */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
+		EE000013AAAABBBBCCCC0001 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				EE000004000000000000DD00 /* APIClient.swift */,
+				EE000005000000000000EE00 /* MockAPIClient.swift */,
+			);
+			path = API;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -490,6 +544,10 @@
 				Base,
 			);
 			mainGroup = B00000000000000000000001;
+			packageReferences = (
+				4AB987332F6BC45C0083F30E /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				4AB987362F6BC61E0083F30E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = B00000000000000000000040 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -511,6 +569,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA000001000000000000AA02 /* Assets.xcassets in Resources */,
+				FF000001000000000000AA01 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -554,6 +613,11 @@
 				BB000003000000000000CC01 /* CartCheckoutView.swift in Sources */,
 				CC000001000000000000AA01 /* ServicesView.swift in Sources */,
 				CC000002000000000000BB01 /* OrderDetailView.swift in Sources */,
+				EE000001000000000000AA01 /* AuthManager.swift in Sources */,
+				EE000002000000000000BB01 /* UserProfile.swift in Sources */,
+				EE000003000000000000CC01 /* UserProfileManager.swift in Sources */,
+				EE000004000000000000DD01 /* APIClient.swift in Sources */,
+				EE000005000000000000EE01 /* MockAPIClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -741,6 +805,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4AB987332F6BC45C0083F30E /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
+		4AB987362F6BC61E0083F30E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4AB987342F6BC45C0083F30E /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4AB987332F6BC45C0083F30E /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		4AB987372F6BC61E0083F30E /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4AB987362F6BC61E0083F30E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B00000000000000000000031 /* Project object */;
 }

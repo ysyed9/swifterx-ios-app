@@ -1,13 +1,31 @@
 import SwiftUI
+import FirebaseAuth
 
 struct PersonalInfoView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var name      = "John Doe"
-    @State private var address   = "New York"
-    @State private var email     = "john.doe@email.com"
-    @State private var currentPw = ""
-    @State private var newPw     = ""
-    @State private var confirmPw = ""
+    @EnvironmentObject private var authManager: AuthManager
+    @EnvironmentObject private var profileManager: UserProfileManager
+
+    @State private var name: String = ""
+    @State private var phone: String = ""
+    @State private var addressLine: String = ""
+    @State private var city: String = ""
+    @State private var state: String = ""
+    @State private var zip: String = ""
+
+    @State private var currentPw: String = ""
+    @State private var newPw: String = ""
+    @State private var confirmPw: String = ""
+
+    @State private var isSaving: Bool = false
+    @State private var isChangingPw: Bool = false
+    @State private var saveSuccess: Bool = false
+    @State private var errorMessage: String? = nil
+    @State private var pwErrorMessage: String? = nil
+    @State private var pwSuccess: Bool = false
+
+    private var email: String { authManager.userEmail ?? "" }
+    private var uid: String? { authManager.userUID }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -31,66 +49,106 @@ struct PersonalInfoView: View {
                 .padding(.horizontal, 26)
                 .padding(.top, 30)
 
-                // Name
+                if let error = errorMessage {
+                    errorBanner(error, color: .red)
+                }
+                if saveSuccess {
+                    errorBanner("Profile saved successfully!", color: .green)
+                }
+
                 InfoField(label: "Name", placeholder: "John Doe", text: $name)
+                InfoField(label: "Phone", placeholder: "(555) 000-0000", text: $phone)
+                InfoField(label: "Street Address", placeholder: "123 Main St, Apt 4", text: $addressLine)
 
-                // Address
-                InfoField(label: "Address", placeholder: "New York", text: $address)
-
-                // Email
-                VStack(alignment: .leading, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("Email")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(.black)
-                        HStack(spacing: 4) {
-                            Image(systemName: "checkmark.seal.fill")
-                                .font(.system(size: 10))
-                                .foregroundStyle(Color(hex: "#49d200"))
-                            Text("Verified email")
-                                .font(.system(size: 10, weight: .regular))
-                                .foregroundStyle(Color(hex: "#49d200"))
-                        }
-                    }
-                    HStack {
-                        Text(email)
-                            .font(.system(size: 17, weight: .bold))
-                            .foregroundStyle(Color(hex: "#d2d2d2"))
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: 33)
-                    .padding(.horizontal, 13)
-                    .background(Color(hex: "#f3f3f3"))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color(hex: "#8e8e8e"), lineWidth: 1)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                HStack(spacing: 12) {
+                    InfoField(label: "City", placeholder: "Austin", text: $city)
+                    InfoField(label: "State", placeholder: "TX", text: $state)
+                        .frame(maxWidth: 90)
+                    InfoField(label: "ZIP", placeholder: "78701", text: $zip)
+                        .frame(maxWidth: 100)
                 }
                 .padding(.horizontal, 26)
 
-                // Create New Password
+                // Email (read-only)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Email")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(.black)
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 10))
+                            .foregroundStyle(Color(hex: "#49d200"))
+                        Text("Verified email")
+                            .font(.system(size: 10))
+                            .foregroundStyle(Color(hex: "#49d200"))
+                    }
+                    Text(email)
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(Color(hex: "#d2d2d2"))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(height: 33)
+                        .padding(.horizontal, 13)
+                        .background(Color(hex: "#f3f3f3"))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(hex: "#8e8e8e"), lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                .padding(.horizontal, 26)
+
+                // Save profile button
+                HStack {
+                    Spacer()
+                    Button { Task { await saveProfile() } } label: {
+                        ZStack {
+                            Text("Save Changes")
+                                .font(.system(size: 17))
+                                .foregroundStyle(.white)
+                                .opacity(isSaving ? 0 : 1)
+                            if isSaving { ProgressView().tint(.white) }
+                        }
+                        .frame(width: 244, height: 43)
+                        .background(Color.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isSaving)
+                    Spacer()
+                }
+
+                Divider().padding(.horizontal, 26)
+
+                // Change Password
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Create New Password")
+                    Text("Change Password")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.black)
 
+                    if let pwError = pwErrorMessage {
+                        errorBanner(pwError, color: .red)
+                    }
+                    if pwSuccess {
+                        errorBanner("Password updated successfully!", color: .green)
+                    }
+
                     SecureInfoField(placeholder: "Current password", text: $currentPw)
-                    SecureInfoField(placeholder: "New password", text: $newPw)
-                    SecureInfoField(placeholder: "Confirm New password", text: $confirmPw)
+                    SecureInfoField(placeholder: "New password (min. 6 characters)", text: $newPw)
+                    SecureInfoField(placeholder: "Confirm new password", text: $confirmPw)
 
                     HStack {
                         Spacer()
-                        Button {
-                        } label: {
-                            Text("Create New Password")
-                                .font(.system(size: 17, weight: .regular))
-                                .foregroundStyle(.white)
-                                .frame(width: 244, height: 43)
-                                .background(.black)
-                                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                        Button { Task { await changePassword() } } label: {
+                            ZStack {
+                                Text("Update Password")
+                                    .font(.system(size: 17))
+                                    .foregroundStyle(.white)
+                                    .opacity(isChangingPw ? 0 : 1)
+                                if isChangingPw { ProgressView().tint(.white) }
+                            }
+                            .frame(width: 244, height: 43)
+                            .background(Color.black)
+                            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                         }
                         .buttonStyle(.plain)
+                        .disabled(isChangingPw)
                         Spacer()
                     }
                 }
@@ -100,8 +158,77 @@ struct PersonalInfoView: View {
             }
         }
         .background(.white)
+        .onAppear { loadFromProfile() }
+        .onChange(of: profileManager.profile) { _ in loadFromProfile() }
+    }
+
+    // MARK: - Helpers
+
+    @ViewBuilder
+    private func errorBanner(_ msg: String, color: Color) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: color == .green ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                .foregroundStyle(color)
+            Text(msg).font(.system(size: 13)).foregroundStyle(color)
+            Spacer()
+        }
+        .padding(12)
+        .background(color.opacity(0.1))
+        .cornerRadius(8)
+        .padding(.horizontal, 26)
+    }
+
+    private func loadFromProfile() {
+        guard let p = profileManager.profile else {
+            name = authManager.displayName ?? ""
+            return
+        }
+        name = p.name; phone = p.phone
+        addressLine = p.addressLine; city = p.city
+        state = p.state; zip = p.zip
+    }
+
+    private func saveProfile() async {
+        guard let uid else { return }
+        isSaving = true
+        saveSuccess = false
+        errorMessage = nil
+        do {
+            try await profileManager.updateProfile(
+                uid: uid, name: name, phone: phone,
+                addressLine: addressLine, city: city, state: state, zip: zip
+            )
+            saveSuccess = true
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isSaving = false
+    }
+
+    private func changePassword() async {
+        guard !newPw.isEmpty else { pwErrorMessage = "New password cannot be empty."; return }
+        guard newPw == confirmPw else { pwErrorMessage = "Passwords do not match."; return }
+        guard newPw.count >= 6 else { pwErrorMessage = "Password must be at least 6 characters."; return }
+        guard let email = authManager.userEmail else { return }
+
+        isChangingPw = true
+        pwErrorMessage = nil
+        pwSuccess = false
+        do {
+            // Re-authenticate first
+            let credential = EmailAuthProvider.credential(withEmail: email, password: currentPw)
+            try await Auth.auth().currentUser?.reauthenticate(with: credential)
+            try await Auth.auth().currentUser?.updatePassword(to: newPw)
+            currentPw = ""; newPw = ""; confirmPw = ""
+            pwSuccess = true
+        } catch {
+            pwErrorMessage = AuthError.from(error).errorDescription
+        }
+        isChangingPw = false
     }
 }
+
+// MARK: - Sub-components
 
 private struct InfoField: View {
     let label: String
@@ -110,19 +237,14 @@ private struct InfoField: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(label)
-                .font(.system(size: 16, weight: .bold))
+            Text(label).font(.system(size: 16, weight: .bold)).foregroundStyle(.black)
+            TextField(placeholder, text: $text)
+                .font(.system(size: 16))
                 .foregroundStyle(.black)
-            TextField("", text: $text)
-                .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(Color(hex: "#d2d2d2"))
                 .frame(height: 33)
                 .padding(.horizontal, 13)
                 .background(.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color(hex: "#8e8e8e"), lineWidth: 1)
-                )
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(hex: "#8e8e8e"), lineWidth: 1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding(.horizontal, 26)
@@ -132,24 +254,21 @@ private struct InfoField: View {
 private struct SecureInfoField: View {
     let placeholder: String
     @Binding var text: String
-
     var body: some View {
-        SecureField("", text: $text, prompt: Text(placeholder)
-            .font(.system(size: 16, weight: .bold))
-            .foregroundColor(Color(hex: "#d2d2d2")))
-            .font(.system(size: 16, weight: .bold))
-            .foregroundStyle(Color(hex: "#d2d2d2"))
+        SecureField("", text: $text, prompt:
+            Text(placeholder).font(.system(size: 16)).foregroundColor(Color(hex: "#d2d2d2")))
+            .font(.system(size: 16))
+            .foregroundStyle(.black)
             .frame(height: 33)
             .padding(.horizontal, 10)
             .background(.white)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(hex: "#8e8e8e"), lineWidth: 1)
-            )
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(hex: "#8e8e8e"), lineWidth: 1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
 #Preview {
     PersonalInfoView()
+        .environmentObject(AuthManager())
+        .environmentObject(UserProfileManager())
 }

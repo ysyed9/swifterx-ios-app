@@ -14,34 +14,53 @@ class AppState: ObservableObject {
 
 struct AppRootView: View {
     @StateObject private var appState = AppState()
+    @EnvironmentObject private var authManager: AuthManager
+    @EnvironmentObject private var profileManager: UserProfileManager
 
     var body: some View {
         Group {
-            switch appState.screen {
-            case .splash:
-                SplashView {
-                    withAnimation {
-                        appState.screen = .roleSelect
+            if authManager.isLoading {
+                // Firebase is checking the persisted session — show splash while waiting
+                SplashView(onFinished: {})
+            } else {
+                switch appState.screen {
+                case .splash:
+                    SplashView {
+                        withAnimation {
+                            // If already logged in, skip role/login and go straight to main
+                            appState.screen = authManager.isSignedIn ? .main : .roleSelect
+                        }
                     }
+
+                case .roleSelect:
+                    RoleSelectView(
+                        onCustomer: { withAnimation { appState.screen = .login } }
+                    )
+
+                case .login:
+                    LoginView {
+                        withAnimation { appState.screen = .main }
+                    }
+
+                case .main:
+                    mainTabView
+                        .onAppear {
+                            // Start listening for profile updates when entering main
+                            if let uid = authManager.userUID {
+                                profileManager.startListening(uid: uid)
+                            }
+                        }
                 }
-
-            case .roleSelect:
-                RoleSelectView(
-                    onCustomer: { withAnimation { appState.screen = .login } }
-                )
-
-            case .login:
-                LoginView(
-                    onSignIn:         { withAnimation { appState.screen = .main } },
-                    onForgotPassword: { },
-                    onGoogleSignIn:   { withAnimation { appState.screen = .main } }
-                )
-
-            case .main:
-                mainTabView
             }
         }
         .environmentObject(appState)
+        // When auth state changes to signed-out, return to login
+        .onChange(of: authManager.isSignedIn) { isSignedIn in
+            if !isSignedIn {
+                profileManager.stopListening()
+                withAnimation { appState.screen = .login }
+            }
+        }
     }
 
     private var mainTabView: some View {
@@ -85,4 +104,6 @@ struct AppRootView: View {
 
 #Preview {
     AppRootView()
+        .environmentObject(AuthManager())
+        .environmentObject(UserProfileManager())
 }
