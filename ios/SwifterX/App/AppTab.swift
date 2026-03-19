@@ -1,7 +1,6 @@
-import Foundation
-
-enum AppTab: Hashable {
+enum AppTab {
     case home
-    case cart
-    case profile
+    case services
+    case orders
+    case account
 }

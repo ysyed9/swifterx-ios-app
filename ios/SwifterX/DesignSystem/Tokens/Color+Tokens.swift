@@ -9,3 +9,9 @@ extension Color {
     static let sxBorder = Color(red: 0.90, green: 0.90, blue: 0.92)
     static let sxCardShadow = Color.black.opacity(0.06)
 }
+
+extension ShapeStyle where Self == Color {
+    static var sxPrimaryText: Color { Color.sxPrimaryText }
+    static var sxSecondaryText: Color { Color.sxSecondaryText }
+    static var sxAccent: Color { Color.sxAccent }
+}

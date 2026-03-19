@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ServiceDetailView: View {
-    let service: Recommendation
+    let provider: ServiceProvider
     @State private var quantity = 1
 
     var body: some View {
@@ -17,12 +17,13 @@ struct ServiceDetailView: View {
                     )
 
                 VStack(alignment: .leading, spacing: SxSpacing.xs) {
-                    Text(service.title)
+                    Text(provider.name)
                         .font(SxTypography.sectionTitle)
-                    Text(service.subtitle)
+                    Text(provider.description)
                         .font(SxTypography.body)
                         .foregroundStyle(.sxSecondaryText)
-                    Label(String(format: "%.1f rating", service.rating), systemImage: "star.fill")
+                    Label(String(format: "%.1f rating  •  %.1fmi", provider.rating, provider.distanceMi),
+                          systemImage: "star.fill")
                         .font(SxTypography.body)
                         .foregroundStyle(.sxAccent)
                 }
@@ -42,7 +43,7 @@ struct ServiceDetailView: View {
 
                 HStack {
                     SecondaryButton(title: "Save for later") {}
-                    PrimaryButton(title: "Add $\(service.price * quantity)") {}
+                    PrimaryButton(title: "Book Now") {}
                 }
             }
             .padding(SxSpacing.md)
@@ -55,6 +56,6 @@ struct ServiceDetailView: View {
 
 #Preview {
     NavigationStack {
-        ServiceDetailView(service: MockData.recommendations[0])
+        ServiceDetailView(provider: MockData.providers[0])
     }
 }
