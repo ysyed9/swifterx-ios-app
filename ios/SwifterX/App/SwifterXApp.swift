@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseCore
+import GoogleSignIn
 
 // Firebase recommends initializing via AppDelegate so it runs before any
 // SwiftUI lifecycle code, ensuring Auth state listeners are set up first.
@@ -10,6 +11,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         FirebaseApp.configure()
         return true
+    }
+
+    // Required for Google Sign-In to handle the OAuth redirect URL
+    func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
+        return GIDSignIn.sharedInstance.handle(url)
     }
 }
 

@@ -1,11 +1,69 @@
-.cursor/
-.DS_Store
-Thumbs.db
+# =============================
+# SwifterX iOS — .gitignore
+# =============================
+
+# ----- Xcode -----
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# ----- Swift Package Manager -----
+.build/
+.swiftpm/
+ios/SwifterX/SwifterX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+
+# ----- CocoaPods (if ever used) -----
+Pods/
+Podfile.lock
+
+# ----- Firebase / Google — NEVER commit these -----
+**/GoogleService-Info.plist
+**/google-services.json
+
+# ----- Environment & Secrets -----
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.development
-.env.test
-.env.production
+.env.*
+*.secret
+secrets.xcconfig
+Config/Secrets.swift
+**/Secrets.swift
+
+# ----- macOS -----
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ----- Editor -----
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =============================
+# IMPORTANT — Secrets setup
+# =============================
+# GoogleService-Info.plist is gitignored.
+# To set up a new dev environment:
+# 1. Download GoogleService-Info.plist from Firebase Console
+#    https://console.firebase.google.com → swifterx-e7f15 → Project Settings → iOS app
+# 2. Copy it to: ios/SwifterX/Resources/GoogleService-Info.plist
+# 3. Build and run
