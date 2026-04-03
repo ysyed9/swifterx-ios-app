@@ -2,7 +2,7 @@ import SwiftUI
 
 struct RoleSelectView: View {
     var onCustomer: () -> Void
-    @State private var showComingSoon = false
+    var onProvider: () -> Void
 
     var body: some View {
         ZStack {
@@ -26,7 +26,6 @@ struct RoleSelectView: View {
                 Spacer().frame(height: 30)
 
                 HStack(spacing: 15) {
-                    // Customer card
                     Button(action: onCustomer) {
                         RoleCard(
                             icon: "person.3.fill",
@@ -36,14 +35,11 @@ struct RoleSelectView: View {
                     }
                     .buttonStyle(.plain)
 
-                    // Provider card — disabled, shows Coming Soon alert
-                    Button {
-                        showComingSoon = true
-                    } label: {
+                    Button(action: onProvider) {
                         RoleCard(
                             icon: "gearshape.2",
                             label: "Provider",
-                            isEnabled: false
+                            isEnabled: true
                         )
                     }
                     .buttonStyle(.plain)
@@ -52,11 +48,6 @@ struct RoleSelectView: View {
 
                 Spacer()
             }
-        }
-        .alert("Coming Soon", isPresented: $showComingSoon) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("The provider side of the app is not available yet. Stay tuned!")
         }
     }
 }
@@ -91,5 +82,5 @@ private struct RoleCard: View {
 }
 
 #Preview {
-    RoleSelectView(onCustomer: {})
+    RoleSelectView(onCustomer: {}, onProvider: {})
 }

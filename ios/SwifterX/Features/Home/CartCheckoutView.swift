@@ -2,13 +2,21 @@ import SwiftUI
 
 struct CartCheckoutView: View {
     @StateObject private var cart = CartStore.shared
+    @EnvironmentObject private var dataService:  DataService
+    @EnvironmentObject private var orderManager: OrderManager
+    @EnvironmentObject private var authManager:  AuthManager
+    @EnvironmentObject private var profileManager: UserProfileManager
+    @EnvironmentObject private var checkoutPayment: CheckoutPaymentCoordinator
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedDate: Date = Date()
-    @State private var selectedTime: String = ""
-    @State private var specialInstructions: String = ""
-    @State private var showConfirmation = false
 
-    private let timeSlots = ["9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"]
+    @State private var selectedDate:         Date   = Date()
+    @State private var selectedTime:         String = ""
+    @State private var specialInstructions:  String = ""
+    @State private var availableSlots:       [String] = []
+    @State private var isLoadingSlots        = false
+    @State private var isPlacingOrder        = false
+    @State private var showConfirmation      = false
+    @State private var orderError:           String? = nil
 
     var body: some View {
         NavigationStack {
@@ -53,8 +61,16 @@ struct CartCheckoutView: View {
                     dismiss()
                 }
             } message: {
-                Text("Your booking has been confirmed. You'll receive a confirmation shortly.")
+                Text("Your booking has been confirmed with \(cart.provider?.name ?? "the provider"). You'll receive an update shortly.")
             }
+            .alert("Order Failed", isPresented: .constant(orderError != nil)) {
+                Button("OK") { orderError = nil }
+            } message: {
+                Text(orderError ?? "")
+            }
+        }
+        .task(id: selectedDate) {
+            await loadSlots()
         }
     }
 
@@ -130,11 +146,14 @@ struct CartCheckoutView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
 
-            DatePicker("", selection: $selectedDate, displayedComponents: .date)
+            DatePicker("", selection: $selectedDate,
+                       in: Date()...,
+                       displayedComponents: .date)
                 .datePickerStyle(.graphical)
                 .tint(.black)
                 .padding(.horizontal, 12)
                 .padding(.bottom, 8)
+                .onChange(of: selectedDate) { _ in selectedTime = "" }
         }
     }
 
@@ -142,15 +161,21 @@ struct CartCheckoutView: View {
 
     private var timeSlotsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Select time")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(.black)
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
+            HStack {
+                Text("Select time")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.black)
+                Spacer()
+                if isLoadingSlots {
+                    ProgressView().scaleEffect(0.8)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(timeSlots, id: \.self) { slot in
+                    ForEach(availableSlots, id: \.self) { slot in
                         TimeChip(time: slot, isSelected: selectedTime == slot) {
                             selectedTime = slot
                         }
@@ -165,20 +190,26 @@ struct CartCheckoutView: View {
     // MARK: - Personal Info
 
     private var personalInfoSection: some View {
-        NavigationLink {
-            PersonalInfoView()
-        } label: {
+        NavigationLink { PersonalInfoView() } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Personal information")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.black)
-                    Text("555 N St, apt 24 • Austin, TX 45667")
-                        .font(.system(size: 13))
-                        .foregroundColor(Color(hex: "828282"))
-                    Text("(555) 123-4567")
-                        .font(.system(size: 13))
-                        .foregroundColor(Color(hex: "828282"))
+                    if let profile = profileManager.profile, !profile.fullAddress.isEmpty {
+                        Text(profile.fullAddress)
+                            .font(.system(size: 13))
+                            .foregroundColor(Color(hex: "828282"))
+                    } else {
+                        Text("Add your address")
+                            .font(.system(size: 13))
+                            .foregroundColor(Color(hex: "cc3333"))
+                    }
+                    if let phone = profileManager.profile?.phone, !phone.isEmpty {
+                        Text(phone)
+                            .font(.system(size: 13))
+                            .foregroundColor(Color(hex: "828282"))
+                    }
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
@@ -213,24 +244,28 @@ struct CartCheckoutView: View {
     // MARK: - Payment
 
     private var paymentSection: some View {
-        Button {} label: {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Payment method")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.black)
-                    Text("Debit •••• 0000")
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Payment method")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.black)
+                if StripeConfig.isLivePaymentsEnabled {
+                    Text("Card / Apple Pay via Stripe")
                         .font(.system(size: 13))
                         .foregroundColor(Color(hex: "828282"))
+                } else {
+                    Text("Dev mode — no charge (add StripePublishableKey + Cloud Functions for live pay)")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(hex: "828282"))
                 }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 13))
-                    .foregroundColor(.gray)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 14)
+            Spacer()
+            Image(systemName: "lock.fill")
+                .font(.system(size: 13))
+                .foregroundColor(Color(hex: "828282"))
         }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 14)
     }
 
     // MARK: - Summary
@@ -242,7 +277,7 @@ struct CartCheckoutView: View {
                 .foregroundColor(.black)
                 .padding(.bottom, 12)
 
-            SummaryRow(label: "subtotal", amount: cart.subtotal)
+            SummaryRow(label: "subtotal",            amount: cart.subtotal)
             SummaryRow(label: "fee & estimated tax", amount: cart.fee)
             Divider().padding(.vertical, 8)
             HStack {
@@ -264,13 +299,19 @@ struct CartCheckoutView: View {
     private var placeOrderButton: some View {
         Button {
             guard !selectedTime.isEmpty else { return }
-            showConfirmation = true
+            Task { await submitOrder() }
         } label: {
             HStack {
                 Spacer()
-                Text(selectedTime.isEmpty ? "Select a time to continue" : "Place Order  •  $\(String(format: "%.2f", cart.total))")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(.white)
+                if isPlacingOrder {
+                    ProgressView().tint(.white)
+                } else {
+                    Text(selectedTime.isEmpty
+                         ? "Select a time to continue"
+                         : "Place Order  •  $\(String(format: "%.2f", cart.total))")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.white)
+                }
                 Spacer()
             }
             .padding(.vertical, 14)
@@ -279,7 +320,45 @@ struct CartCheckoutView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
         }
-        .disabled(selectedTime.isEmpty)
+        .disabled(selectedTime.isEmpty || isPlacingOrder)
+    }
+
+    // MARK: - Helpers
+
+    private func loadSlots() async {
+        guard let provider = cart.provider else { return }
+        isLoadingSlots = true
+        availableSlots = await dataService.fetchAvailability(for: provider.id, on: selectedDate)
+        isLoadingSlots = false
+    }
+
+    private func submitOrder() async {
+        guard let uid = authManager.userUID else { return }
+        isPlacingOrder = true
+        cart.selectedDate         = selectedDate
+        cart.selectedTime         = selectedTime
+        cart.specialInstructions  = specialInstructions
+        let useStripe = StripeConfig.isLivePaymentsEnabled
+        do {
+            let order = try await orderManager.placeOrder(from: cart, uid: uid, useLiveStripe: useStripe)
+            if useStripe, let pk = StripeConfig.publishableKey {
+                let clientSecret = try await checkoutPayment.fetchPaymentIntentClientSecret(orderId: order.id)
+                let completed = try await checkoutPayment.presentPaymentSheet(
+                    clientSecret: clientSecret,
+                    publishableKey: pk
+                )
+                guard completed else {
+                    orderError = "Payment was canceled. Your order is still pending—you can pay again from Orders when supported."
+                    isPlacingOrder = false
+                    return
+                }
+                try await checkoutPayment.confirmOrderPayment(orderId: order.id)
+            }
+            showConfirmation = true
+        } catch {
+            orderError = error.localizedDescription
+        }
+        isPlacingOrder = false
     }
 
     private func formattedDate(_ date: Date) -> String {
@@ -312,7 +391,6 @@ private struct TimeChip: View {
 private struct SummaryRow: View {
     let label: String
     let amount: Double
-
     var body: some View {
         HStack {
             Text(label)
@@ -333,4 +411,9 @@ private struct SummaryRow: View {
     let services = MockData.serviceItems(for: "Plumbing")
     cart.items = [CartItem(service: services[0]), CartItem(service: services[1])]
     return CartCheckoutView()
+        .environmentObject(DataService(client: MockAPIClient.shared))
+        .environmentObject(OrderManager())
+        .environmentObject(AuthManager())
+        .environmentObject(UserProfileManager())
+        .environmentObject(CheckoutPaymentCoordinator())
 }

@@ -1,24 +1,24 @@
 import SwiftUI
 
 struct ServicesView: View {
+    @EnvironmentObject private var dataService: DataService
     @State private var searchText = ""
     @State private var selectedCategory: String? = nil
 
-    private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+    private let columns = [
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12)
+    ]
 
     private var filteredProviders: [ServiceProvider] {
-        let base = MockData.providers
-        if let cat = selectedCategory {
-            return base.filter { $0.category == cat }
-        }
-        return base
+        dataService.filteredProviders(category: selectedCategory, search: searchText)
     }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 0) {
 
-                // Header
                 Text("Services")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundStyle(.black)
@@ -49,23 +49,27 @@ struct ServicesView: View {
                     .padding(.top, 24)
                     .padding(.bottom, 12)
 
-                LazyVGrid(columns: columns, spacing: 12) {
-                    ForEach(MockData.categories, id: \.name) { cat in
-                        ServiceCategoryTile(
-                            name: cat.name,
-                            icon: cat.icon,
-                            isSelected: selectedCategory == cat.name
-                        )
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                selectedCategory = (selectedCategory == cat.name) ? nil : cat.name
+                if dataService.categories.isEmpty {
+                    ProgressView().frame(maxWidth: .infinity).padding(.bottom, 12)
+                } else {
+                    LazyVGrid(columns: columns, spacing: 12) {
+                        ForEach(dataService.categories, id: \.name) { cat in
+                            ServiceCategoryTile(
+                                name: cat.name,
+                                icon: cat.icon,
+                                isSelected: selectedCategory == cat.name
+                            )
+                            .onTapGesture {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    selectedCategory = (selectedCategory == cat.name) ? nil : cat.name
+                                }
                             }
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
 
-                // Providers
+                // Providers header
                 HStack {
                     Text(selectedCategory ?? "All Providers")
                         .font(.system(size: 16, weight: .bold))
@@ -86,12 +90,14 @@ struct ServicesView: View {
                 .padding(.top, 24)
                 .padding(.bottom, 4)
 
-                if filteredProviders.isEmpty {
+                if dataService.isLoadingProviders {
+                    ProgressView().frame(maxWidth: .infinity).padding(.top, 40)
+                } else if filteredProviders.isEmpty {
                     VStack(spacing: 12) {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 40))
                             .foregroundStyle(Color(hex: "#cccccc"))
-                        Text("No providers in this category yet.")
+                        Text("No providers found.")
                             .font(.system(size: 14))
                             .foregroundStyle(Color(hex: "#828282"))
                     }
@@ -115,6 +121,13 @@ struct ServicesView: View {
         }
         .background(Color.white)
         .navigationBarHidden(true)
+        .task {
+            if dataService.providers.isEmpty {
+                async let p: () = dataService.loadProviders()
+                async let c: () = dataService.loadCategories()
+                _ = await (p, c)
+            }
+        }
     }
 }
 
@@ -152,14 +165,8 @@ private struct ProviderListRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color(hex: "#dbdbdb"))
-                .frame(width: 60, height: 60)
-                .overlay(
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 24))
-                        .foregroundStyle(Color(hex: "#999999"))
-                )
+            ProviderThumb(provider: provider)
+                .frame(width: 64, height: 64)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(provider.name)
@@ -172,9 +179,12 @@ private struct ProviderListRow: View {
                     Image(systemName: "star.fill")
                         .font(.system(size: 10))
                         .foregroundStyle(.black)
-                    Text("\(provider.rating, specifier: "%.1f")  •  \(provider.distanceMi, specifier: "%.1f")mi")
+                    Text("\(provider.rating, specifier: "%.1f")  •  \(provider.distanceMi, specifier: "%.1f")mi away")
                         .font(.system(size: 12))
                         .foregroundStyle(Color(hex: "#828282"))
+                    Text("• \(provider.reviewCount) reviews")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color(hex: "#aaaaaa"))
                 }
             }
 
@@ -189,6 +199,45 @@ private struct ProviderListRow: View {
     }
 }
 
+// MARK: - Provider Thumbnail
+
+private struct ProviderThumb: View {
+    let provider: ServiceProvider
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 10, style: .continuous)
+            .fill(Color(hex: "#dbdbdb"))
+            .overlay { imageContent }
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    @ViewBuilder
+    private var imageContent: some View {
+        if !provider.imageName.isEmpty {
+            Image(provider.imageName)
+                .resizable()
+                .scaledToFill()
+        } else if let url = URL(string: provider.imageURL), !provider.imageURL.isEmpty {
+            AsyncImage(url: url) { phase in
+                if case .success(let image) = phase {
+                    image.resizable().scaledToFill()
+                } else {
+                    fallbackIcon
+                }
+            }
+        } else {
+            fallbackIcon
+        }
+    }
+
+    private var fallbackIcon: some View {
+        Image(systemName: "person.fill")
+            .font(.system(size: 24))
+            .foregroundStyle(Color(hex: "#999999"))
+    }
+}
+
 #Preview {
     NavigationStack { ServicesView() }
+        .environmentObject(DataService(client: MockAPIClient.shared))
 }

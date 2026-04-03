@@ -52,6 +52,10 @@ Config/Secrets.swift
 .Spotlight-V100
 .Trashes
 
+# ----- Firebase Functions -----
+firebase/functions/node_modules/
+firebase/functions/.env
+
 # ----- Editor -----
 .vscode/
 .idea/

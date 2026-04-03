@@ -1,0 +1,105 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ─── Users (profiles) ─────────────────────────────────────────────────────
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // ─── Categories ───────────────────────────────────────────────────────────
+    // Public read — only backend/admin writes
+    match /categories/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ─── Providers ────────────────────────────────────────────────────────────
+    // Public read — only backend/admin writes
+    match /providers/{providerID} {
+      allow read: if true;
+      allow write: if false;
+
+      // Services offered (public read)
+      match /services/{serviceID} {
+        allow read: if true;
+        allow write: if false;
+      }
+
+      // Reviews — any authenticated user can create once per order; no edit/delete
+      match /reviews/{reviewID} {
+        allow read: if true;
+        allow create: if isSignedIn()
+          && request.resource.data.customerUID == request.auth.uid
+          && request.resource.data.rating is int
+          && request.resource.data.rating >= 1
+          && request.resource.data.rating <= 5
+          && request.resource.data.orderID is string;
+        allow update, delete: if false;
+      }
+
+      // Availability slots (public read — provider/admin sets)
+      match /availability/{date} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+
+    // ─── Orders ───────────────────────────────────────────────────────────────
+    match /orders/{orderID} {
+
+      // Read: customer owns it, provider is assigned to it, or it's in the open inbox
+      allow read: if isSignedIn() && (
+        resource.data.customerUID == request.auth.uid ||
+        resource.data.providerUID == request.auth.uid ||
+        (resource.data.providerUID == "" && resource.data.status == "confirmed")
+      );
+
+      // Create: customer creating their own order
+      allow create: if isSignedIn()
+        && request.resource.data.customerUID == request.auth.uid
+        && request.resource.data.providerID is string
+        && request.resource.data.providerID.size() > 0
+        && (
+          (request.resource.data.paymentStatus == "unpaid"  && request.resource.data.status == "pending")
+          || (request.resource.data.paymentStatus == "paid" && request.resource.data.status == "confirmed")
+        );
+
+      // Customer: cancel their own order
+      allow update: if isSignedIn()
+        && resource.data.customerUID == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"])
+        && request.resource.data.status == "cancelled";
+
+      // Provider: claim an unclaimed confirmed job (set providerUID to self)
+      allow update: if isSignedIn()
+        && resource.data.providerUID == ""
+        && resource.data.status == "confirmed"
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["providerUID"])
+        && request.resource.data.providerUID == request.auth.uid;
+
+      // Provider: release a claimed job back to inbox (clear providerUID)
+      allow update: if isSignedIn()
+        && resource.data.providerUID == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["providerUID"])
+        && request.resource.data.providerUID == "";
+
+      // Provider: update status on their assigned job (start, complete, cancel)
+      allow update: if isSignedIn()
+        && resource.data.providerUID == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"])
+        && request.resource.data.status in ["inProgress", "completed", "cancelled"];
+
+      allow delete: if false;
+    }
+  }
+}

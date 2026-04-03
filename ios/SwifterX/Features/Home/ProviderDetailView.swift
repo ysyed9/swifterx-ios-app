@@ -3,12 +3,14 @@ import SwiftUI
 struct ProviderDetailView: View {
     let provider: ServiceProvider
     @StateObject private var cart = CartStore.shared
+    @EnvironmentObject private var dataService: DataService
+    @EnvironmentObject private var favoritesStore: FavoritesStore
     @Environment(\.dismiss) private var dismiss
-    @State private var showCart = false
-
-    private var services: [ServiceItem] {
-        MockData.serviceItems(for: provider.category)
-    }
+    @State private var showCart        = false
+    @State private var showAllReviews  = false
+    @State private var reviews:    [Review] = []
+    @State private var services:   [ServiceItem] = []
+    @State private var isLoading   = true
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -29,14 +31,23 @@ struct ProviderDetailView: View {
         .fullScreenCover(isPresented: $showCart) {
             CartCheckoutView()
         }
+        .sheet(isPresented: $showAllReviews) {
+            AllReviewsSheet(provider: provider, reviews: reviews)
+        }
+        .task {
+            async let r = dataService.fetchReviews(for: provider.id)
+            let fetchedReviews = await r
+            reviews  = fetchedReviews.isEmpty ? MockData.mockReviews.filter { $0.providerID == provider.id } : fetchedReviews
+            services = MockData.serviceItems(for: provider.category)
+            isLoading = false
+        }
     }
 
     // MARK: - Hero
 
     private var heroSection: some View {
         ZStack(alignment: .top) {
-            Rectangle()
-                .fill(Color(red: 0.85, green: 0.85, blue: 0.87))
+            providerHeroImage
                 .frame(height: 210)
 
             HStack {
@@ -44,23 +55,56 @@ struct ProviderDetailView: View {
                     Circle()
                         .fill(Color.black.opacity(0.5))
                         .frame(width: 36, height: 36)
-                        .overlay(Image(systemName: "xmark").font(.system(size: 14, weight: .semibold)).foregroundColor(.white))
+                        .overlay(Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.white))
                 }
                 Spacer()
                 HStack(spacing: 8) {
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            favoritesStore.toggle(provider)
+                        }
+                    } label: {
+                        Circle()
+                            .fill(Color.black.opacity(0.5))
+                            .frame(width: 36, height: 36)
+                            .overlay(
+                                Image(systemName: favoritesStore.isFavorite(provider.id) ? "heart.fill" : "heart")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(favoritesStore.isFavorite(provider.id) ? .red : .white)
+                            )
+                    }
                     Circle()
                         .fill(Color.black.opacity(0.5))
                         .frame(width: 36, height: 36)
-                        .overlay(Image(systemName: "heart").font(.system(size: 14)).foregroundColor(.white))
-                    Circle()
-                        .fill(Color.black.opacity(0.5))
-                        .frame(width: 36, height: 36)
-                        .overlay(Image(systemName: "ellipsis").font(.system(size: 14)).foregroundColor(.white))
+                        .overlay(Image(systemName: "ellipsis")
+                            .font(.system(size: 14))
+                            .foregroundColor(.white))
                 }
             }
             .padding(.horizontal, 20)
             .padding(.top, 56)
         }
+    }
+
+    private var providerHeroImage: some View {
+        Color(red: 0.85, green: 0.85, blue: 0.87)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay {
+                if !provider.imageName.isEmpty {
+                    Image(provider.imageName)
+                        .resizable()
+                        .scaledToFill()
+                } else if let url = URL(string: provider.imageURL), !provider.imageURL.isEmpty {
+                    AsyncImage(url: url) { phase in
+                        if case .success(let image) = phase {
+                            image.resizable().scaledToFill()
+                        }
+                    }
+                }
+            }
+            .clipped()
     }
 
     // MARK: - Content
@@ -80,7 +124,7 @@ struct ProviderDetailView: View {
                     Image(systemName: "star.fill")
                         .font(.system(size: 9))
                         .foregroundColor(Color(hex: "828282"))
-                    Text("(\(provider.reviewCount))")
+                    Text("(\(reviews.isEmpty ? provider.reviewCount : reviews.count))")
                         .font(.system(size: 14))
                         .foregroundColor(Color(hex: "828282"))
                     Text("•")
@@ -99,60 +143,41 @@ struct ProviderDetailView: View {
             .frame(maxWidth: .infinity)
 
             VStack(alignment: .leading, spacing: 0) {
-                // About / description
-                Divider().foregroundColor(Color(hex: "eeeeee"))
+                Divider()
                 Text(provider.description)
                     .font(.system(size: 14))
                     .foregroundColor(.black)
                     .lineSpacing(4)
                     .padding(.vertical, 15)
 
-                Divider().foregroundColor(Color(hex: "eeeeee"))
+                Divider()
 
                 // Hours row
                 HStack(spacing: 20) {
-                    Image(systemName: "clock")
-                        .font(.system(size: 14))
-                        .foregroundColor(.black)
+                    Image(systemName: "clock").font(.system(size: 14)).foregroundColor(.black)
                     HStack(spacing: 4) {
-                        Text("Open")
-                            .font(.system(size: 14))
-                            .foregroundColor(Color(hex: "3ab130"))
-                        Text("•")
-                            .font(.system(size: 9))
-                            .foregroundColor(Color(hex: "383838"))
-                        Text("Closes 6 PM")
-                            .font(.system(size: 14))
-                            .foregroundColor(Color(hex: "383838"))
+                        Text("Open").font(.system(size: 14)).foregroundColor(Color(hex: "3ab130"))
+                        Text("•").font(.system(size: 9)).foregroundColor(Color(hex: "383838"))
+                        Text("Closes 6 PM").font(.system(size: 14)).foregroundColor(Color(hex: "383838"))
                     }
                     Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
+                    Image(systemName: "chevron.right").font(.system(size: 12)).foregroundColor(.gray)
                 }
                 .padding(.vertical, 15)
 
-                Divider().foregroundColor(Color(hex: "eeeeee"))
+                Divider()
 
-                // Phone row
                 HStack(spacing: 20) {
-                    Image(systemName: "phone")
-                        .font(.system(size: 14))
-                        .foregroundColor(.black)
-                    Text("(555) 123-4567")
-                        .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "383838"))
+                    Image(systemName: "phone").font(.system(size: 14)).foregroundColor(.black)
+                    Text("(555) 123-4567").font(.system(size: 14)).foregroundColor(Color(hex: "383838"))
                     Spacer()
                 }
                 .padding(.vertical, 15)
 
-                Divider().foregroundColor(Color(hex: "eeeeee"))
+                Divider()
             }
 
-            // Reviews section
             reviewsSection
-
-            // Our Services section
             servicesSection
         }
         .padding(.horizontal, 20)
@@ -168,27 +193,40 @@ struct ProviderDetailView: View {
                 .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.black)
 
-            HStack(spacing: 4) {
-                Text("4.8")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color(hex: "828282"))
-                Image(systemName: "star.fill")
-                    .font(.system(size: 9))
-                    .foregroundColor(Color(hex: "828282"))
-                Text("156 Ratings")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color(hex: "828282"))
-                Spacer()
-                Text("view all")
-                    .font(.system(size: 12))
-                    .foregroundColor(.black)
-                    .underline()
-            }
+            if isLoading {
+                ProgressView().frame(maxWidth: .infinity)
+            } else {
+                HStack(spacing: 4) {
+                    Text("\(provider.rating, specifier: "%.1f")")
+                        .font(.system(size: 14))
+                        .foregroundColor(Color(hex: "828282"))
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 9))
+                        .foregroundColor(Color(hex: "828282"))
+                    Text("\(reviews.isEmpty ? provider.reviewCount : reviews.count) Ratings")
+                        .font(.system(size: 14))
+                        .foregroundColor(Color(hex: "828282"))
+                    Spacer()
+                    Button { showAllReviews = true } label: {
+                        Text("view all")
+                            .font(.system(size: 12))
+                            .foregroundColor(.black)
+                            .underline()
+                    }
+                }
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(MockData.reviews, id: \.reviewer) { review in
-                        ReviewCard(review: review)
+                if reviews.isEmpty {
+                    Text("No reviews yet.")
+                        .font(.system(size: 13))
+                        .foregroundColor(Color(hex: "828282"))
+                        .padding(.top, 4)
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(reviews) { review in
+                                ReviewCard(review: review)
+                            }
+                        }
                     }
                 }
             }
@@ -204,53 +242,54 @@ struct ProviderDetailView: View {
                 .foregroundColor(.black)
                 .padding(.bottom, 4)
 
-            ForEach(services) { service in
-                VStack(spacing: 0) {
-                    Divider().foregroundColor(Color(hex: "eeeeee"))
-                    HStack {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(service.name)
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.black)
-                            Text("$\(Int(service.price))")
-                                .font(.system(size: 14))
-                                .foregroundColor(Color(hex: "828282"))
-                        }
-                        Spacer()
-                        Button {
-                            withAnimation(.spring(response: 0.3)) {
-                                if cart.contains(service) {
-                                    cart.remove(service)
-                                } else {
-                                    cart.add(service, from: provider)
-                                }
+            if isLoading {
+                ProgressView().frame(maxWidth: .infinity).padding(.vertical, 20)
+            } else {
+                ForEach(services) { service in
+                    VStack(spacing: 0) {
+                        Divider()
+                        HStack {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(service.name)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(.black)
+                                Text("$\(Int(service.price))")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(Color(hex: "828282"))
                             }
-                        } label: {
-                            Circle()
-                                .fill(cart.contains(service) ? Color.black : Color(hex: "f6f6f6"))
-                                .frame(width: 38, height: 38)
-                                .overlay(
-                                    Image(systemName: cart.contains(service) ? "checkmark" : "plus")
-                                        .font(.system(size: 15, weight: .semibold))
-                                        .foregroundColor(cart.contains(service) ? .white : .black)
-                                )
+                            Spacer()
+                            Button {
+                                withAnimation(.spring(response: 0.3)) {
+                                    if cart.contains(service) {
+                                        cart.remove(service)
+                                    } else {
+                                        cart.add(service, from: provider)
+                                    }
+                                }
+                            } label: {
+                                Circle()
+                                    .fill(cart.contains(service) ? Color.black : Color(hex: "f6f6f6"))
+                                    .frame(width: 38, height: 38)
+                                    .overlay(
+                                        Image(systemName: cart.contains(service) ? "checkmark" : "plus")
+                                            .font(.system(size: 15, weight: .semibold))
+                                            .foregroundColor(cart.contains(service) ? .white : .black)
+                                    )
+                            }
                         }
+                        .padding(.vertical, 15)
                     }
-                    .padding(.vertical, 15)
                 }
+                Divider()
+                Spacer().frame(height: 80)
             }
-            Divider().foregroundColor(Color(hex: "eeeeee"))
-
-            Spacer().frame(height: 80)
         }
     }
 
     // MARK: - View Cart Button
 
     private var viewCartButton: some View {
-        Button {
-            showCart = true
-        } label: {
+        Button { showCart = true } label: {
             HStack {
                 Spacer()
                 Text("View cart (\(cart.items.count))")
@@ -267,7 +306,7 @@ struct ProviderDetailView: View {
     }
 }
 
-// MARK: - Supporting views
+// MARK: - Supporting Views
 
 private struct TagChip: View {
     let label: String
@@ -284,16 +323,19 @@ private struct TagChip: View {
 }
 
 private struct ReviewCard: View {
-    let review: (reviewer: String, rating: Int, date: String, text: String)
+    let review: Review
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Circle()
                     .fill(Color(hex: "f6f6f6"))
                     .frame(width: 30, height: 30)
-                    .overlay(Image(systemName: "person.fill").font(.system(size: 14)).foregroundColor(.gray))
+                    .overlay(Image(systemName: "person.fill")
+                        .font(.system(size: 14))
+                        .foregroundColor(.gray))
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(review.reviewer)
+                    Text(review.customerName)
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.black)
                     HStack(spacing: 15) {
@@ -304,13 +346,13 @@ private struct ReviewCard: View {
                                     .foregroundColor(Color(hex: "828282"))
                             }
                         }
-                        Text(review.date)
+                        Text(review.timeAgo)
                             .font(.system(size: 12))
                             .foregroundColor(Color(hex: "828282"))
                     }
                 }
             }
-            Text(review.text)
+            Text(review.comment)
                 .font(.system(size: 12))
                 .foregroundColor(.black)
                 .fixedSize(horizontal: false, vertical: true)
@@ -322,8 +364,75 @@ private struct ReviewCard: View {
     }
 }
 
+// MARK: - All Reviews Sheet
+
+private struct AllReviewsSheet: View {
+    let provider: ServiceProvider
+    let reviews: [Review]
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    if reviews.isEmpty {
+                        Text("No reviews yet.")
+                            .font(.system(size: 14))
+                            .foregroundColor(Color(hex: "828282"))
+                            .padding(.top, 40)
+                    } else {
+                        ForEach(reviews) { review in
+                            VStack(alignment: .leading, spacing: 10) {
+                                HStack(spacing: 8) {
+                                    Circle()
+                                        .fill(Color(hex: "f6f6f6"))
+                                        .frame(width: 36, height: 36)
+                                        .overlay(Image(systemName: "person.fill")
+                                            .font(.system(size: 16))
+                                            .foregroundColor(.gray))
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(review.customerName)
+                                            .font(.system(size: 14, weight: .semibold))
+                                        HStack(spacing: 2) {
+                                            ForEach(1...5, id: \.self) { i in
+                                                Image(systemName: i <= review.rating ? "star.fill" : "star")
+                                                    .font(.system(size: 10))
+                                                    .foregroundColor(Color(hex: "828282"))
+                                            }
+                                        }
+                                    }
+                                    Spacer()
+                                    Text(review.timeAgo)
+                                        .font(.system(size: 12))
+                                        .foregroundColor(Color(hex: "828282"))
+                                }
+                                Text(review.comment)
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.black)
+                                    .lineSpacing(3)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 16)
+                            Divider().padding(.horizontal, 20)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("\(provider.name) — Reviews")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") { dismiss() }.foregroundStyle(.black)
+                }
+            }
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         ProviderDetailView(provider: MockData.providers[0])
     }
+    .environmentObject(DataService(client: MockAPIClient.shared))
+    .environmentObject(FavoritesStore())
 }

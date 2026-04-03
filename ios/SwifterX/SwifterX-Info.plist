@@ -13,5 +13,9 @@
 			</array>
 		</dict>
 	</array>
+	<key>StripePublishableKey</key>
+	<string>pk_live_51TDeUgFeTUUzSNY6HEM18ZwJhPgOqbsP4dAymZjMY3UC4llZg4i4DL5pLm9XzmmsDgS4qhe4zyzCQBAPEcjCJYd700oNkSy8w5</string>
+	<key>FirebaseInAppMessagingAutomaticDataCollectionEnabled</key>
+	<false/>
 </dict>
 </plist>

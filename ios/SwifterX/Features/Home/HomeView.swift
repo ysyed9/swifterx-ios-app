@@ -1,71 +1,72 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var searchText = ""
-    let categories = MockData.categories
-    let providers   = MockData.providers
+    @EnvironmentObject private var dataService: DataService
+    @EnvironmentObject private var appState: AppState
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 0) {
 
-                // Search bar
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundStyle(Color(hex: "#858585"))
-                    Text("Search Swifter")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(Color(hex: "#858585"))
-                    Spacer()
-                }
-                .padding(.horizontal, 16)
-                .frame(height: 42)
-                .background(Color(hex: "#f6f6f6"))
-                .clipShape(Capsule())
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
+                // Hero banner with floating search bar
+                HeroBanner { appState.activeTab = .services }
 
                 // Top Services
-                SectionHeader(title: "Top Services for you", action: "Show More")
-                    .padding(.horizontal, 20)
-                    .padding(.top, 20)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 15) {
-                        ForEach(Array(categories.prefix(5)), id: \.name) { cat in
-                            CategoryPillView(name: cat.name, icon: cat.icon)
-                        }
-                    }
-                    .padding(.horizontal, 20)
+                SectionHeader(title: "Top Services for you", action: "Show More") {
+                    appState.activeTab = .services
                 }
-                .padding(.top, 12)
+                .padding(.horizontal, 20)
+                .padding(.top, 22)
+
+                if dataService.categories.isEmpty {
+                    ProgressView().padding(.top, 12).frame(maxWidth: .infinity)
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 15) {
+                            ForEach(Array(dataService.categories.prefix(5)), id: \.name) { cat in
+                                Button { appState.activeTab = .services } label: {
+                                    CategoryPillView(name: cat.name, icon: cat.icon)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                    .padding(.top, 12)
+                }
 
                 // Recommended
-                SectionHeader(title: "Recommended", action: "Show More")
-                    .padding(.horizontal, 20)
-                    .padding(.top, 24)
+                SectionHeader(title: "Recommended", action: "Show More") {
+                    appState.activeTab = .services
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 24)
 
-                VStack(spacing: 0) {
-                    ForEach(providers.prefix(3)) { provider in
-                        NavigationLink(destination: ProviderDetailView(provider: provider)) {
-                            ProviderRowView(provider: provider)
-                        }
-                        .buttonStyle(.plain)
-                        if provider.id != providers.prefix(3).last?.id {
-                            Divider().padding(.leading, 20)
+                if dataService.isLoadingProviders {
+                    ProgressView().padding(.top, 12).frame(maxWidth: .infinity)
+                } else {
+                    VStack(spacing: 0) {
+                        let top = Array(dataService.providers.prefix(3))
+                        ForEach(top) { provider in
+                            NavigationLink(destination: ProviderDetailView(provider: provider)) {
+                                ProviderRowView(provider: provider)
+                            }
+                            .buttonStyle(.plain)
+                            if provider.id != top.last?.id {
+                                Divider().padding(.leading, 20)
+                            }
                         }
                     }
+                    .padding(.top, 12)
                 }
-                .padding(.top, 12)
 
                 // Featured Services
-                SectionHeader(title: "Featured Services", action: "")
+                SectionHeader(title: "Featured Services", action: "")  { }
                     .padding(.horizontal, 20)
                     .padding(.top, 24)
 
                 VStack(spacing: 12) {
-                    ForEach(providers) { provider in
+                    ForEach(dataService.providers) { provider in
                         NavigationLink(destination: ProviderDetailView(provider: provider)) {
                             FeaturedCardView(provider: provider)
                         }
@@ -80,6 +81,98 @@ struct HomeView: View {
         }
         .background(Color.white)
         .navigationBarHidden(true)
+        .task {
+            if dataService.providers.isEmpty {
+                async let p: () = dataService.loadProviders()
+                async let c: () = dataService.loadCategories()
+                _ = await (p, c)
+            }
+        }
+    }
+}
+
+// MARK: - Hero Banner
+
+private struct HeroBanner: View {
+    let onSearchTap: () -> Void
+
+    var body: some View {
+        ZStack {
+            // Background image — explicit height prevents ZStack sizing loop
+            Image("img_hero_banner")
+                .resizable()
+                .scaledToFill()
+                .frame(maxWidth: .infinity)
+                .frame(height: 240)
+                .clipped()
+
+            // Uniform dark overlay so text is always readable
+            Color.black.opacity(0.42)
+
+            // Layout: bell top-right, title centred, search at bottom
+            VStack(spacing: 0) {
+
+                // Bell — top right
+                HStack {
+                    Spacer()
+                    ZStack(alignment: .topTrailing) {
+                        Image(systemName: "bell.fill")
+                            .font(.system(size: 18))
+                            .foregroundStyle(.white)
+                        Circle()
+                            .fill(Color(hex: "#f97316"))
+                            .frame(width: 9, height: 9)
+                            .offset(x: 3, y: -3)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 18)
+
+                Spacer()
+
+                // Centred branding
+                VStack(spacing: 6) {
+                    Text("SwifterX")
+                        .font(.system(size: 30, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text("Home services, on demand")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.78))
+                        .tracking(0.2)
+                }
+
+                Spacer()
+
+                // Search bar — black pill to match the tab bar below
+                Button(action: onSearchTap) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.7))
+                        Text("Search services, providers…")
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundStyle(.white.opacity(0.5))
+                        Spacer()
+                        // Thin divider
+                        Rectangle()
+                            .fill(.white.opacity(0.2))
+                            .frame(width: 1, height: 16)
+                        Image(systemName: "slider.horizontal.3")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(height: 50)
+                    .background(Color.black)
+                    .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 22)
+            }
+        }
+        .frame(height: 240)
+        .clipped()
     }
 }
 
@@ -88,18 +181,27 @@ struct HomeView: View {
 private struct SectionHeader: View {
     let title: String
     let action: String
+    let onAction: () -> Void
+
+    init(title: String, action: String, onAction: @escaping () -> Void = {}) {
+        self.title = title
+        self.action = action
+        self.onAction = onAction
+    }
 
     var body: some View {
         HStack {
             Text(title)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(.black)
-            Spacer()
+            Spacer(minLength: 8)
             if !action.isEmpty {
-                Text(action)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(.black)
-                    .underline()
+                Button(action: onAction) {
+                    Text(action)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundStyle(.black)
+                        .underline()
+                }
             }
         }
     }
@@ -119,7 +221,6 @@ private struct CategoryPillView: View {
                         .font(.system(size: 22, weight: .light))
                         .foregroundStyle(Color(hex: "#555555"))
                 )
-
             Text(name)
                 .font(.system(size: 12, weight: .regular))
                 .foregroundStyle(.black)
@@ -133,14 +234,8 @@ private struct ProviderRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color(hex: "#dbdbdb"))
+            ProviderThumbView(provider: provider, cornerRadius: 8)
                 .frame(width: 94, height: 84)
-                .overlay(
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 32))
-                        .foregroundStyle(Color(hex: "#999999"))
-                )
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(provider.name)
@@ -176,14 +271,8 @@ private struct FeaturedCardView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color(hex: "#dbdbdb"))
+            ProviderThumbView(provider: provider, cornerRadius: 8)
                 .frame(width: 116, height: 102)
-                .overlay(
-                    Image(systemName: "photo")
-                        .font(.system(size: 28))
-                        .foregroundStyle(Color(hex: "#999999"))
-                )
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(provider.name)
@@ -200,6 +289,43 @@ private struct FeaturedCardView: View {
     }
 }
 
+private struct ProviderThumbView: View {
+    let provider: ServiceProvider
+    let cornerRadius: CGFloat
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .fill(Color(hex: "#dbdbdb"))
+            .overlay { imageContent }
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+    }
+
+    @ViewBuilder
+    private var imageContent: some View {
+        if !provider.imageName.isEmpty {
+            Image(provider.imageName)
+                .resizable()
+                .scaledToFill()
+        } else if let url = URL(string: provider.imageURL), !provider.imageURL.isEmpty {
+            AsyncImage(url: url) { phase in
+                if case .success(let image) = phase {
+                    image.resizable().scaledToFill()
+                } else {
+                    placeholderIcon
+                }
+            }
+        } else {
+            placeholderIcon
+        }
+    }
+
+    private var placeholderIcon: some View {
+        Image(systemName: "photo")
+            .font(.system(size: 22))
+            .foregroundStyle(Color(hex: "#999999"))
+    }
+}
+
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -207,14 +333,10 @@ extension Color {
         Scanner(string: hex).scanHexInt64(&int)
         let a, r, g, b: UInt64
         switch hex.count {
-        case 3:
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6:
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8:
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
+        case 3:  (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6:  (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8:  (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default: (a, r, g, b) = (255, 0, 0, 0)
         }
         self.init(.sRGB, red: Double(r)/255, green: Double(g)/255, blue: Double(b)/255, opacity: Double(a)/255)
     }
@@ -222,4 +344,6 @@ extension Color {
 
 #Preview {
     NavigationStack { HomeView() }
+        .environmentObject(DataService(client: MockAPIClient.shared))
+        .environmentObject(AppState())
 }
