@@ -3,12 +3,16 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject private var dataService: DataService
     @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var geoSort: GeoSortService
+
+    private var topProviders: [ServiceProvider] {
+        Array(geoSort.sorted(dataService.providers).prefix(3))
+    }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(spacing: 0) {
 
-                // Hero banner with floating search bar
                 HeroBanner { appState.activeTab = .services }
 
                 // Top Services
@@ -19,7 +23,14 @@ struct HomeView: View {
                 .padding(.top, 22)
 
                 if dataService.categories.isEmpty {
-                    ProgressView().padding(.top, 12).frame(maxWidth: .infinity)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 15) {
+                            ForEach(0..<5, id: \.self) { _ in SkeletonCategoryPill() }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                    .padding(.top, 12)
+                    .allowsHitTesting(false)
                 } else {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 15) {
@@ -43,16 +54,22 @@ struct HomeView: View {
                 .padding(.top, 24)
 
                 if dataService.isLoadingProviders {
-                    ProgressView().padding(.top, 12).frame(maxWidth: .infinity)
+                    VStack(spacing: 0) {
+                        ForEach(0..<3, id: \.self) { i in
+                            SkeletonProviderRow()
+                            if i < 2 { Divider().padding(.leading, 20) }
+                        }
+                    }
+                    .padding(.top, 12)
+                    .allowsHitTesting(false)
                 } else {
                     VStack(spacing: 0) {
-                        let top = Array(dataService.providers.prefix(3))
-                        ForEach(top) { provider in
+                        ForEach(topProviders) { provider in
                             NavigationLink(destination: ProviderDetailView(provider: provider)) {
                                 ProviderRowView(provider: provider)
                             }
                             .buttonStyle(.plain)
-                            if provider.id != top.last?.id {
+                            if provider.id != topProviders.last?.id {
                                 Divider().padding(.leading, 20)
                             }
                         }
@@ -61,23 +78,34 @@ struct HomeView: View {
                 }
 
                 // Featured Services
-                SectionHeader(title: "Featured Services", action: "")  { }
+                SectionHeader(title: "Featured Services", action: "") { }
                     .padding(.horizontal, 20)
                     .padding(.top, 24)
 
-                VStack(spacing: 12) {
-                    ForEach(dataService.providers) { provider in
-                        NavigationLink(destination: ProviderDetailView(provider: provider)) {
-                            FeaturedCardView(provider: provider)
-                        }
-                        .buttonStyle(.plain)
+                if dataService.isLoadingProviders {
+                    VStack(spacing: 12) {
+                        ForEach(0..<3, id: \.self) { _ in SkeletonFeaturedCard() }
                     }
+                    .padding(.top, 12)
+                    .allowsHitTesting(false)
+                } else {
+                    VStack(spacing: 12) {
+                        ForEach(dataService.providers) { provider in
+                            NavigationLink(destination: ProviderDetailView(provider: provider)) {
+                                FeaturedCardView(provider: provider)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
 
-                Spacer().frame(height: 20)
+                Spacer().frame(height: 24)
             }
+            // This is the one place maxWidth is safe: the direct child of ScrollView.
+            // It tells the VStack to fill the scroll view's width (= screen width).
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .background(Color.white)
         .navigationBarHidden(true)
@@ -97,82 +125,79 @@ private struct HeroBanner: View {
     let onSearchTap: () -> Void
 
     var body: some View {
-        ZStack {
-            // Background image — explicit height prevents ZStack sizing loop
-            Image("img_hero_banner")
-                .resizable()
-                .scaledToFill()
-                .frame(maxWidth: .infinity)
-                .frame(height: 240)
-                .clipped()
+        // Content VStack owns the frame — background image stretches to match it.
+        // This avoids ZStack sizing ambiguity (Color.infinity vs image size).
+        VStack(spacing: 0) {
 
-            // Uniform dark overlay so text is always readable
-            Color.black.opacity(0.42)
-
-            // Layout: bell top-right, title centred, search at bottom
-            VStack(spacing: 0) {
-
-                // Bell — top right
-                HStack {
-                    Spacer()
-                    ZStack(alignment: .topTrailing) {
-                        Image(systemName: "bell.fill")
-                            .font(.system(size: 18))
-                            .foregroundStyle(.white)
-                        Circle()
-                            .fill(Color(hex: "#f97316"))
-                            .frame(width: 9, height: 9)
-                            .offset(x: 3, y: -3)
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 18)
-
+            // Bell — top right
+            HStack {
                 Spacer()
-
-                // Centred branding
-                VStack(spacing: 6) {
-                    Text("SwifterX")
-                        .font(.system(size: 30, weight: .bold))
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: "bell.fill")
+                        .font(.system(size: 18))
                         .foregroundStyle(.white)
-                    Text("Home services, on demand")
+                    Circle()
+                        .fill(Color(hex: "#f97316"))
+                        .frame(width: 9, height: 9)
+                        .offset(x: 3, y: -3)
+                }
+                .accessibilityLabel("Notifications")
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 18)
+
+            Spacer()
+
+            // Centred branding
+            VStack(spacing: 6) {
+                Text("SwifterX")
+                    .font(.system(size: 30, weight: .bold))
+                    .foregroundStyle(.white)
+                    Text("Empowerment through opportunity")
                         .font(.system(size: 14, weight: .regular))
                         .foregroundStyle(.white.opacity(0.78))
                         .tracking(0.2)
-                }
-
-                Spacer()
-
-                // Search bar — black pill to match the tab bar below
-                Button(action: onSearchTap) {
-                    HStack(spacing: 10) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.7))
-                        Text("Search services, providers…")
-                            .font(.system(size: 14, weight: .regular))
-                            .foregroundStyle(.white.opacity(0.5))
-                        Spacer()
-                        // Thin divider
-                        Rectangle()
-                            .fill(.white.opacity(0.2))
-                            .frame(width: 1, height: 16)
-                        Image(systemName: "slider.horizontal.3")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.7))
-                    }
-                    .padding(.horizontal, 16)
-                    .frame(height: 50)
-                    .background(Color.black)
-                    .clipShape(Capsule())
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 22)
             }
+
+            Spacer()
+
+            // Black pill — matches the tab bar below
+            Button(action: onSearchTap) {
+                HStack(spacing: 10) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Color(hex: "#666666"))
+                    Text("Search services, providers…")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundStyle(Color(hex: "#999999"))
+                    Spacer()
+                    Rectangle()
+                        .fill(Color(hex: "#dddddd"))
+                        .frame(width: 1, height: 16)
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(Color(hex: "#666666"))
+                }
+                .padding(.horizontal, 16)
+                .frame(height: 50)
+                .background(Color.white)
+                .clipShape(Capsule())
+                .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 2)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Search for services and providers")
+            .padding(.horizontal, 20)
+            .padding(.bottom, 22)
         }
-        .frame(height: 240)
-        .clipped()
+        .frame(maxWidth: .infinity, minHeight: 240)
+        // Image is a background: it fills exactly the content VStack's bounds.
+        .background(
+            Image("img_hero_banner")
+                .resizable()
+                .scaledToFill()
+                .overlay(Color.black.opacity(0.42))
+                .clipped()
+        )
     }
 }
 
@@ -238,9 +263,17 @@ private struct ProviderRowView: View {
                 .frame(width: 94, height: 84)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(provider.name)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.black)
+                HStack(spacing: 4) {
+                    Text(provider.name)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.black)
+                    if provider.showsVerifiedBadge {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 11))
+                            .foregroundStyle(Color(hex: "2563eb"))
+                            .accessibilityLabel("Verified")
+                    }
+                }
                 Text(provider.description)
                     .font(.system(size: 12, weight: .regular))
                     .foregroundStyle(.black)
@@ -275,9 +308,17 @@ private struct FeaturedCardView: View {
                 .frame(width: 116, height: 102)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(provider.name)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#1e1e1e"))
+                HStack(spacing: 4) {
+                    Text(provider.name)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(Color(hex: "#1e1e1e"))
+                    if provider.showsVerifiedBadge {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: "2563eb"))
+                            .accessibilityLabel("Verified")
+                    }
+                }
                 Text(provider.description)
                     .font(.system(size: 12, weight: .regular))
                     .foregroundStyle(.black)
@@ -285,7 +326,6 @@ private struct FeaturedCardView: View {
             }
             Spacer()
         }
-        .frame(maxWidth: .infinity)
     }
 }
 
@@ -346,4 +386,5 @@ extension Color {
     NavigationStack { HomeView() }
         .environmentObject(DataService(client: MockAPIClient.shared))
         .environmentObject(AppState())
+        .environmentObject(GeoSortService.shared)
 }

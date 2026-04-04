@@ -68,6 +68,7 @@ struct LoginView: View {
                             .focused($focusedField, equals: .email)
                             .submitLabel(.next)
                             .onSubmit { focusedField = .password }
+                            .sanitized($email, using: InputSanitizer.email)
                     }
 
                     SxInputField(title: "Password", placeholder: "••••••••••", text: $password) {
@@ -76,6 +77,7 @@ struct LoginView: View {
                             .focused($focusedField, equals: .password)
                             .submitLabel(.go)
                             .onSubmit { Task { await signIn() } }
+                            .sanitized($password, using: InputSanitizer.password)
                     }
 
                     // Sign In button
@@ -163,15 +165,20 @@ struct LoginView: View {
     // MARK: - Actions
 
     private func signIn() async {
-        guard !email.isEmpty, !password.isEmpty else {
-            errorMessage = "Please enter your email and password."
-            return
+        let cleanEmail    = InputSanitizer.email(email)
+        let cleanPassword = InputSanitizer.password(password)
+
+        if let err = InputSanitizer.validateEmail(cleanEmail) {
+            errorMessage = err; return
+        }
+        guard !cleanPassword.isEmpty else {
+            errorMessage = "Please enter your password."; return
         }
         isLoading = true
         errorMessage = nil
         focusedField = nil
         do {
-            try await authManager.signIn(email: email, password: password)
+            try await authManager.signIn(email: cleanEmail, password: cleanPassword)
             onSignedIn()
         } catch {
             errorMessage = (error as? AuthError)?.errorDescription ?? error.localizedDescription
@@ -254,6 +261,7 @@ private struct ForgotPasswordView: View {
                         .padding(12)
                         .background(Color(red: 0.96, green: 0.96, blue: 0.96))
                         .cornerRadius(8)
+                        .sanitized($email, using: InputSanitizer.email)
                 }
                 .padding(.horizontal, 24)
 

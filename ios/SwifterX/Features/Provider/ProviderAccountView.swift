@@ -5,6 +5,7 @@ struct ProviderAccountView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var authManager: AuthManager
     @EnvironmentObject private var profileManager: UserProfileManager
+    @EnvironmentObject private var providerProfileManager: ProviderProfileManager
 
     @State private var showPersonalInfo = false
     @State private var showLogOutAlert  = false
@@ -67,16 +68,16 @@ struct ProviderAccountView: View {
                 providerSection(title: "profile") {
                     VStack(spacing: 20) {
                         NavigationLink {
-                            PersonalInfoView()
+                            ProviderPublicProfileView()
                         } label: {
-                            ProviderChevronRow(title: "personal info")
+                            ProviderChevronRow(title: "My Public Profile")
                         }
                         .buttonStyle(.plain)
 
                         NavigationLink {
-                            ProviderPlaceholderDetail(title: "Work Experience", message: "Add your work history and certifications here.")
+                            PersonalInfoView()
                         } label: {
-                            ProviderChevronRow(title: "Work Experience")
+                            ProviderChevronRow(title: "Personal Info")
                         }
                         .buttonStyle(.plain)
 
@@ -87,6 +88,30 @@ struct ProviderAccountView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                }
+                .padding(.top, 28)
+
+                // Payouts
+                providerSection(title: "Earnings & Payouts") {
+                    NavigationLink {
+                        ProviderPayoutView()
+                    } label: {
+                        HStack {
+                            Label("Payouts & Earnings", systemImage: "banknote")
+                                .font(.system(size: 15))
+                                .foregroundStyle(.black)
+                            Spacer()
+                            if let profile = providerProfileManager.profile {
+                                Circle()
+                                    .fill(profile.payoutsEnabled ? Color.green : Color.orange)
+                                    .frame(width: 8, height: 8)
+                            }
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13))
+                                .foregroundStyle(Color(hex: "#aaaaaa"))
+                        }
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.top, 28)
 

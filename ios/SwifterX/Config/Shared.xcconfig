@@ -1,0 +1,6 @@
+// SwifterX — shared build settings (committed).
+// For local Stripe keys, copy Secrets.xcconfig.example → Secrets.xcconfig (gitignored).
+
+STRIPE_PUBLISHABLE_KEY = pk_test_REPLACE_ME
+
+#include? "Secrets.xcconfig"

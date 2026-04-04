@@ -5,5 +5,54 @@
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "headers": [
+      {
+        "source": "/.well-known/apple-app-site-association",
+        "headers": [
+          { "key": "Content-Type",  "value": "application/json" },
+          { "key": "Cache-Control", "value": "public, max-age=3600" }
+        ]
+      },
+      {
+        "source": "/**",
+        "headers": [
+          { "key": "X-Frame-Options",        "value": "SAMEORIGIN" },
+          { "key": "X-Content-Type-Options",  "value": "nosniff" },
+          { "key": "Referrer-Policy",         "value": "strict-origin-when-cross-origin" },
+          { "key": "Permissions-Policy",      "value": "geolocation=(), microphone=(), camera=()" }
+        ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/order/:id",
+        "destination": "/deeplink.html"
+      },
+      {
+        "source": "/refer/:code",
+        "destination": "/deeplink.html"
+      },
+      {
+        "source": "/provider/:id",
+        "destination": "/deeplink.html"
+      },
+      {
+        "source": "**",
+        "destination": "/404.html"
+      }
+    ]
   }
 }

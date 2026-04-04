@@ -22,9 +22,13 @@ final class NotificationManager: NSObject, ObservableObject {
         UNUserNotificationCenter.current().requestAuthorization(
             options: [.alert, .badge, .sound]
         ) { granted, error in
+            #if DEBUG
             if let error { print("[Notifications] Permission error: \(error)") }
+            #endif
             guard granted else {
+                #if DEBUG
                 print("[Notifications] Permission denied")
+                #endif
                 return
             }
             DispatchQueue.main.async {
@@ -40,13 +44,17 @@ final class NotificationManager: NSObject, ObservableObject {
 
     /// Called by AppDelegate when APNs registration fails.
     func didFailToRegisterForRemoteNotifications(error: Error) {
+        #if DEBUG
         print("[Notifications] APNs registration failed: \(error.localizedDescription)")
+        #endif
     }
 
     /// Called by MessagingDelegate when FCM provides a new token.
     func didReceiveFCMToken(_ token: String) {
         fcmToken = token
+        #if DEBUG
         print("[Notifications] FCM token: \(token)")
+        #endif
         saveTokenToFirestore(token: token)
     }
 
@@ -62,7 +70,9 @@ final class NotificationManager: NSObject, ObservableObject {
                     merge: true
                 )
             } catch {
+                #if DEBUG
                 print("[Notifications] Failed to save FCM token: \(error)")
+                #endif
             }
         }
     }

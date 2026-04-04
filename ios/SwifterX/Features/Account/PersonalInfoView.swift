@@ -190,13 +190,24 @@ struct PersonalInfoView: View {
 
     private func saveProfile() async {
         guard let uid else { return }
+
+        let cleanName    = InputSanitizer.name(name)
+        let cleanPhone   = InputSanitizer.phone(phone)
+        let cleanAddress = InputSanitizer.address(addressLine)
+        let cleanCity    = InputSanitizer.clean(city, limit: 60)
+        let cleanState   = InputSanitizer.clean(state, limit: 30)
+        let cleanZip     = InputSanitizer.phone(zip)   // digits + hyphen only
+
+        if let err = InputSanitizer.validateName(cleanName) { errorMessage = err; return }
+        if !cleanPhone.isEmpty, let err = InputSanitizer.validatePhone(cleanPhone) { errorMessage = err; return }
+
         isSaving = true
         saveSuccess = false
         errorMessage = nil
         do {
             try await profileManager.updateProfile(
-                uid: uid, name: name, phone: phone,
-                addressLine: addressLine, city: city, state: state, zip: zip
+                uid: uid, name: cleanName, phone: cleanPhone,
+                addressLine: cleanAddress, city: cleanCity, state: cleanState, zip: cleanZip
             )
             saveSuccess = true
         } catch {
@@ -206,19 +217,19 @@ struct PersonalInfoView: View {
     }
 
     private func changePassword() async {
-        guard !newPw.isEmpty else { pwErrorMessage = "New password cannot be empty."; return }
-        guard newPw == confirmPw else { pwErrorMessage = "Passwords do not match."; return }
-        guard newPw.count >= 6 else { pwErrorMessage = "Password must be at least 6 characters."; return }
+        let cleanNew     = InputSanitizer.password(newPw)
+        let cleanConfirm = InputSanitizer.password(confirmPw)
+        if let err = InputSanitizer.validatePassword(cleanNew) { pwErrorMessage = err; return }
+        guard cleanNew == cleanConfirm else { pwErrorMessage = "Passwords do not match."; return }
         guard let email = authManager.userEmail else { return }
 
         isChangingPw = true
         pwErrorMessage = nil
         pwSuccess = false
         do {
-            // Re-authenticate first
             let credential = EmailAuthProvider.credential(withEmail: email, password: currentPw)
             try await Auth.auth().currentUser?.reauthenticate(with: credential)
-            try await Auth.auth().currentUser?.updatePassword(to: newPw)
+            try await Auth.auth().currentUser?.updatePassword(to: cleanNew)
             currentPw = ""; newPw = ""; confirmPw = ""
             pwSuccess = true
         } catch {

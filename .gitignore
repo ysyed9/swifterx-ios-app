@@ -41,6 +41,7 @@ Podfile.lock
 .env.*
 *.secret
 secrets.xcconfig
+ios/SwifterX/Config/Secrets.xcconfig
 Config/Secrets.swift
 **/Secrets.swift
 
@@ -65,9 +66,11 @@ firebase/functions/.env
 # =============================
 # IMPORTANT — Secrets setup
 # =============================
-# GoogleService-Info.plist is gitignored.
-# To set up a new dev environment:
-# 1. Download GoogleService-Info.plist from Firebase Console
-#    https://console.firebase.google.com → swifterx-e7f15 → Project Settings → iOS app
-# 2. Copy it to: ios/SwifterX/Resources/GoogleService-Info.plist
-# 3. Build and run
+# GoogleService-Info.plist is gitignored (never commit).
+#   1. Firebase Console → Project settings → Your iOS app → Download GoogleService-Info.plist
+#   2. Save as: ios/SwifterX/Resources/GoogleService-Info.plist
+#   See Resources/GoogleService-Info.plist.example for shape of the file.
+#
+# Stripe publishable key (not committed):
+#   1. cp ios/SwifterX/Config/Secrets.xcconfig.example ios/SwifterX/Config/Secrets.xcconfig
+#   2. Set STRIPE_PUBLISHABLE_KEY in Secrets.xcconfig (merged via Config/Shared.xcconfig)

@@ -1,0 +1,6 @@
+• Provider payout dashboard powered by Stripe Connect
+• Real-time order tracking with live provider location
+• In-app chat between customers and providers
+• Promo codes and referral program
+• Improved search and map view for discovering nearby providers
+• Performance and stability improvements

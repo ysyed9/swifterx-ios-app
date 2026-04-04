@@ -22,12 +22,16 @@ final class DataService: ObservableObject {
 
     func loadProviders() async {
         isLoadingProviders = true
+        let trace = PerformanceTracer(name: "load_providers")
         providers = (try? await client.fetchProviders()) ?? MockData.providers
+        trace?.stop()
         isLoadingProviders = false
     }
 
     func loadCategories() async {
+        let trace = PerformanceTracer(name: "load_categories")
         categories = (try? await client.fetchCategories()) ?? MockData.categories
+        trace?.stop()
     }
 
     func filteredProviders(category: String?, search: String) -> [ServiceProvider] {
@@ -48,7 +52,11 @@ final class DataService: ObservableObject {
     // MARK: - Reviews
 
     func fetchReviews(for providerID: String) async -> [Review] {
-        return (try? await client.fetchReviews(for: providerID)) ?? []
+        let trace = PerformanceTracer(name: "fetch_reviews")
+        trace?.setAttribute("provider_id", value: providerID)
+        let result = (try? await client.fetchReviews(for: providerID)) ?? []
+        trace?.stop()
+        return result
     }
 
     func submitReview(_ review: Review, uid: String) async throws {

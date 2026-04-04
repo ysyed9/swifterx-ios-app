@@ -14,8 +14,18 @@
 		</dict>
 	</array>
 	<key>StripePublishableKey</key>
-	<string>pk_live_51TDeUgFeTUUzSNY6HEM18ZwJhPgOqbsP4dAymZjMY3UC4llZg4i4DL5pLm9XzmmsDgS4qhe4zyzCQBAPEcjCJYd700oNkSy8w5</string>
+	<string>$(STRIPE_PUBLISHABLE_KEY)</string>
 	<key>FirebaseInAppMessagingAutomaticDataCollectionEnabled</key>
+	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>SwifterX shares your location with the customer while you are on the way to their job so they can track your arrival.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>SwifterX uses your photo library so you can set a profile photo.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>SwifterX uses your camera so you can take a profile photo.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We use analytics to improve the app experience. No data is shared with advertisers.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>
 </plist>

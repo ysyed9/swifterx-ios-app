@@ -14,9 +14,11 @@ Amounts are **never** taken from the client for the charge; the server uses the 
 1. **Add Swift Package** (if not already in the project):  
    `https://github.com/stripe/stripe-ios-spm` → product **StripePaymentSheet**.
 
-2. **Publishable key** in `SwifterX-Info.plist` → `StripePublishableKey`  
-   - Use a real `pk_test_...` or `pk_live_...` key (must **not** contain the substring `REPLACE_ME`).  
-   - While the placeholder `pk_test_REPLACE_ME` is present, the app runs in **dev mode** (orders are created as paid/confirmed with no Stripe UI).
+2. **Publishable key** (not committed):  
+   - `SwifterX-Info.plist` maps `StripePublishableKey` → `$(STRIPE_PUBLISHABLE_KEY)` from Xcode build settings.  
+   - Defaults live in `ios/SwifterX/Config/Shared.xcconfig` (`pk_test_REPLACE_ME` until overridden).  
+   - Copy `Config/Secrets.xcconfig.example` → `Config/Secrets.xcconfig` (gitignored) and set `STRIPE_PUBLISHABLE_KEY = pk_test_...` or `pk_live_...` (must **not** contain `REPLACE_ME` for live checkout).  
+   - **Debug** only: with no valid key, checkout can still simulate paid orders; **Release** requires a real key (see `StripeConfig`).
 
 ## Firebase / Stripe backend
 

@@ -29,33 +29,29 @@ struct OrdersView: View {
                                 .offset(x: 6, y: -4)
                         }
                     }
+                    .accessibilityLabel("Notifications")
                     .padding(.trailing, 12)
 
                     Image(systemName: "cart")
                         .font(.system(size: 22, weight: .regular))
                         .foregroundStyle(.black)
+                        .accessibilityLabel("Cart")
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
 
                 if orderManager.isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 60)
-                } else if orderManager.orders.isEmpty {
                     VStack(spacing: 16) {
-                        Image(systemName: "doc.text")
-                            .font(.system(size: 48))
-                            .foregroundStyle(Color(hex: "#cccccc"))
-                        Text("No orders yet")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.black)
-                        Text("Book a service to get started.")
-                            .font(.system(size: 14))
-                            .foregroundStyle(Color(hex: "#828282"))
+                        ForEach(0..<4, id: \.self) { _ in SkeletonOrderCard() }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 80)
+                    .padding(.top, 20)
+                    .allowsHitTesting(false)
+                } else if orderManager.orders.isEmpty {
+                    EmptyStateView(
+                        icon: "doc.text.magnifyingglass",
+                        title: "No orders yet",
+                        subtitle: "Book a service and your orders will appear here."
+                    )
                 } else {
                     VStack(spacing: 0) {
                         ForEach(orderManager.orders) { order in

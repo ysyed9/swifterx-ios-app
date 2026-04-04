@@ -2,12 +2,15 @@ import SwiftUI
 import MapKit
 
 struct ProviderHomeView: View {
-    @EnvironmentObject private var orderManager: OrderManager
-    @EnvironmentObject private var authManager: AuthManager
+    @EnvironmentObject private var orderManager:   OrderManager
+    @EnvironmentObject private var authManager:    AuthManager
+    @EnvironmentObject private var providerProfileManager: ProviderProfileManager
+    @EnvironmentObject private var locationManager: LocationManager
     @State private var showInbox = false
     @State private var selectedInboxJob: ServiceOrder? = nil
     @State private var actionError: String? = nil
     @State private var isActioning = false
+    @State private var showChat = false
     @State private var mapPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 30.2672, longitude: -97.7431),
@@ -23,6 +26,17 @@ struct ProviderHomeView: View {
     }
     private var currentJob: ServiceOrder? { activeJob ?? nextConfirmedJob }
     private var uid: String { authManager.userUID ?? "" }
+
+    /// Onboarded but operator has not set `approved` yet — cannot claim jobs (enforced in rules).
+    private var pendingApproval: Bool {
+        guard let p = providerProfileManager.profile else { return false }
+        return p.isOnboarded && !p.isApprovedForJobs
+    }
+
+    private var rejectionReasonText: String? {
+        guard pendingApproval else { return nil }
+        return providerProfileManager.profile?.trimmedRejectionReason
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -58,26 +72,28 @@ struct ProviderHomeView: View {
 
     private var mapLayer: some View {
         Map(position: $mapPosition) {
-            Annotation("You", coordinate: CLLocationCoordinate2D(latitude: 30.2672, longitude: -97.7431)) {
-                Circle()
-                    .fill(Color.blue.opacity(0.25))
-                    .frame(width: 26, height: 26)
-                    .overlay(Circle().fill(.blue).frame(width: 11, height: 11))
-            }
-            if activeJob != nil {
-                Annotation("Job", coordinate: CLLocationCoordinate2D(latitude: 30.25, longitude: -97.72)) {
-                    Image(systemName: "mappin.circle.fill")
-                        .font(.system(size: 32))
-                        .foregroundStyle(.black)
+            // Real device location
+            if let loc = locationManager.location {
+                Annotation("You", coordinate: loc.coordinate) {
+                    Circle()
+                        .fill(Color.blue.opacity(0.25))
+                        .frame(width: 26, height: 26)
+                        .overlay(Circle().fill(.blue).frame(width: 11, height: 11))
                 }
-                MapPolyline(coordinates: [
-                    CLLocationCoordinate2D(latitude: 30.2672, longitude: -97.7431),
-                    CLLocationCoordinate2D(latitude: 30.25, longitude: -97.72)
-                ])
-                .stroke(.black, lineWidth: 3)
             }
+            UserAnnotation()
         }
         .mapStyle(.standard)
+        .onChange(of: locationManager.location) { loc in
+            if let loc {
+                withAnimation {
+                    mapPosition = .region(MKCoordinateRegion(
+                        center: loc.coordinate,
+                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                    ))
+                }
+            }
+        }
     }
 
     // MARK: - Top Bar
@@ -85,7 +101,7 @@ struct ProviderHomeView: View {
     private var topBar: some View {
         HStack {
             Spacer()
-            if !orderManager.inboxOrders.isEmpty {
+            if !orderManager.inboxOrders.isEmpty && !pendingApproval {
                 Button { showInbox = true } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "briefcase.fill")
@@ -112,6 +128,12 @@ struct ProviderHomeView: View {
         VStack(alignment: .leading, spacing: 0) {
             if let job = currentJob {
                 activeJobCard(job)
+            } else if pendingApproval {
+                if let reason = rejectionReasonText {
+                    rejectionCard(reason: reason)
+                } else {
+                    underReviewCard
+                }
             } else if orderManager.isLoadingProviderJobs {
                 HStack { Spacer(); ProgressView(); Spacer() }
                     .padding(.vertical, 40)
@@ -148,9 +170,31 @@ struct ProviderHomeView: View {
                         .lineLimit(1)
                 }
                 Spacer()
+                // Chat with customer
+                Button { showChat = true } label: {
+                    Image(systemName: "bubble.left.fill")
+                        .font(.system(size: 20))
+                        .foregroundStyle(.black)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Chat with customer")
+                .padding(.trailing, 10)
                 statusPill(job.status)
             }
             .padding(.horizontal, 20)
+            .sheet(isPresented: $showChat) {
+                if let job = currentJob {
+                    NavigationStack {
+                        ChatView(
+                            orderID:     job.id,
+                            orderTitle:  "Order #\(job.id.prefix(6).uppercased())",
+                            currentUID:  uid,
+                            currentName: "Provider",
+                            isProvider:  true
+                        )
+                    }
+                }
+            }
 
             HStack(spacing: 8) {
                 Image(systemName: "calendar")
@@ -256,6 +300,63 @@ struct ProviderHomeView: View {
         }
     }
 
+    // MARK: - Under review / rejection (approval gate)
+
+    private func rejectionCard(reason: String) -> some View {
+        VStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(Color(hex: "#d0d0d0"))
+                .frame(width: 36, height: 4)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 10)
+                .padding(.bottom, 6)
+
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 32))
+                .foregroundStyle(Color(hex: "#ca8a04"))
+            Text("Profile not approved")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(.black)
+            Text(reason)
+                .font(.system(size: 13))
+                .foregroundStyle(Color(hex: "#444444"))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 16)
+            Text("Update your profile if needed, or contact support if you have questions.")
+                .font(.system(size: 12))
+                .foregroundStyle(Color(hex: "#828282"))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 16)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.bottom, 28)
+    }
+
+    private var underReviewCard: some View {
+        VStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(Color(hex: "#d0d0d0"))
+                .frame(width: 36, height: 4)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 10)
+                .padding(.bottom, 6)
+
+            Image(systemName: "hourglass")
+                .font(.system(size: 32))
+                .foregroundStyle(Color(hex: "#888888"))
+            Text("Under review")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(.black)
+            Text("Your profile is being verified. You will be able to accept paid jobs once SwifterX approves your account.")
+                .font(.system(size: 13))
+                .foregroundStyle(Color(hex: "#828282"))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 16)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.bottom, 28)
+    }
+
     // MARK: - Empty State
 
     private var emptyState: some View {
@@ -323,15 +424,20 @@ struct ProviderHomeView: View {
 
     private func startJob(_ job: ServiceOrder) async {
         isActioning = true
-        do { try await orderManager.startJob(job, providerUID: uid) }
-        catch { actionError = error.localizedDescription }
+        do {
+            try await orderManager.startJob(job, providerUID: uid)
+            // Begin streaming live location to this order's document
+            locationManager.startSharing(orderID: job.id)
+        } catch { actionError = error.localizedDescription }
         isActioning = false
     }
 
     private func completeJob(_ job: ServiceOrder) async {
         isActioning = true
-        do { try await orderManager.completeJob(job, providerUID: uid) }
-        catch { actionError = error.localizedDescription }
+        do {
+            try await orderManager.completeJob(job, providerUID: uid)
+            locationManager.stopSharing()
+        } catch { actionError = error.localizedDescription }
         isActioning = false
     }
 }
@@ -530,4 +636,6 @@ private struct JobDetailSheet: View {
     NavigationStack { ProviderHomeView() }
         .environmentObject(OrderManager())
         .environmentObject(AuthManager())
+        .environmentObject(ProviderProfileManager.shared)
+        .environmentObject(LocationManager.shared)
 }

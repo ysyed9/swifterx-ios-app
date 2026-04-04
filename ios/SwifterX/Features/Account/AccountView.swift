@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import UIKit
 import FirebaseAuth
 
 struct AccountView: View {
@@ -16,12 +17,14 @@ struct AccountView: View {
     @State private var showWallet        = false
     @State private var showFavorites     = false
     @State private var showBookmarks     = false
+    @State private var showReferral      = false
     @State private var inboxMessagesOn   = true
     @State private var notificationsOn   = false
 
     // Profile picture
     @State private var profileImage:     Image?
     @State private var photosItem:       PhotosPickerItem?
+    @State private var avatarUploadError: String?
 
     private var displayName: String {
         profileManager.profile?.name.isEmpty == false
@@ -55,6 +58,33 @@ struct AccountView: View {
                                     profileImage
                                         .resizable()
                                         .scaledToFill()
+                                } else if let urlStr = profileManager.profile?.photoURL, !urlStr.isEmpty,
+                                          let url = URL(string: urlStr) {
+                                    AsyncImage(url: url) { phase in
+                                        switch phase {
+                                        case .success(let image):
+                                            image
+                                                .resizable()
+                                                .scaledToFill()
+                                        case .failure:
+                                            Color.black
+                                                .overlay(
+                                                    Text(initials)
+                                                        .font(.system(size: 22, weight: .bold))
+                                                        .foregroundStyle(.white)
+                                                )
+                                        case .empty:
+                                            Color.black
+                                                .overlay(ProgressView().tint(.white))
+                                        @unknown default:
+                                            Color.black
+                                                .overlay(
+                                                    Text(initials)
+                                                        .font(.system(size: 22, weight: .bold))
+                                                        .foregroundStyle(.white)
+                                                )
+                                        }
+                                    }
                                 } else {
                                     Color.black
                                         .overlay(
@@ -78,13 +108,23 @@ struct AccountView: View {
                                 .offset(x: 2, y: 2)
                         }
                     }
-                    .onChange(of: photosItem) { newItem in
+                    .onChange(of: photosItem) { _, newItem in
                         Task {
-                            if let data = try? await newItem?.loadTransferable(type: Data.self),
-                               let uiImage = UIImage(data: data) {
+                            guard let data = try? await newItem?.loadTransferable(type: Data.self),
+                                  let uiImage = UIImage(data: data) else { return }
+                            await MainActor.run {
                                 profileImage = Image(uiImage: uiImage)
-                                // Persist to disk
-                                UserDefaults.standard.set(data, forKey: "swifterx_pfp_data")
+                            }
+                            UserDefaults.standard.set(data, forKey: "swifterx_pfp_data")
+                            guard let uid = authManager.userUID else { return }
+                            do {
+                                let url = try await ProviderProfilePhotoStorage.uploadCustomerProfilePhoto(uid: uid, image: uiImage)
+                                try await profileManager.updatePhotoURL(uid: uid, url: url)
+                            } catch {
+                                await MainActor.run {
+                                    avatarUploadError = (error as? LocalizedError)?.errorDescription
+                                        ?? "Could not upload your photo."
+                                }
                             }
                         }
                     }
@@ -106,6 +146,7 @@ struct AccountView: View {
                             .foregroundStyle(.black)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Edit personal information")
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
@@ -171,6 +212,30 @@ struct AccountView: View {
                     }
                 }
 
+                // MARK: Referral
+                AccountSection(title: "Referral Program") {
+                    Button { showReferral = true } label: {
+                        HStack {
+                            Label("Refer a friend — Get $10", systemImage: "gift.fill")
+                                .font(.system(size: 15))
+                                .foregroundStyle(.black)
+                            Spacer()
+                            if let credits = profileManager.profile?.referralCredits, credits > 0 {
+                                Text("$\(String(format: "%.2f", credits)) credit")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(.green)
+                            }
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13))
+                                .foregroundStyle(Color(hex: "#cccccc"))
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+                .navigationDestination(isPresented: $showReferral) {
+                    ReferralView()
+                }
+
                 // MARK: Help & Policies
                 AccountSection(title: "Help & Policies") {
                     VStack(spacing: 20) {
@@ -212,6 +277,13 @@ struct AccountView: View {
         .background(Color.white)
         .navigationBarHidden(true)
         .onAppear { loadSavedProfileImage() }
+        .onChange(of: profileManager.profile?.photoURL) { _, newVal in
+            if newVal == nil || newVal?.isEmpty == true {
+                loadSavedProfileImage()
+            } else {
+                profileImage = nil
+            }
+        }
 
         // MARK: Sheets & navigation
         .sheet(isPresented: $showPersonalInfo) { PersonalInfoView() }
@@ -244,11 +316,20 @@ struct AccountView: View {
         } message: {
             Text("Are you sure you want to log out?")
         }
+        .alert("Photo upload", isPresented: Binding(
+            get: { avatarUploadError != nil },
+            set: { if !$0 { avatarUploadError = nil } }
+        )) {
+            Button("OK", role: .cancel) { avatarUploadError = nil }
+        } message: {
+            Text(avatarUploadError ?? "")
+        }
     }
 
     // MARK: - Helpers
 
     private func loadSavedProfileImage() {
+        guard profileManager.profile?.photoURL.isEmpty != false else { return }
         if let data = UserDefaults.standard.data(forKey: "swifterx_pfp_data"),
            let uiImage = UIImage(data: data) {
             profileImage = Image(uiImage: uiImage)

@@ -1,14 +1,17 @@
 import SwiftUI
 
 struct CartCheckoutView: View {
-    @StateObject private var cart = CartStore.shared
+    @StateObject private var cart        = CartStore.shared
+    @StateObject private var promoService = PromoCodeService.shared
     @EnvironmentObject private var dataService:  DataService
     @EnvironmentObject private var orderManager: OrderManager
     @EnvironmentObject private var authManager:  AuthManager
     @EnvironmentObject private var profileManager: UserProfileManager
     @EnvironmentObject private var checkoutPayment: CheckoutPaymentCoordinator
+    @EnvironmentObject private var notificationFeed: NotificationFeedStore
     @Environment(\.dismiss) private var dismiss
 
+    @State private var loggedPromoCodeForFeed: String? = nil
     @State private var selectedDate:         Date   = Date()
     @State private var selectedTime:         String = ""
     @State private var specialInstructions:  String = ""
@@ -17,6 +20,13 @@ struct CartCheckoutView: View {
     @State private var isPlacingOrder        = false
     @State private var showConfirmation      = false
     @State private var orderError:           String? = nil
+    @State private var promoInput:           String = ""
+
+    private var discountAmount: Double {
+        if case .valid(let d, _) = promoService.promoState { return d }
+        return 0
+    }
+    private var finalTotal: Double { max(0, cart.total - discountAmount) }
 
     var body: some View {
         NavigationStack {
@@ -35,6 +45,8 @@ struct CartCheckoutView: View {
                     instructionsSection
                     Divider()
                     paymentSection
+                    Divider()
+                    promoSection
                     Divider()
                     summarySection
                     Divider()
@@ -236,6 +248,7 @@ struct CartCheckoutView: View {
                 .background(Color(hex: "f6f6f6"))
                 .cornerRadius(8)
                 .lineLimit(3...5)
+                .sanitized($specialInstructions, using: InputSanitizer.specialInstructions)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -254,7 +267,9 @@ struct CartCheckoutView: View {
                         .font(.system(size: 13))
                         .foregroundColor(Color(hex: "828282"))
                 } else {
-                    Text("Dev mode — no charge (add StripePublishableKey + Cloud Functions for live pay)")
+                    Text(StripeConfig.canSimulatePaidCheckoutWithoutStripe
+                         ? "Dev mode — no charge (add StripePublishableKey + Cloud Functions for live pay)"
+                         : "Payments are not configured for this build.")
                         .font(.system(size: 12))
                         .foregroundColor(Color(hex: "828282"))
                 }
@@ -268,6 +283,75 @@ struct CartCheckoutView: View {
         .padding(.vertical, 14)
     }
 
+    // MARK: - Promo Code
+
+    private var promoSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Promo code")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.black)
+
+            HStack(spacing: 10) {
+                TextField("Enter code", text: $promoInput)
+                    .font(.system(size: 14))
+                    .textInputAutocapitalization(.characters)
+                    .autocorrectionDisabled()
+                    .padding(.horizontal, 12)
+                    .frame(height: 42)
+                    .background(Color(hex: "f6f6f6"))
+                    .cornerRadius(8)
+                    .sanitized($promoInput, using: InputSanitizer.promoCode)
+
+                Button {
+                    let cleanCode = InputSanitizer.promoCode(promoInput)
+                    Task { await promoService.validate(code: cleanCode, subtotal: cart.subtotal) }
+                } label: {
+                    Group {
+                        if case .loading = promoService.promoState {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text("Apply")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .frame(width: 72, height: 42)
+                    .background(Color.black)
+                    .cornerRadius(8)
+                }
+                .disabled(promoInput.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+
+            // State feedback
+            switch promoService.promoState {
+            case .valid(_, let desc):
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
+                    Text("\(desc) applied!").foregroundColor(.green)
+                }
+                .font(.system(size: 13))
+            case .invalid(let msg):
+                HStack(spacing: 6) {
+                    Image(systemName: "xmark.circle.fill").foregroundColor(.red)
+                    Text(msg).foregroundColor(.red)
+                }
+                .font(.system(size: 13))
+            default:
+                EmptyView()
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 14)
+        .onChange(of: promoService.promoState) { _, newState in
+            if case .valid(_, let desc) = newState,
+               let code = promoService.validatedPromo?.code,
+               loggedPromoCodeForFeed != code {
+                loggedPromoCodeForFeed = code
+                Task { await notificationFeed.logPromoApplied(code: code, savingsDescription: desc) }
+            }
+        }
+    }
+
     // MARK: - Summary
 
     private var summarySection: some View {
@@ -279,13 +363,16 @@ struct CartCheckoutView: View {
 
             SummaryRow(label: "subtotal",            amount: cart.subtotal)
             SummaryRow(label: "fee & estimated tax", amount: cart.fee)
+            if discountAmount > 0 {
+                SummaryRow(label: "promo discount", amount: -discountAmount)
+            }
             Divider().padding(.vertical, 8)
             HStack {
                 Text("total")
                     .font(.system(size: 15, weight: .bold))
                     .foregroundColor(.black)
                 Spacer()
-                Text("$\(String(format: "%.2f", cart.total))")
+                Text("$\(String(format: "%.2f", finalTotal))")
                     .font(.system(size: 15, weight: .bold))
                     .foregroundColor(.black)
             }
@@ -295,6 +382,10 @@ struct CartCheckoutView: View {
     }
 
     // MARK: - Place Order
+
+    private var checkoutPaymentsConfigured: Bool {
+        StripeConfig.isLivePaymentsEnabled || StripeConfig.canSimulatePaidCheckoutWithoutStripe
+    }
 
     private var placeOrderButton: some View {
         Button {
@@ -306,21 +397,35 @@ struct CartCheckoutView: View {
                 if isPlacingOrder {
                     ProgressView().tint(.white)
                 } else {
-                    Text(selectedTime.isEmpty
-                         ? "Select a time to continue"
-                         : "Place Order  •  $\(String(format: "%.2f", cart.total))")
+                    Text(placeOrderButtonTitle)
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
                 }
                 Spacer()
             }
             .padding(.vertical, 14)
-            .background(selectedTime.isEmpty ? Color.gray : Color.black)
+            .background(placeOrderButtonBackground)
             .cornerRadius(8)
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
         }
-        .disabled(selectedTime.isEmpty || isPlacingOrder)
+        .disabled(selectedTime.isEmpty || isPlacingOrder || !checkoutPaymentsConfigured)
+    }
+
+    private var placeOrderButtonTitle: String {
+        if !checkoutPaymentsConfigured {
+            return "Payments unavailable — update the app"
+        }
+        if selectedTime.isEmpty {
+            return "Select a time to continue"
+        }
+        return "Place Order  •  $\(String(format: "%.2f", finalTotal))"
+    }
+
+    private var placeOrderButtonBackground: Color {
+        if selectedTime.isEmpty || !checkoutPaymentsConfigured { return Color.gray }
+        return Color.black
     }
 
     // MARK: - Helpers
@@ -339,6 +444,12 @@ struct CartCheckoutView: View {
         cart.selectedTime         = selectedTime
         cart.specialInstructions  = specialInstructions
         let useStripe = StripeConfig.isLivePaymentsEnabled
+        if !useStripe && !StripeConfig.canSimulatePaidCheckoutWithoutStripe {
+            orderError = StripeConfig.checkoutBlockedMessage
+            isPlacingOrder = false
+            return
+        }
+        let checkoutTrace = PerformanceTracer(name: "checkout_flow")
         do {
             let order = try await orderManager.placeOrder(from: cart, uid: uid, useLiveStripe: useStripe)
             if useStripe, let pk = StripeConfig.publishableKey {
@@ -354,8 +465,17 @@ struct CartCheckoutView: View {
                 }
                 try await checkoutPayment.confirmOrderPayment(orderId: order.id)
             }
-            showConfirmation = true
+            // Redeem promo if applied
+        if let promo = promoService.validatedPromo {
+            AnalyticsManager.shared.logPromoApplied(code: promo.code, discountAmount: discountAmount)
+            promoService.redeem(code: promo.code)
+            promoService.reset()
+        }
+        checkoutTrace?.stop()
+        showConfirmation = true
         } catch {
+            checkoutTrace?.stop()
+            AnalyticsManager.shared.recordError(error, context: "submitOrder")
             orderError = error.localizedDescription
         }
         isPlacingOrder = false
@@ -395,11 +515,13 @@ private struct SummaryRow: View {
         HStack {
             Text(label)
                 .font(.system(size: 14))
-                .foregroundColor(Color(hex: "828282"))
+                .foregroundColor(amount < 0 ? Color.green : Color(hex: "828282"))
             Spacer()
-            Text("$\(String(format: "%.2f", amount))")
+            Text(amount < 0
+                 ? "-$\(String(format: "%.2f", abs(amount)))"
+                 : "$\(String(format: "%.2f", amount))")
                 .font(.system(size: 14))
-                .foregroundColor(.black)
+                .foregroundColor(amount < 0 ? .green : .black)
         }
         .padding(.bottom, 8)
     }
@@ -416,4 +538,5 @@ private struct SummaryRow: View {
         .environmentObject(AuthManager())
         .environmentObject(UserProfileManager())
         .environmentObject(CheckoutPaymentCoordinator())
+        .environmentObject(NotificationFeedStore.shared)
 }

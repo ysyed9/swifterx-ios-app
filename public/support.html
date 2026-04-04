@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support — SwifterX</title>
+  <meta name="description" content="Get help with your SwifterX account, bookings, payments, and more." />
+  <link rel="canonical" href="https://swifterx.app/support" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --black: #0a0a0a; --white: #fff; --grey: #888; --border: #1f1f1f; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--black); color: var(--white); line-height: 1.7; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 40px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,.92); backdrop-filter: blur(12px); z-index: 100; }
+    .nav-logo { font-size: 20px; font-weight: 800; text-decoration: none; color: var(--white); }
+    .back { color: var(--grey); font-size: 14px; text-decoration: none; transition: color .2s; }
+    .back:hover { color: var(--white); }
+    main { max-width: 760px; margin: 0 auto; padding: 72px 24px 100px; }
+    h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+    .subtitle { font-size: 17px; color: var(--grey); margin-bottom: 56px; }
+    /* Contact card */
+    .contact-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 20px;
+      padding: 36px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 56px;
+    }
+    .contact-icon { font-size: 36px; flex-shrink: 0; }
+    .contact-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .contact-card p  { font-size: 14px; color: var(--grey); margin-bottom: 16px; }
+    .contact-card a.btn {
+      display: inline-block;
+      background: var(--white);
+      color: var(--black);
+      padding: 10px 22px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+    .contact-card a.btn:hover { opacity: .85; }
+    /* FAQ */
+    .faq-section h2 { font-size: 22px; font-weight: 800; margin-bottom: 24px; }
+    details {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+    }
+    summary {
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      user-select: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-size: 20px; color: var(--grey); flex-shrink: 0; transition: transform .2s; }
+    details[open] summary::after { content: "−"; }
+    .faq-answer { margin-top: 14px; font-size: 14px; color: #bbb; line-height: 1.7; }
+    .faq-answer a { color: var(--white); }
+    /* Topics */
+    .topics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 48px 0; }
+    .topic {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 14px;
+      padding: 24px 20px;
+      text-decoration: none;
+      color: var(--white);
+      transition: border-color .2s, transform .15s;
+    }
+    .topic:hover { border-color: #444; transform: translateY(-2px); }
+    .topic .t-icon { font-size: 24px; margin-bottom: 12px; }
+    .topic h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .topic p  { font-size: 13px; color: var(--grey); }
+    footer { border-top: 1px solid var(--border); padding: 32px 40px; text-align: center; color: var(--grey); font-size: 13px; }
+    @media (max-width: 600px) { nav { padding: 16px 20px; } .contact-card { flex-direction: column; } footer { padding: 24px 20px; } }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="/">SwifterX</a>
+    <a class="back" href="/">← Back to Home</a>
+  </nav>
+
+  <main>
+    <h1>Support Center</h1>
+    <p class="subtitle">Find answers to common questions, or reach our team directly.</p>
+
+    <!-- Contact -->
+    <div class="contact-card">
+      <div class="contact-icon">✉️</div>
+      <div>
+        <h2>Email Support</h2>
+        <p>Our team typically responds within 24 hours on business days.</p>
+        <a class="btn" href="mailto:support@swifterx.app">support@swifterx.app</a>
+      </div>
+    </div>
+
+    <!-- Topic cards -->
+    <div class="topics">
+      <div class="topic">
+        <div class="t-icon">📦</div>
+        <h3>Bookings</h3>
+        <p>Schedule, modify, or cancel a booking.</p>
+      </div>
+      <div class="topic">
+        <div class="t-icon">💳</div>
+        <h3>Payments</h3>
+        <p>Charges, refunds, and payment methods.</p>
+      </div>
+      <div class="topic">
+        <div class="t-icon">👤</div>
+        <h3>Account</h3>
+        <p>Profile, password, and data deletion.</p>
+      </div>
+      <div class="topic">
+        <div class="t-icon">🔧</div>
+        <h3>Providers</h3>
+        <p>Onboarding, payouts, and job management.</p>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+      <h2>Frequently Asked Questions</h2>
+
+      <details>
+        <summary>How do I book a service?</summary>
+        <p class="faq-answer">Open SwifterX, tap a service category on the Home tab, choose a provider, select your date and time, add any special instructions, and proceed to checkout. Payment is processed securely through Stripe.</p>
+      </details>
+
+      <details>
+        <summary>Can I cancel or reschedule a booking?</summary>
+        <p class="faq-answer">Yes. Go to the <strong>Orders</strong> tab, find your booking, and tap Cancel. Cancellations made more than 2 hours before the scheduled time are fully refunded. For rescheduling, cancel and rebook at your preferred time.</p>
+      </details>
+
+      <details>
+        <summary>When will I be charged?</summary>
+        <p class="faq-answer">Your card is charged when you confirm the booking. If the provider cancels or you cancel in the eligible window, you'll receive a full refund within 5–10 business days, depending on your bank.</p>
+      </details>
+
+      <details>
+        <summary>My payment failed — what should I do?</summary>
+        <p class="faq-answer">Check that your card details are correct and that your card isn't expired. You can add a new payment method in <strong>Account → Wallet</strong>. If the problem persists, contact your bank or email <a href="mailto:support@swifterx.app">support@swifterx.app</a>.</p>
+      </details>
+
+      <details>
+        <summary>How do I track my provider?</summary>
+        <p class="faq-answer">Once your provider marks the job as "In Progress", a live map appears at the top of your order detail. You'll also receive a push notification when they're on their way.</p>
+      </details>
+
+      <details>
+        <summary>How do I leave a review?</summary>
+        <p class="faq-answer">After your order is marked <strong>Completed</strong>, a review prompt will appear on the order detail screen. Tap the star rating, write an optional comment, and submit. Reviews cannot be edited after submission.</p>
+      </details>
+
+      <details>
+        <summary>I want to become a provider. How do I sign up?</summary>
+        <p class="faq-answer">Download SwifterX and create an account. On the Role Select screen, choose <strong>Provider</strong>. Follow the onboarding steps: choose your services, set your hourly rate and radius, add your availability, and complete background check consent. Once approved, you'll start receiving job requests.</p>
+      </details>
+
+      <details>
+        <summary>How do providers get paid?</summary>
+        <p class="faq-answer">Payouts are processed via <strong>Stripe Connect</strong>. Set up your bank account in <strong>Account → Payouts &amp; Earnings</strong>. After each completed job, your net earnings (minus the SwifterX platform fee) are automatically transferred to your bank account — typically within 2 business days.</p>
+      </details>
+
+      <details>
+        <summary>How do I delete my account?</summary>
+        <p class="faq-answer">Go to <strong>Account → Settings → Delete Account</strong> in the app. Account deletion is permanent and cannot be undone. Alternatively, email <a href="mailto:privacy@swifterx.app">privacy@swifterx.app</a> and we will process your request within 30 days.</p>
+      </details>
+
+      <details>
+        <summary>How do I report a problem with a job?</summary>
+        <p class="faq-answer">Please email <a href="mailto:support@swifterx.app">support@swifterx.app</a> with your order ID (found in the Orders tab) and a description of the issue. We aim to respond within 24 hours and will work to resolve disputes fairly for both customers and providers.</p>
+      </details>
+
+      <details>
+        <summary>Is my personal data safe?</summary>
+        <p class="faq-answer">Yes. All data is encrypted in transit and at rest. We never sell your personal data. Read our full <a href="/privacy">Privacy Policy</a> for details.</p>
+      </details>
+    </div>
+
+  </main>
+
+  <footer>
+    &copy; 2026 SwifterX &nbsp;·&nbsp; <a href="/privacy" style="color:inherit">Privacy Policy</a> &nbsp;·&nbsp; <a href="/support" style="color:inherit">Support</a>
+  </footer>
+
+</body>
+</html>

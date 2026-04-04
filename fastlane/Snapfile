@@ -1,0 +1,24 @@
+# Snapfile — drives `fastlane screenshots`
+# Tells snapshot (fastlane) which devices and languages to capture.
+
+# Required device sizes for App Store
+devices([
+  "iPhone 16 Pro Max",   # 6.9" — required
+  "iPhone 16",           # 6.1" — required
+  "iPhone SE (3rd generation)",  # 4.7"
+  "iPad Pro 13-inch (M4)"        # iPad — required if supporting iPad
+])
+
+languages(["en-US"])
+
+# Point at a UI test scheme that calls `snapshot("ScreenName")`
+# Create SwifterXUITests target in Xcode, then enable scheme sharing.
+scheme("SwifterXUITests")
+
+# Where to save screenshots (committed to repo for `deliver`/`upload_to_app_store`)
+output_directory("./fastlane/screenshots")
+
+clear_previous_screenshots(true)
+
+# Skip the framing step if you don't have frameit assets
+override_status_bar(true)

@@ -1,0 +1,5 @@
+{
+  "review_demo_user": "reviewer@swifterx.app",
+  "review_demo_password": "TestFlight2025!",
+  "review_notes": "This is a two-sided marketplace app for home services. To test the customer side, use the demo account above. To test the provider side, select 'Service Provider' on the role selection screen and use the same credentials. The app uses live Stripe test mode — no real charges are made during App Review."
+}

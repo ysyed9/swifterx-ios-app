@@ -191,6 +191,7 @@ struct ReviewSheet: View {
                     .background(Color.clear)
                     .padding(10)
                     .frame(minHeight: 110)
+                    .sanitized($comment, using: InputSanitizer.reviewComment)
             }
         }
         .padding(.top, 28)
@@ -286,18 +287,22 @@ struct ReviewSheet: View {
     private func submitReview() async {
         guard let uid = authManager.userUID, selectedRating > 0 else { return }
         isSubmitting = true
+        let cleanComment = InputSanitizer.reviewComment(comment)
+        let cleanName    = InputSanitizer.name(customerName.isEmpty ? "Customer" : customerName)
         let review = Review(
             providerID: order.providerID,
             customerUID: uid,
-            customerName: customerName.isEmpty ? "Customer" : customerName,
+            customerName: cleanName,
             rating: selectedRating,
-            comment: comment.trimmingCharacters(in: .whitespacesAndNewlines),
+            comment: cleanComment,
             orderID: order.id
         )
         do {
             try await dataService.submitReview(review, uid: uid)
+            AnalyticsManager.shared.logReviewSubmitted(providerID: order.providerID, rating: selectedRating)
             withAnimation(.spring(response: 0.4)) { showSuccess = true }
         } catch {
+            AnalyticsManager.shared.recordError(error, context: "submitReview:\(order.providerID)")
             submitError = error.localizedDescription
         }
         isSubmitting = false

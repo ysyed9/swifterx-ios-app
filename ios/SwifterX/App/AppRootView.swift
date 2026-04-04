@@ -9,6 +9,7 @@ enum ProviderTab: Hashable {
     case home
     case services
     case schedule
+    case notifications
     case account
 }
 
@@ -16,6 +17,8 @@ enum AppScreen {
     case splash
     case roleSelect
     case login
+    case onboarding       // first-run customer walkthrough
+    case providerOnboarding
     case main
     case providerMain
 }
@@ -43,12 +46,27 @@ class AppState: ObservableObject {
 
 struct AppRootView: View {
     @StateObject private var appState = AppState()
-    @EnvironmentObject private var authManager:    AuthManager
-    @EnvironmentObject private var profileManager: UserProfileManager
-    @EnvironmentObject private var dataService:    DataService
-    @EnvironmentObject private var orderManager:   OrderManager
+    @EnvironmentObject private var authManager:          AuthManager
+    @EnvironmentObject private var profileManager:       UserProfileManager
+    @EnvironmentObject private var providerProfileManager: ProviderProfileManager
+    @EnvironmentObject private var dataService:          DataService
+    @EnvironmentObject private var orderManager:         OrderManager
+    @EnvironmentObject private var deepLinkRouter:       DeepLinkRouter
+    @EnvironmentObject private var notificationFeed:     NotificationFeedStore
+
+    // Deep-link navigation state
+    @State private var deepLinkedOrder:    ServiceOrder? = nil
+    @State private var deepLinkedProvider: ServiceProvider? = nil
 
     var body: some View {
+        VStack(spacing: 0) {
+            OfflineBanner()
+            contentBody
+        }
+    }
+
+    @ViewBuilder
+    private var contentBody: some View {
         Group {
             if authManager.isLoading {
                 SplashView(onFinished: {})
@@ -81,9 +99,28 @@ struct AppRootView: View {
                 case .login:
                     LoginView {
                         UserDefaults.standard.set(appState.userRole.rawValue, forKey: AppState.userRoleDefaultsKey)
-                        withAnimation {
-                            appState.screen = appState.userRole == .provider ? .providerMain : .main
+                        if appState.userRole == .provider, let uid = authManager.userUID {
+                            Task {
+                                let onboarded = await providerProfileManager.isOnboarded(uid: uid)
+                                withAnimation {
+                                    appState.screen = onboarded ? .providerMain : .providerOnboarding
+                                }
+                            }
+                        } else if OnboardingView.shouldShow {
+                            withAnimation { appState.screen = .onboarding }
+                        } else {
+                            withAnimation { appState.screen = .main }
                         }
+                    }
+
+                case .onboarding:
+                    OnboardingView {
+                        withAnimation { appState.screen = .main }
+                    }
+
+                case .providerOnboarding:
+                    ProviderOnboardingView {
+                        withAnimation { appState.screen = .providerMain }
                     }
 
                 case .main:
@@ -99,23 +136,65 @@ struct AppRootView: View {
                         .onAppear {
                             if let uid = authManager.userUID {
                                 profileManager.startListening(uid: uid)
+                                providerProfileManager.startListening(uid: uid)
                             }
                         }
                 }
             }
         }
         .environmentObject(appState)
+        .environmentObject(providerProfileManager)
         .task(id: appState.screen) {
             syncOrderListening(for: appState.screen)
+            syncNotificationFeed(for: appState.screen)
         }
         .onChange(of: authManager.isSignedIn) { isSignedIn in
             if !isSignedIn {
                 profileManager.stopListening()
                 orderManager.stopListening()
                 orderManager.stopListeningAsProvider()
+                notificationFeed.stopListening()
                 withAnimation { appState.screen = .login }
             }
         }
+        // Deep link routing
+        .onChange(of: deepLinkRouter.pendingLink) { link in
+            guard let link, authManager.isSignedIn,
+                  appState.screen == .main || appState.screen == .providerMain
+            else { return }
+            handleDeepLink(link)
+        }
+        // Show deep-linked order
+        .sheet(item: $deepLinkedOrder) { order in
+            NavigationStack {
+                OrderDetailView(order: order)
+            }
+        }
+        // Navigate to deep-linked provider
+        .sheet(item: $deepLinkedProvider) { provider in
+            NavigationStack {
+                ProviderDetailView(provider: provider)
+            }
+        }
+    }
+
+    private func handleDeepLink(_ link: DeepLink) {
+        switch link {
+        case .order(let id):
+            if let order = orderManager.customerOrders.first(where: { $0.id == id }) {
+                deepLinkedOrder = order
+            } else {
+                // Order not in memory — switch to orders tab so user can find it
+                appState.activeTab = .orders
+            }
+        case .provider(let id):
+            if let provider = dataService.providers.first(where: { $0.id == id }) {
+                deepLinkedProvider = provider
+            }
+        case .referral:
+            break // handled at login/signup time
+        }
+        deepLinkRouter.clear()
     }
 
     private func restoreRoleFromDefaults() {
@@ -142,6 +221,19 @@ struct AppRootView: View {
         }
     }
 
+    private func syncNotificationFeed(for screen: AppScreen) {
+        guard let uid = authManager.userUID else {
+            notificationFeed.stopListening()
+            return
+        }
+        switch screen {
+        case .main, .providerMain:
+            notificationFeed.startListening(uid: uid)
+        default:
+            notificationFeed.stopListening()
+        }
+    }
+
     private var mainTabView: some View {
         TabView(selection: $appState.activeTab) {
             NavigationStack { HomeView() }
@@ -155,6 +247,11 @@ struct AppRootView: View {
             NavigationStack { OrdersView() }
                 .tabItem { Label("Orders",   systemImage: "doc.text") }
                 .tag(AppTab.orders)
+
+            NavigationStack { NotificationCenterView() }
+                .tabItem { Label("Notifications", systemImage: "bell") }
+                .tag(AppTab.notifications)
+                .badge(notificationFeed.unreadCount)
 
             NavigationStack { AccountView() }
                 .tabItem { Label("Account",  systemImage: "person") }
@@ -177,6 +274,11 @@ struct AppRootView: View {
             NavigationStack { ProviderScheduleView() }
                 .tabItem { Label("Schedule", systemImage: "calendar") }
                 .tag(ProviderTab.schedule)
+
+            NavigationStack { NotificationCenterView() }
+                .tabItem { Label("Notifications", systemImage: "bell") }
+                .tag(ProviderTab.notifications)
+                .badge(notificationFeed.unreadCount)
 
             NavigationStack { ProviderAccountView() }
                 .tabItem { Label("Account",  systemImage: "person") }
@@ -207,6 +309,8 @@ struct AppRootView: View {
     AppRootView()
         .environmentObject(AuthManager())
         .environmentObject(UserProfileManager())
+        .environmentObject(ProviderProfileManager.shared)
         .environmentObject(DataService(client: MockAPIClient.shared))
         .environmentObject(OrderManager())
+        .environmentObject(NotificationFeedStore.shared)
 }

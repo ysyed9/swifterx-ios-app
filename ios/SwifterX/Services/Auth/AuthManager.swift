@@ -2,6 +2,7 @@ import SwiftUI
 import FirebaseCore
 import FirebaseAuth
 import GoogleSignIn
+import FirebaseAnalytics
 
 // MARK: - Auth Errors
 
@@ -56,6 +57,9 @@ final class AuthManager: ObservableObject {
             Task { @MainActor [weak self] in
                 self?.currentUser = user
                 self?.isLoading = false
+                if let uid = user?.uid {
+                    AnalyticsManager.shared.setUser(uid: uid)
+                }
             }
         }
     }
@@ -76,7 +80,9 @@ final class AuthManager: ObservableObject {
     func signIn(email: String, password: String) async throws {
         do {
             try await Auth.auth().signIn(withEmail: email, password: password)
+            AnalyticsManager.shared.logLogin(method: "email")
         } catch {
+            AnalyticsManager.shared.recordError(error, context: "signIn")
             throw AuthError.from(error)
         }
     }
@@ -107,7 +113,9 @@ final class AuthManager: ObservableObject {
         )
         do {
             try await Auth.auth().signIn(with: credential)
+            AnalyticsManager.shared.logLogin(method: "google")
         } catch {
+            AnalyticsManager.shared.recordError(error, context: "googleSignIn")
             throw AuthError.from(error)
         }
     }
@@ -120,7 +128,9 @@ final class AuthManager: ObservableObject {
             let changeRequest = result.user.createProfileChangeRequest()
             changeRequest.displayName = name
             try await changeRequest.commitChanges()
+            AnalyticsManager.shared.logSignUp(method: "email")
         } catch {
+            AnalyticsManager.shared.recordError(error, context: "createAccount")
             throw AuthError.from(error)
         }
     }
@@ -141,6 +151,8 @@ final class AuthManager: ObservableObject {
         do {
             try Auth.auth().signOut()
             GIDSignIn.sharedInstance.signOut()
+            AnalyticsManager.shared.clearUser()
+            AnalyticsManager.shared.log("User signed out")
         } catch {
             throw AuthError.from(error)
         }

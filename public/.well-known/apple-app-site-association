@@ -1,0 +1,20 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["Z855T78S6X.com.swifterx.app"],
+        "components": [
+          { "/": "/order/*",   "comment": "Order detail deep link" },
+          { "/": "/refer/*",   "comment": "Referral code deep link" },
+          { "/": "/provider/*","comment": "Provider profile deep link" }
+        ]
+      }
+    ]
+  },
+  "activitycontinuation": {
+    "apps": ["Z855T78S6X.com.swifterx.app"]
+  },
+  "webcredentials": {
+    "apps": ["Z855T78S6X.com.swifterx.app"]
+  }
+}

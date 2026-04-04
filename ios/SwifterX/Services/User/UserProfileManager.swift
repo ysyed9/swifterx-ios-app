@@ -47,14 +47,23 @@ final class UserProfileManager: ObservableObject {
                        state: String,
                        zip: String) async throws {
         let data: [String: Any] = [
-            "name": name,
-            "phone": phone,
-            "addressLine": addressLine,
-            "city": city,
-            "state": state,
-            "zip": zip
+            "name": InputSanitizer.name(name),
+            "phone": InputSanitizer.phone(phone),
+            "addressLine": InputSanitizer.address(addressLine),
+            "city": InputSanitizer.clean(city, limit: 60),
+            "state": InputSanitizer.clean(state, limit: 30),
+            "zip": InputSanitizer.clean(zip, limit: FieldLimit.zipCode)
         ]
         try await db.collection("users").document(uid).updateData(data)
+    }
+
+    func updatePhotoURL(uid: String, url: String) async throws {
+        let cleaned = InputSanitizer.photoURL(url)
+        try await db.collection("users").document(uid).updateData(["photoURL": cleaned])
+        if var p = profile, p.uid == uid {
+            p.photoURL = cleaned
+            profile = p
+        }
     }
 
     // Fetch once (used for quick reads, e.g. on app resume)

@@ -21,7 +21,8 @@ enum MockData {
             description: "Piper's Plumbing offers expert plumbing services, specializing in leak detection, drain cleaning, pipe repairs, and fixture installations. Our licensed plumbers ensure fast, reliable service with a satisfaction guarantee.",
             rating: 4.8, distanceMi: 2.4,
             imageName: "img_plumber_work",
-            reviewCount: 214
+            reviewCount: 214,
+            providerLat: 33.7490, providerLng: -84.3880
         ),
         ServiceProvider(
             id: "provider-nets-handyman",
@@ -30,7 +31,8 @@ enum MockData {
             description: "Professional handyman services for all your repair and maintenance needs. Serving the area for over 10 years with 5-star rated service.",
             rating: 4.8, distanceMi: 1.2,
             imageName: "img_repair_tech",
-            reviewCount: 189
+            reviewCount: 189,
+            providerLat: 33.7560, providerLng: -84.3990
         ),
         ServiceProvider(
             id: "provider-your-lawn-guy",
@@ -39,7 +41,8 @@ enum MockData {
             description: "Full-service lawn care and gardening. From mowing and trimming to fertilization and landscaping design.",
             rating: 4.7, distanceMi: 0.8,
             imageName: "img_lawn_mowing",
-            reviewCount: 156
+            reviewCount: 156,
+            providerLat: 33.7510, providerLng: -84.3850
         ),
         ServiceProvider(
             id: "provider-marcus-electric",
@@ -48,7 +51,8 @@ enum MockData {
             description: "Licensed and insured electrician with 20+ years experience. Specializing in rewiring, panel upgrades, and emergency electrical repairs. Available 24/7.",
             rating: 4.9, distanceMi: 1.5,
             imageName: "img_provider_marcus",
-            reviewCount: 302
+            reviewCount: 302,
+            providerLat: 33.7620, providerLng: -84.4010
         ),
         ServiceProvider(
             id: "provider-jasmine-cleaning",
@@ -57,7 +61,8 @@ enum MockData {
             description: "Top-rated residential and commercial cleaning service. Eco-friendly products, detailed attention, and flexible scheduling. Your home will shine.",
             rating: 4.9, distanceMi: 0.5,
             imageName: "img_provider_jasmine",
-            reviewCount: 421
+            reviewCount: 421,
+            providerLat: 33.7480, providerLng: -84.3920
         ),
         ServiceProvider(
             id: "provider-james-pest",
@@ -66,7 +71,8 @@ enum MockData {
             description: "Safe, effective pest control for homes and businesses. Treating termites, rodents, ants, and more. Guaranteed results or we come back for free.",
             rating: 4.6, distanceMi: 3.8,
             imageName: "img_provider_james",
-            reviewCount: 97
+            reviewCount: 97,
+            providerLat: 33.7350, providerLng: -84.3750
         ),
         ServiceProvider(
             id: "provider-swift-support",
@@ -75,7 +81,8 @@ enum MockData {
             description: "Full-service home concierge and project management team. We coordinate all your home service needs in one place so you never have to chase contractors.",
             rating: 4.7, distanceMi: 2.1,
             imageName: "img_customer_service",
-            reviewCount: 178
+            reviewCount: 178,
+            providerLat: 33.7530, providerLng: -84.4050
         )
     ]
 

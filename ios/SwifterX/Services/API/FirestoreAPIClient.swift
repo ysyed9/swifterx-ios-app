@@ -32,7 +32,8 @@ final class FirestoreAPIClient: APIClient {
         let providers: [ServiceProvider] = snapshot.documents.compactMap { doc in
             try? doc.data(as: ServiceProvider.self)
         }
-        return providers.isEmpty ? MockData.providers : providers
+        if providers.isEmpty { return MockData.providers }
+        return providers.filter(\.isVisibleToCustomers)
     }
 
     // MARK: - Categories

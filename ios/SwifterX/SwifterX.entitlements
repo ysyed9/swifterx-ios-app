@@ -10,5 +10,11 @@
 	<!-- Push Notifications (production) -->
 	<key>aps-environment</key>
 	<string>production</string>
+	<!-- Universal Links -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:swifterx.app</string>
+		<string>applinks:www.swifterx.app</string>
+	</array>
 </dict>
 </plist>

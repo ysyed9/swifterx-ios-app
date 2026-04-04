@@ -10,10 +10,23 @@ struct ServiceProvider: Identifiable, Codable {
     var imageName: String
     var imageURL: String
     var reviewCount: Int
+    /// Provider's base/home coordinate for geo-sorting.
+    var providerLat: Double
+    var providerLng: Double
+    /// Synced from `providerProfiles` via Cloud Function. When `false`, hide from customer browse.
+    var listingApproved: Bool?
+
+    /// Legacy docs without `listingApproved` remain visible (grandfather).
+    var isVisibleToCustomers: Bool { listingApproved ?? true }
+
+    /// Operator-approved listing (`listingApproved == true` on `providers/{id}`).
+    var showsVerifiedBadge: Bool { listingApproved == true }
 
     init(id: String = UUID().uuidString, name: String, category: String,
          description: String, rating: Double, distanceMi: Double,
-         imageName: String = "", imageURL: String = "", reviewCount: Int = 156) {
+         imageName: String = "", imageURL: String = "", reviewCount: Int = 156,
+         providerLat: Double = 0, providerLng: Double = 0,
+         listingApproved: Bool? = nil) {
         self.id = id
         self.name = name
         self.category = category
@@ -23,6 +36,46 @@ struct ServiceProvider: Identifiable, Codable {
         self.imageName = imageName
         self.imageURL = imageURL
         self.reviewCount = reviewCount
+        self.providerLat = providerLat
+        self.providerLng = providerLng
+        self.listingApproved = listingApproved
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, category, description, rating, distanceMi
+        case imageName, imageURL, reviewCount, providerLat, providerLng, listingApproved
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        category = try c.decode(String.self, forKey: .category)
+        description = try c.decode(String.self, forKey: .description)
+        rating = try c.decode(Double.self, forKey: .rating)
+        distanceMi = try c.decode(Double.self, forKey: .distanceMi)
+        imageName = try c.decodeIfPresent(String.self, forKey: .imageName) ?? ""
+        imageURL = try c.decodeIfPresent(String.self, forKey: .imageURL) ?? ""
+        reviewCount = try c.decodeIfPresent(Int.self, forKey: .reviewCount) ?? 0
+        providerLat = try c.decodeIfPresent(Double.self, forKey: .providerLat) ?? 0
+        providerLng = try c.decodeIfPresent(Double.self, forKey: .providerLng) ?? 0
+        listingApproved = try c.decodeIfPresent(Bool.self, forKey: .listingApproved)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id)
+        try c.encode(name, forKey: .name)
+        try c.encode(category, forKey: .category)
+        try c.encode(description, forKey: .description)
+        try c.encode(rating, forKey: .rating)
+        try c.encode(distanceMi, forKey: .distanceMi)
+        try c.encode(imageName, forKey: .imageName)
+        try c.encode(imageURL, forKey: .imageURL)
+        try c.encode(reviewCount, forKey: .reviewCount)
+        try c.encode(providerLat, forKey: .providerLat)
+        try c.encode(providerLng, forKey: .providerLng)
+        try c.encodeIfPresent(listingApproved, forKey: .listingApproved)
     }
 }
 
@@ -51,6 +104,11 @@ struct ServiceOrder: Identifiable, Codable {
     var stripePaymentIntentId: String?
     /// Firebase Auth UID of the provider who accepted this job. Empty until a provider claims it.
     var providerUID: String
+    /// Live provider location written by LocationManager during inProgress jobs.
+    var providerLat: Double?
+    var providerLng: Double?
+    /// Stripe Connect account for routing funds to the provider
+    var stripeConnectAccountId: String?
 
     // Computed for display — not stored in Firestore
     var date: String {
@@ -65,6 +123,7 @@ struct ServiceOrder: Identifiable, Codable {
         case scheduledDate, scheduledTime, status, services
         case specialInstructions, createdAt
         case paymentStatus, stripePaymentIntentId, providerUID
+        case providerLat, providerLng, stripeConnectAccountId
     }
 
     init(from decoder: Decoder) throws {
@@ -83,6 +142,9 @@ struct ServiceOrder: Identifiable, Codable {
         paymentStatus = try c.decodeIfPresent(OrderPaymentStatus.self, forKey: .paymentStatus) ?? .paid
         stripePaymentIntentId = try c.decodeIfPresent(String.self, forKey: .stripePaymentIntentId)
         providerUID = try c.decodeIfPresent(String.self, forKey: .providerUID) ?? ""
+        providerLat = try c.decodeIfPresent(Double.self, forKey: .providerLat)
+        providerLng = try c.decodeIfPresent(Double.self, forKey: .providerLng)
+        stripeConnectAccountId = try c.decodeIfPresent(String.self, forKey: .stripeConnectAccountId)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -101,6 +163,9 @@ struct ServiceOrder: Identifiable, Codable {
         try c.encode(paymentStatus, forKey: .paymentStatus)
         try c.encodeIfPresent(stripePaymentIntentId, forKey: .stripePaymentIntentId)
         try c.encode(providerUID, forKey: .providerUID)
+        try c.encodeIfPresent(providerLat, forKey: .providerLat)
+        try c.encodeIfPresent(providerLng, forKey: .providerLng)
+        try c.encodeIfPresent(stripeConnectAccountId, forKey: .stripeConnectAccountId)
     }
 
     enum OrderStatus: String, Codable, CaseIterable {
@@ -138,7 +203,10 @@ struct ServiceOrder: Identifiable, Codable {
          specialInstructions: String = "", createdAt: Date = Date(),
          paymentStatus: OrderPaymentStatus = .unpaid,
          stripePaymentIntentId: String? = nil,
-         providerUID: String = "") {
+         providerUID: String = "",
+         providerLat: Double? = nil,
+         providerLng: Double? = nil,
+         stripeConnectAccountId: String? = nil) {
         self.id = id
         self.customerUID = customerUID
         self.providerID = providerID
@@ -153,6 +221,9 @@ struct ServiceOrder: Identifiable, Codable {
         self.paymentStatus = paymentStatus
         self.stripePaymentIntentId = stripePaymentIntentId
         self.providerUID = providerUID
+        self.providerLat = providerLat
+        self.providerLng = providerLng
+        self.stripeConnectAccountId = stripeConnectAccountId
     }
 }
 

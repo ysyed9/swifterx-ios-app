@@ -1,0 +1,9 @@
+app_identifier("com.swifterx.app")   # Bundle ID
+apple_id("your-apple-id@email.com")  # TODO: replace with your Apple ID
+
+# App Store Connect API key (preferred over password)
+# Generate at: https://appstoreconnect.apple.com/access/api
+# then set these env vars in .env.secret (never commit):
+#   APP_STORE_CONNECT_API_KEY_ID
+#   APP_STORE_CONNECT_API_ISSUER_ID
+#   APP_STORE_CONNECT_API_KEY_CONTENT  (base64-encoded .p8)

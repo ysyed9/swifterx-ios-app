@@ -11,6 +11,8 @@ final class OrderManager: ObservableObject {
 
     // MARK: Customer
     @Published private(set) var orders: [ServiceOrder] = []
+    /// Alias used by deep link router and OrderDetailView
+    var customerOrders: [ServiceOrder] { orders }
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String? = nil
 
@@ -155,7 +157,21 @@ final class OrderManager: ObservableObject {
             stripePaymentIntentId: nil,
             providerUID: ""
         )
-        try await db.collection("orders").document(order.id).setData(from: order)
+        do {
+            try await db.collection("orders").document(order.id).setData(from: order)
+            RetryQueue.shared.remove(key: "place_order_\(order.id)")
+        } catch {
+            // If offline, queue for retry when connectivity returns
+            RetryQueue.shared.enqueue(key: "place_order_\(order.id)") { [weak self] in
+                try? await self?.db.collection("orders").document(order.id).setData(from: order)
+            }
+            throw error
+        }
+        AnalyticsManager.shared.logOrderPlaced(
+            orderID:      order.id,
+            providerName: order.providerName,
+            amount:       order.price
+        )
         return order
     }
 
@@ -172,6 +188,7 @@ final class OrderManager: ObservableObject {
                 "status": ServiceOrder.OrderStatus.cancelled.rawValue
             ])
         }
+        AnalyticsManager.shared.logOrderCancelled(orderID: order.id)
     }
 }
 

@@ -2,8 +2,10 @@ import SwiftUI
 
 struct ServicesView: View {
     @EnvironmentObject private var dataService: DataService
+    @EnvironmentObject private var geoSort: GeoSortService
     @State private var searchText = ""
     @State private var selectedCategory: String? = nil
+    @State private var sortByDistance = false
 
     private let columns = [
         GridItem(.flexible(), spacing: 12),
@@ -12,10 +14,36 @@ struct ServicesView: View {
     ]
 
     private var filteredProviders: [ServiceProvider] {
-        dataService.filteredProviders(category: selectedCategory, search: searchText)
+        let base = dataService.filteredProviders(category: selectedCategory, search: searchText)
+        return sortByDistance ? geoSort.sorted(base) : base
     }
 
+    @State private var showMap = false
+
     var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            mainContent
+
+            // Floating map button
+            Button { showMap = true } label: {
+                Image(systemName: "map.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 52, height: 52)
+                    .background(Color.black)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
+            }
+            .accessibilityLabel("View providers on map")
+            .padding(.trailing, 20)
+            .padding(.bottom, 24)
+        }
+        .sheet(isPresented: $showMap) {
+            NavigationStack { NearbyProvidersMapView() }
+        }
+    }
+
+    private var mainContent: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 0) {
 
@@ -25,19 +53,36 @@ struct ServicesView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
 
-                // Search bar
+                // Search bar + sort toggle
                 HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color(hex: "#858585"))
-                    TextField("Search services...", text: $searchText)
-                        .font(.system(size: 14))
-                        .foregroundStyle(.black)
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Color(hex: "#858585"))
+                        TextField("Search services...", text: $searchText)
+                            .font(.system(size: 14))
+                            .foregroundStyle(.black)
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(height: 42)
+                    .background(Color(hex: "#f6f6f6"))
+                    .clipShape(Capsule())
+
+                    // Distance sort toggle (only shown when location available)
+                    if geoSort.userCoordinate != nil {
+                        Button {
+                            withAnimation(.spring(response: 0.3)) { sortByDistance.toggle() }
+                        } label: {
+                            Image(systemName: sortByDistance ? "location.fill" : "location")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(sortByDistance ? .white : .black)
+                                .frame(width: 42, height: 42)
+                                .background(sortByDistance ? Color.black : Color(hex: "#f6f6f6"))
+                                .clipShape(Circle())
+                        }
+                        .accessibilityLabel(sortByDistance ? "Sort by rating" : "Sort by distance")
+                    }
                 }
-                .padding(.horizontal, 16)
-                .frame(height: 42)
-                .background(Color(hex: "#f6f6f6"))
-                .clipShape(Capsule())
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
 
@@ -50,7 +95,14 @@ struct ServicesView: View {
                     .padding(.bottom, 12)
 
                 if dataService.categories.isEmpty {
-                    ProgressView().frame(maxWidth: .infinity).padding(.bottom, 12)
+                    LazyVGrid(columns: columns, spacing: 12) {
+                        ForEach(0..<6, id: \.self) { _ in
+                            SkeletonBlock(height: 72, cornerRadius: 14)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 12)
+                    .allowsHitTesting(false)
                 } else {
                     LazyVGrid(columns: columns, spacing: 12) {
                         ForEach(dataService.categories, id: \.name) { cat in
@@ -91,18 +143,23 @@ struct ServicesView: View {
                 .padding(.bottom, 4)
 
                 if dataService.isLoadingProviders {
-                    ProgressView().frame(maxWidth: .infinity).padding(.top, 40)
-                } else if filteredProviders.isEmpty {
-                    VStack(spacing: 12) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 40))
-                            .foregroundStyle(Color(hex: "#cccccc"))
-                        Text("No providers found.")
-                            .font(.system(size: 14))
-                            .foregroundStyle(Color(hex: "#828282"))
+                    VStack(spacing: 0) {
+                        ForEach(0..<5, id: \.self) { i in
+                            SkeletonProviderListRow()
+                            if i < 4 { Divider().padding(.horizontal, 20) }
+                        }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 40)
+                    .padding(.top, 8)
+                    .allowsHitTesting(false)
+                } else if filteredProviders.isEmpty {
+                    EmptyStateView(
+                        icon: "magnifyingglass",
+                        title: "No providers found",
+                        subtitle: "Try a different category or clear your search.",
+                        actionTitle: "Clear filters",
+                        action: { selectedCategory = nil; searchText = "" }
+                    )
+                    .padding(.top, 20)
                 } else {
                     VStack(spacing: 0) {
                         ForEach(filteredProviders) { provider in
@@ -240,4 +297,5 @@ private struct ProviderThumb: View {
 #Preview {
     NavigationStack { ServicesView() }
         .environmentObject(DataService(client: MockAPIClient.shared))
+        .environmentObject(GeoSortService.shared)
 }

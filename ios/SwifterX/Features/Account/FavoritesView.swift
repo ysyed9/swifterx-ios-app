@@ -24,20 +24,12 @@ struct FavoritesView: View {
     // MARK: - Empty state
 
     private var emptyState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "heart.slash")
-                .font(.system(size: 48))
-                .foregroundStyle(Color(hex: "#cccccc"))
-            Text("No favourites yet")
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(.black)
-            Text("Tap the heart on any provider to save them here.")
-                .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "#828282"))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        EmptyStateView(
+            icon: "heart.slash",
+            title: "No favourites yet",
+            subtitle: "Tap the heart on any provider to save them here.",
+            accentColor: Color(hex: "#e63946")
+        )
     }
 
     // MARK: - List

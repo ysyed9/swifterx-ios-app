@@ -11,31 +11,124 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    // Field is a non-empty string within the given char limit
+    function validStr(field, maxLen) {
+      return field is string && field.size() > 0 && field.size() <= maxLen;
+    }
+
+    // Field is a string within the given char limit (may be empty)
+    function optStr(field, maxLen) {
+      return field is string && field.size() <= maxLen;
+    }
+
+    // Public provider listing doc: visible if listingApproved is absent (legacy) or true.
+    function providerListingVisible() {
+      return !('listingApproved' in resource.data) || resource.data.listingApproved == true;
+    }
+
+    // Customer may book only listed providers (grandfather: missing providers doc or field).
+    function providerListedForBooking(pid) {
+      let d = get(/databases/$(database)/documents/providers/$(pid));
+      return !d.exists || !('listingApproved' in d.data) || d.data.listingApproved == true;
+    }
+
+    // Provider must have a profile doc and be operator-approved (or legacy without `approved`) to claim jobs.
+    function providerApprovedForJobs(uid) {
+      let p = get(/databases/$(database)/documents/providerProfiles/$(uid));
+      return p.exists && (!('approved' in p.data) || p.data.approved == true);
+    }
+
+    // Only approved providers (with a profile doc) may read unclaimed confirmed orders in the job inbox.
+    function canReadUnclaimedConfirmedOrder() {
+      return providerApprovedForJobs(request.auth.uid);
+    }
+
+    function orderDoc(orderId) {
+      return get(/databases/$(database)/documents/orders/$(orderId));
+    }
+
+    // Matches app rule: dispute after completed/cancelled with paid or processing payment.
+    function orderEligibleForDispute(oid) {
+      let o = orderDoc(oid);
+      return o.exists
+        && o.data.customerUID == request.auth.uid
+        && o.data.providerID == request.resource.data.providerID
+        && o.data.providerName == request.resource.data.providerName
+        && o.data.price == request.resource.data.orderAmount
+        && (o.data.status == 'completed' || o.data.status == 'cancelled')
+        && (o.data.paymentStatus == 'paid' || o.data.paymentStatus == 'processing');
+    }
+
+    // Client cannot set operator-only approval fields; `approved` may only stay same or
+    // become explicit true when the server doc never had `approved` (legacy grandfather).
+    function providerProfileApprovalFieldsOk() {
+      let diff = request.resource.data.diff(resource.data).affectedKeys();
+      return !diff.hasAny(['approvedAt', 'rejectionReason'])
+        && (
+          !diff.hasAny(['approved'])
+          || (!('approved' in resource.data)
+              ? request.resource.data.approved == true
+              : request.resource.data.approved == resource.data.approved)
+        );
+    }
+
     // ─── Users (profiles) ─────────────────────────────────────────────────────
     match /users/{uid} {
-      allow read, write: if isOwner(uid);
+      allow read: if isOwner(uid);
+      allow write: if isOwner(uid)
+        && validStr(request.resource.data.name,  60)
+        && optStr(request.resource.data.phone,   20)
+        && optStr(request.resource.data.addressLine, 160)
+        && optStr(request.resource.data.city,    60)
+        && optStr(request.resource.data.state,   30)
+        && optStr(request.resource.data.zip,     10)
+        && optStr(request.resource.data.photoURL, 2048);
+
+      // In-app Notification Center (server writes order/chat/dispute; client may log promos)
+      match /notifications/{nid} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && request.resource.data.category == "promo"
+          && validStr(request.resource.data.title, 120)
+          && optStr(request.resource.data.body, 500)
+          && request.resource.data.read == false
+          && validStr(request.resource.data.promoCode, 40)
+          && request.resource.data.keys().hasOnly(["title", "body", "category", "promoCode", "read", "createdAt"]);
+        allow update: if isOwner(uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["read"])
+          && request.resource.data.read is bool;
+        allow delete: if isOwner(uid);
+      }
+    }
+
+    // ─── Provider private profiles (onboarding; approval only via Admin SDK / Console)
+    match /providerProfiles/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && request.resource.data.id == uid
+        && request.resource.data.approved == false;
+      allow update: if isOwner(uid) && providerProfileApprovalFieldsOk();
+      allow delete: if false;
     }
 
     // ─── Categories ───────────────────────────────────────────────────────────
-    // Public read — only backend/admin writes
     match /categories/{id} {
       allow read: if true;
       allow write: if false;
     }
 
     // ─── Providers ────────────────────────────────────────────────────────────
-    // Public read — only backend/admin writes
     match /providers/{providerID} {
-      allow read: if true;
+      allow read: if providerListingVisible()
+        || (isSignedIn() && request.auth.uid == providerID);
       allow write: if false;
 
-      // Services offered (public read)
       match /services/{serviceID} {
         allow read: if true;
         allow write: if false;
       }
 
-      // Reviews — any authenticated user can create once per order; no edit/delete
+      // Reviews — authenticated user, one per order, validated fields
       match /reviews/{reviewID} {
         allow read: if true;
         allow create: if isSignedIn()
@@ -43,11 +136,12 @@ service cloud.firestore {
           && request.resource.data.rating is int
           && request.resource.data.rating >= 1
           && request.resource.data.rating <= 5
-          && request.resource.data.orderID is string;
+          && validStr(request.resource.data.orderID, 128)
+          && optStr(request.resource.data.comment,   1000)  // FieldLimit.reviewComment
+          && optStr(request.resource.data.customerName, 60); // FieldLimit.name
         allow update, delete: if false;
       }
 
-      // Availability slots (public read — provider/admin sets)
       match /availability/{date} {
         allow read: if true;
         allow write: if false;
@@ -57,49 +151,137 @@ service cloud.firestore {
     // ─── Orders ───────────────────────────────────────────────────────────────
     match /orders/{orderID} {
 
-      // Read: customer owns it, provider is assigned to it, or it's in the open inbox
       allow read: if isSignedIn() && (
         resource.data.customerUID == request.auth.uid ||
         resource.data.providerUID == request.auth.uid ||
-        (resource.data.providerUID == "" && resource.data.status == "confirmed")
+        (resource.data.providerUID == "" && resource.data.status == "confirmed"
+          && canReadUnclaimedConfirmedOrder())
       );
 
-      // Create: customer creating their own order
+      // Create: customer creates their own order — validate all fields
       allow create: if isSignedIn()
         && request.resource.data.customerUID == request.auth.uid
-        && request.resource.data.providerID is string
-        && request.resource.data.providerID.size() > 0
+        && validStr(request.resource.data.providerID,   128)
+        && validStr(request.resource.data.providerName, 120)
+        && request.resource.data.price is number
+        && request.resource.data.price > 0
+        && request.resource.data.price < 100000       // sanity cap $100k
+        && optStr(request.resource.data.specialInstructions, 500)  // FieldLimit
         && (
           (request.resource.data.paymentStatus == "unpaid"  && request.resource.data.status == "pending")
           || (request.resource.data.paymentStatus == "paid" && request.resource.data.status == "confirmed")
-        );
+        )
+        && providerListedForBooking(request.resource.data.providerID);
 
-      // Customer: cancel their own order
+      // Customer: cancel only
       allow update: if isSignedIn()
         && resource.data.customerUID == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"])
         && request.resource.data.status == "cancelled";
 
-      // Provider: claim an unclaimed confirmed job (set providerUID to self)
+      // Provider: claim unclaimed confirmed job
       allow update: if isSignedIn()
         && resource.data.providerUID == ""
         && resource.data.status == "confirmed"
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["providerUID"])
-        && request.resource.data.providerUID == request.auth.uid;
+        && request.resource.data.providerUID == request.auth.uid
+        && providerApprovedForJobs(request.auth.uid);
 
-      // Provider: release a claimed job back to inbox (clear providerUID)
+      // Provider: release claimed job back to inbox
       allow update: if isSignedIn()
         && resource.data.providerUID == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["providerUID"])
         && request.resource.data.providerUID == "";
 
-      // Provider: update status on their assigned job (start, complete, cancel)
+      // Provider: advance job status
       allow update: if isSignedIn()
         && resource.data.providerUID == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"])
         && request.resource.data.status in ["inProgress", "completed", "cancelled"];
 
+      // Provider: write live location during in-progress job
+      allow update: if isSignedIn()
+        && resource.data.providerUID == request.auth.uid
+        && resource.data.status == "inProgress"
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["providerLat", "providerLng"])
+        && request.resource.data.providerLat is number
+        && request.resource.data.providerLat >= -90
+        && request.resource.data.providerLat <= 90
+        && request.resource.data.providerLng is number
+        && request.resource.data.providerLng >= -180
+        && request.resource.data.providerLng <= 180;
+
       allow delete: if false;
+
+      // Chat messages — length-capped, sender-verified
+      match /messages/{messageID} {
+        allow read: if isSignedIn() && (
+          get(/databases/$(database)/documents/orders/$(orderID)).data.customerUID == request.auth.uid ||
+          get(/databases/$(database)/documents/orders/$(orderID)).data.providerUID == request.auth.uid
+        );
+        allow create: if isSignedIn()
+          && (
+            get(/databases/$(database)/documents/orders/$(orderID)).data.customerUID == request.auth.uid ||
+            get(/databases/$(database)/documents/orders/$(orderID)).data.providerUID == request.auth.uid
+          )
+          && request.resource.data.senderUID == request.auth.uid
+          && validStr(request.resource.data.text, 2000)         // FieldLimit.chatMessage
+          && validStr(request.resource.data.senderName, 60);    // FieldLimit.name
+        allow update, delete: if false;
+      }
+    }
+
+    // ─── Promo codes: single-doc get by code only (no collection listing) ────
+    match /promoCodes/{code} {
+      allow get: if isSignedIn()
+        && code.matches('^[A-Z0-9\\-]{1,24}$');
+      allow list: if false;
+      // Redeem: increment usedCount only (+1 per update).
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usedCount'])
+        && request.resource.data.usedCount is int
+        && resource.data.usedCount is int
+        && request.resource.data.usedCount == resource.data.usedCount + 1;
+      allow create, delete: if false;
+    }
+
+    // ─── Disputes ─────────────────────────────────────────────────────────────
+    // Customers create disputes for their own orders.
+    // Cloud Functions (Admin SDK) handle all updates — no client writes after create.
+    match /disputes/{disputeID} {
+
+      // Customer can read their own dispute; provider can read disputes about their orders.
+      allow read: if isSignedIn() && (
+        resource.data.customerUID == request.auth.uid ||
+        resource.data.providerID  == request.auth.uid
+      );
+
+      // Create: customer must match Firestore order (prevents forged disputes for others' orders).
+      allow create: if isSignedIn()
+        && request.resource.data.customerUID == request.auth.uid
+        && validStr(request.resource.data.orderID,      128)
+        && validStr(request.resource.data.providerID,   128)
+        && validStr(request.resource.data.providerName, 120)
+        && request.resource.data.orderAmount is number
+        && request.resource.data.orderAmount > 0
+        && request.resource.data.orderAmount < 100000
+        && validStr(request.resource.data.reason,       50)
+        && request.resource.data.reason in [
+            "no_show", "poor_quality", "wrong_service",
+            "overcharged", "safety_issue", "other"
+           ]
+        && validStr(request.resource.data.description,  1000)
+        && request.resource.data.refundRequested is bool
+        && request.resource.data.status == "submitted"
+        && orderEligibleForDispute(request.resource.data.orderID);
+
+      // Updates only allowed via Admin SDK (Cloud Functions).
+      allow update, delete: if false;
+    }
+
+    // ─── Admin alerts (write-only for Cloud Functions via Admin SDK) ──────────
+    match /adminAlerts/{alertID} {
+      allow read, write: if false;
     }
   }
 }

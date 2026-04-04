@@ -1,0 +1,23 @@
+SwifterX connects customers with skilled, vetted home-service professionals — on demand.
+
+Book a cleaner, plumber, electrician, or handyman in minutes. Track your provider in real time, pay securely through the app, and leave a review when the job is done.
+
+CUSTOMERS
+• Browse hundreds of local, background-checked providers
+• Book same-day or schedule in advance
+• Real-time GPS tracking while your provider is en route
+• Pay with Apple Pay or any major card — powered by Stripe
+• Full order history and one-tap rebooking
+• In-app chat with your provider
+
+PROVIDERS
+• Set your own schedule and service radius
+• Accept or decline jobs from your job inbox
+• Mark jobs in-progress and complete them from the app
+• Receive payouts directly to your bank account via Stripe
+• Build your reputation with verified customer reviews
+
+EMPOWERMENT THROUGH OPPORTUNITY
+SwifterX is built for both sides of the marketplace — giving customers convenience and providers a reliable, flexible income stream.
+
+Your privacy matters. SwifterX never sells your personal data. Read our full privacy policy at https://swifterx.app/privacy.

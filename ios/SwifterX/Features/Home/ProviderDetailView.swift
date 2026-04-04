@@ -43,6 +43,21 @@ struct ProviderDetailView: View {
         }
     }
 
+    private func shareProvider() {
+        let url = DeepLinkRouter.providerURL(id: provider.id)
+        let text = "Check out \(provider.name) on SwifterX — \(provider.category) services, rated \(String(format: "%.1f", provider.rating))★"
+        let items: [Any] = [text, url]
+        let av = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let root = scene.windows.first?.rootViewController else { return }
+        var presenter = root
+        while let presented = presenter.presentedViewController {
+            presenter = presented
+        }
+        presenter.present(av, animated: true)
+        AnalyticsManager.shared.log("Provider shared: \(provider.id)")
+    }
+
     // MARK: - Hero
 
     private var heroSection: some View {
@@ -75,12 +90,17 @@ struct ProviderDetailView: View {
                                     .foregroundColor(favoritesStore.isFavorite(provider.id) ? .red : .white)
                             )
                     }
-                    Circle()
-                        .fill(Color.black.opacity(0.5))
-                        .frame(width: 36, height: 36)
-                        .overlay(Image(systemName: "ellipsis")
-                            .font(.system(size: 14))
-                            .foregroundColor(.white))
+                    Button {
+                        shareProvider()
+                    } label: {
+                        Circle()
+                            .fill(Color.black.opacity(0.5))
+                            .frame(width: 36, height: 36)
+                            .overlay(Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 14))
+                                .foregroundColor(.white))
+                    }
+                    .accessibilityLabel("Share provider")
                 }
             }
             .padding(.horizontal, 20)
@@ -113,9 +133,17 @@ struct ProviderDetailView: View {
         VStack(alignment: .leading, spacing: 20) {
             // Provider header
             VStack(spacing: 8) {
-                Text(provider.name)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                HStack(spacing: 6) {
+                    Text(provider.name)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                    if provider.showsVerifiedBadge {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Color(hex: "2563eb"))
+                            .accessibilityLabel("Verified provider")
+                    }
+                }
 
                 HStack(spacing: 4) {
                     Text("\(provider.rating, specifier: "%.1f")")

@@ -61,6 +61,7 @@ final class CheckoutPaymentCoordinator: ObservableObject {
         do {
             result = try await callable.call(["orderId": orderId])
         } catch {
+            AnalyticsManager.shared.recordError(error, context: "confirmOrderPayment:\(orderId)")
             throw mappedError(error)
         }
         if let dict = result.data as? [String: Any],
@@ -68,6 +69,10 @@ final class CheckoutPaymentCoordinator: ObservableObject {
            let msg = dict["error"] as? String {
             throw CheckoutPaymentError.confirmationFailed(msg)
         }
+        // Payment confirmed — log the purchase event.
+        // We don't have the amount here easily; the cloud function owns authoritative amount.
+        AnalyticsManager.shared.logPaymentCompleted(orderID: orderId, amount: 0)
+        AnalyticsManager.shared.log("Payment confirmed for order \(orderId)")
     }
 
     /// Presents Stripe PaymentSheet. Returns `true` if the customer completed payment.
@@ -125,6 +130,7 @@ final class CheckoutPaymentCoordinator: ObservableObject {
     }
 
     private func mappedError(_ error: Error) -> CheckoutPaymentError {
+        #if DEBUG
         guard let fnError = error as NSError? else {
             return .paymentFailed(error.localizedDescription)
         }
@@ -134,5 +140,9 @@ final class CheckoutPaymentCoordinator: ObservableObject {
             return .paymentFailed("\(message) (\(detailsString))")
         }
         return .paymentFailed(message)
+        #else
+        AnalyticsManager.shared.recordError(error, context: "checkout_payment_callable")
+        return .paymentFailed("Something went wrong. Please try again.")
+        #endif
     }
 }

@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		4A302E742F6BCEFB0097FBCA /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 4A302E732F6BCEFB0097FBCA /* FirebaseAuth */; };
 		4A302E762F6BCF0B0097FBCA /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 4A302E752F6BCF0B0097FBCA /* FirebaseFirestore */; };
-		4A302E782F6BCF850097FBCA /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = 4A302E772F6BCF850097FBCA /* FirebaseAI */; };
-		4A302E7A2F6BCF850097FBCA /* FirebaseAILogic in Frameworks */ = {isa = PBXBuildFile; productRef = 4A302E792F6BCF850097FBCA /* FirebaseAILogic */; };
 		4A302E7C2F6BCF850097FBCA /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 4A302E7B2F6BCF850097FBCA /* FirebaseAnalytics */; };
 		4A302E7E2F6BCF850097FBCA /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4A302E7D2F6BCF850097FBCA /* FirebaseAnalyticsCore */; };
 		4A302E802F6BCF850097FBCA /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 4A302E7F2F6BCF850097FBCA /* FirebaseAnalyticsIdentitySupport */; };
@@ -93,6 +91,42 @@
 		FAV0000200000000000002AA01 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAV0000200000000000002AA00 /* FavoritesView.swift */; };
 		FAV0000300000000000003AA01 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAV0000300000000000003AA00 /* WalletView.swift */; };
 		REV0000100000000000001AA01 /* ReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = REV0000100000000000001AA00 /* ReviewSheet.swift */; };
+		POB0000100000000000001AA01 /* ProviderProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000100000000000001AA00 /* ProviderProfile.swift */; };
+		POB0000200000000000002AA01 /* ProviderProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000200000000000002AA00 /* ProviderProfileManager.swift */; };
+		POB0000210000000000002AA01 /* ProviderProfilePhotoStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000210000000000002AA00 /* ProviderProfilePhotoStorage.swift */; };
+		POB0000300000000000003AA01 /* ProviderOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000300000000000003AA00 /* ProviderOnboardingView.swift */; };
+		POB0000400000000000004AA01 /* ProviderPublicProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000400000000000004AA00 /* ProviderPublicProfileView.swift */; };
+		LOC0000100000000000001AA01 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOC0000100000000000001AA00 /* LocationManager.swift */; };
+		LOC0000200000000000002AA01 /* ProviderTrackingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOC0000200000000000002AA00 /* ProviderTrackingCard.swift */; };
+		PRM0000100000000000001BB01 /* PromoCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRM0000100000000000001BB00 /* PromoCode.swift */; };
+		PRM0000200000000000002BB01 /* PromoCodeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRM0000200000000000002BB00 /* PromoCodeService.swift */; };
+		CHT0000100000000000001BB01 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHT0000100000000000001BB00 /* ChatMessage.swift */; };
+		CHT0000200000000000002BB01 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHT0000200000000000002BB00 /* ChatManager.swift */; };
+		CHT0000300000000000003BB01 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHT0000300000000000003BB00 /* ChatView.swift */; };
+		REF0000100000000000001BB01 /* ReferralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REF0000100000000000001BB00 /* ReferralView.swift */; };
+		ANL0000100000000000001CC01 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ANL0000100000000000001CC00 /* AnalyticsManager.swift */; };
+		SHM0000100000000000001DD01 /* ShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SHM0000100000000000001DD00 /* ShimmerView.swift */; };
+		EMP0000100000000000001DD01 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EMP0000100000000000001DD00 /* EmptyStateView.swift */; };
+		ONB0000100000000000001DD01 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONB0000100000000000001DD00 /* OnboardingView.swift */; };
+		PRV0000100000000000001EE01 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PRV0000100000000000001EE00 /* PrivacyInfo.xcprivacy */; };
+		DLR0000100000000000001FF01 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DLR0000100000000000001FF00 /* DeepLinkRouter.swift */; };
+		NWM0000100000000000001FF01 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = NWM0000100000000000001FF00 /* NetworkMonitor.swift */; };
+		RTQ0000100000000000001FF01 /* RetryQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = RTQ0000100000000000001FF00 /* RetryQueue.swift */; };
+		GEO0000100000000000001FF01 /* GeoSortService.swift in Sources */ = {isa = PBXBuildFile; fileRef = GEO0000100000000000001FF00 /* GeoSortService.swift */; };
+		MAP0000100000000000001FF01 /* NearbyProvidersMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MAP0000100000000000001FF00 /* NearbyProvidersMapView.swift */; };
+		SAN0000100000000000002FF01 /* InputSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = SAN0000100000000000002FF00 /* InputSanitizer.swift */; };
+		TST0000100000000000001AA01 /* InputSanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000100000000000001AA00 /* InputSanitizerTests.swift */; };
+		TST0000200000000000002AA01 /* GeoSortServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000200000000000002AA00 /* GeoSortServiceTests.swift */; };
+		TST0000300000000000003AA01 /* DeepLinkRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000300000000000003AA00 /* DeepLinkRouterTests.swift */; };
+		TST0000400000000000004AA01 /* PromoCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000400000000000004AA00 /* PromoCodeTests.swift */; };
+		SCN0000100000000000001BB01 /* StripeConnectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SCN0000100000000000001BB00 /* StripeConnectService.swift */; };
+		PPV0000100000000000001BB01 /* ProviderPayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPV0000100000000000001BB00 /* ProviderPayoutView.swift */; };
+		DSP0000100000000000001CC01 /* Dispute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DSP0000100000000000001CC00 /* Dispute.swift */; };
+		DSP0000200000000000002CC01 /* DisputeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DSP0000200000000000002CC00 /* DisputeService.swift */; };
+		DSP0000300000000000003CC01 /* DisputeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DSP0000300000000000003CC00 /* DisputeView.swift */; };
+		NTF0000100000000000001AA01 /* InAppNotificationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = NTF0000100000000000001AA00 /* InAppNotificationItem.swift */; };
+		NTF0000200000000000002AA01 /* NotificationFeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = NTF0000200000000000002AA00 /* NotificationFeedStore.swift */; };
+		NTF0000300000000000003AA01 /* NotificationCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NTF0000300000000000003AA00 /* NotificationCenterView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -168,6 +202,7 @@
 		EE000008000000000000B100 /* OrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderManager.swift; sourceTree = "<group>"; };
 		EE000009000000000000C100 /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		FF000001000000000000AA00 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CFG0000100000000000001CC00 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		PP000001000000000000AA00 /* ProviderHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderHomeView.swift; sourceTree = "<group>"; };
 		PP000002000000000000BB00 /* ProviderScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderScheduleView.swift; sourceTree = "<group>"; };
 		PP000003000000000000CC00 /* ProviderAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderAccountView.swift; sourceTree = "<group>"; };
@@ -180,6 +215,43 @@
 		FAV0000200000000000002AA00 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		FAV0000300000000000003AA00 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		REV0000100000000000001AA00 /* ReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSheet.swift; sourceTree = "<group>"; };
+		POB0000100000000000001AA00 /* ProviderProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfile.swift; sourceTree = "<group>"; };
+		POB0000200000000000002AA00 /* ProviderProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfileManager.swift; sourceTree = "<group>"; };
+		POB0000210000000000002AA00 /* ProviderProfilePhotoStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfilePhotoStorage.swift; sourceTree = "<group>"; };
+		POB0000300000000000003AA00 /* ProviderOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding/ProviderOnboardingView.swift; sourceTree = "<group>"; };
+		POB0000400000000000004AA00 /* ProviderPublicProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderPublicProfileView.swift; sourceTree = "<group>"; };
+		LOC0000100000000000001AA00 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		LOC0000200000000000002AA00 /* ProviderTrackingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderTrackingCard.swift; sourceTree = "<group>"; };
+		PRM0000100000000000001BB00 /* PromoCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCode.swift; sourceTree = "<group>"; };
+		PRM0000200000000000002BB00 /* PromoCodeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCodeService.swift; sourceTree = "<group>"; };
+		CHT0000100000000000001BB00 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		CHT0000200000000000002BB00 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
+		CHT0000300000000000003BB00 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		REF0000100000000000001BB00 /* ReferralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralView.swift; sourceTree = "<group>"; };
+		ANL0000100000000000001CC00 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
+		SHM0000100000000000001DD00 /* ShimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmerView.swift; sourceTree = "<group>"; };
+		EMP0000100000000000001DD00 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		ONB0000100000000000001DD00 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		PRV0000100000000000001EE00 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = "text.xml"; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		DLR0000100000000000001FF00 /* DeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouter.swift; sourceTree = "<group>"; };
+		NWM0000100000000000001FF00 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		RTQ0000100000000000001FF00 /* RetryQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryQueue.swift; sourceTree = "<group>"; };
+		GEO0000100000000000001FF00 /* GeoSortService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoSortService.swift; sourceTree = "<group>"; };
+		MAP0000100000000000001FF00 /* NearbyProvidersMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyProvidersMapView.swift; sourceTree = "<group>"; };
+		SAN0000100000000000002FF00 /* InputSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputSanitizer.swift; sourceTree = "<group>"; };
+		TST0000100000000000001AA00 /* InputSanitizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputSanitizerTests.swift; sourceTree = "<group>"; };
+		TST0000200000000000002AA00 /* GeoSortServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoSortServiceTests.swift; sourceTree = "<group>"; };
+		TST0000300000000000003AA00 /* DeepLinkRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouterTests.swift; sourceTree = "<group>"; };
+		TST0000400000000000004AA00 /* PromoCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCodeTests.swift; sourceTree = "<group>"; };
+		TST0000500000000000005AA00 /* SwifterXTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwifterXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		SCN0000100000000000001BB00 /* StripeConnectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeConnectService.swift; sourceTree = "<group>"; };
+		PPV0000100000000000001BB00 /* ProviderPayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderPayoutView.swift; sourceTree = "<group>"; };
+		DSP0000100000000000001CC00 /* Dispute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dispute.swift; sourceTree = "<group>"; };
+		DSP0000200000000000002CC00 /* DisputeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisputeService.swift; sourceTree = "<group>"; };
+		DSP0000300000000000003CC00 /* DisputeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisputeView.swift; sourceTree = "<group>"; };
+		NTF0000100000000000001AA00 /* InAppNotificationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotificationItem.swift; sourceTree = "<group>"; };
+		NTF0000200000000000002AA00 /* NotificationFeedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationFeedStore.swift; sourceTree = "<group>"; };
+		NTF0000300000000000003AA00 /* NotificationCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,8 +259,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A302E7A2F6BCF850097FBCA /* FirebaseAILogic in Frameworks */,
-				4A302E782F6BCF850097FBCA /* FirebaseAI in Frameworks */,
 				4A302EA02F6BCF850097FBCA /* FirebasePerformance in Frameworks */,
 				4A302EA22F6BCF850097FBCA /* FirebaseRemoteConfig in Frameworks */,
 				4AB987382F6BC61E0083F30E /* FirebaseAnalytics in Frameworks */,
@@ -326,7 +396,12 @@
 				AA000006000000000000FF00 /* ServiceProvider.swift */,
 				BB000001000000000000AA00 /* CartStore.swift */,
 				EE000009000000000000C100 /* Review.swift */,
+				POB0000100000000000001AA00 /* ProviderProfile.swift */,
 				FAV0000100000000000001AA00 /* FavoritesStore.swift */,
+				PRM0000100000000000001BB00 /* PromoCode.swift */,
+				CHT0000100000000000001BB00 /* ChatMessage.swift */,
+				DSP0000100000000000001CC00 /* Dispute.swift */,
+				NTF0000100000000000001AA00 /* InAppNotificationItem.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -349,6 +424,7 @@
 				4A880A082F6A6E0F00EBEE3D /* Profile */,
 				4A880A0E2F6A6E0F00EBEE3D /* Shared */,
 				CC000001AAAABBBBCCCC0001 /* Services */,
+				MAP00005AAAABBBBCCCC0001 /* Map */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -471,8 +547,18 @@
 			children = (
 				4AAD038F2F6A75EA00E18C05 /* MockData */,
 				4AAD03922F6A75EA00E18C05 /* Models */,
+				SHM00005AAAABBBBCCCC0001 /* Components */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		SHM00005AAAABBBBCCCC0001 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				SHM0000100000000000001DD00 /* ShimmerView.swift */,
+				EMP0000100000000000001DD00 /* EmptyStateView.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		4AAD03942F6A75EA00E18C05 /* Features */ = {
@@ -485,6 +571,9 @@
 				4AAD03932F6A75EA00E18C05 /* Shared */,
 				AA000004AAAABBBBCCCC0001 /* Orders */,
 				AA000004AAAABBBBCCCC0002 /* Account */,
+				CHT0000FFFFAAAA00000001BB /* Chat */,
+				ONB00005AAAABBBBCCCC0001 /* Onboarding */,
+				NTF00005AAAABBBBCCCC0001 /* Notifications */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -501,6 +590,7 @@
 			isa = PBXGroup;
 			children = (
 				4A1E568F2F6F738100B9F8BD /* SwifterX-Info.plist */,
+				PRV0000100000000000001EE00 /* PrivacyInfo.xcprivacy */,
 				4AAD03752F6A75EA00E18C05 /* App */,
 				4AAD03822F6A75EA00E18C05 /* DesignSystem */,
 				4AAD03842F6A75EA00E18C05 /* Docs */,
@@ -508,12 +598,16 @@
 				4AAD03962F6A75EA00E18C05 /* Resources */,
 				4AAD03972F6A75EA00E18C05 /* README.md */,
 				4AAD03982F6A75EA00E18C05 /* SwifterX.xcodeproj */,
+				TST00005AAAABBBBCCCC0001 /* SwifterXTests */,
 			);
 			name = SwifterX;
 			sourceTree = "<group>";
 		};
 		4AAD039A2F6A75EA00E18C05 /* Products */ = {
 			isa = PBXGroup;
+			children = (
+				TST0000500000000000005AA00 /* SwifterXTests.app */,
+			);
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -523,8 +617,26 @@
 				AA000003000000000000CC00 /* OrdersView.swift */,
 				CC000002000000000000BB00 /* OrderDetailView.swift */,
 				REV0000100000000000001AA00 /* ReviewSheet.swift */,
+				LOC0000200000000000002AA00 /* ProviderTrackingCard.swift */,
+				DSP0000300000000000003CC00 /* DisputeView.swift */,
 			);
 			path = Orders;
+			sourceTree = "<group>";
+		};
+		CHT0000FFFFAAAA00000001BB /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				CHT0000300000000000003BB00 /* ChatView.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		ONB00005AAAABBBBCCCC0001 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				ONB0000100000000000001DD00 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		AA000004AAAABBBBCCCC0002 /* Account */ = {
@@ -534,19 +646,30 @@
 				AA000005000000000000EE00 /* PersonalInfoView.swift */,
 				FAV0000200000000000002AA00 /* FavoritesView.swift */,
 				FAV0000300000000000003AA00 /* WalletView.swift */,
+				REF0000100000000000001BB00 /* ReferralView.swift */,
 			);
 			path = Account;
+			sourceTree = "<group>";
+		};
+		CFGGRP00000000000000001CC /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				CFG0000100000000000001CC00 /* Shared.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		B00000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
 				4AAD03992F6A75EA00E18C05 /* SwifterX */,
+				CFGGRP00000000000000001CC /* Config */,
 				4A8809F22F6A6E0F00EBEE3D /* App */,
 				4A8809FF2F6A6E0F00EBEE3D /* DesignSystem */,
 				4A880A012F6A6E0F00EBEE3D /* Docs */,
 				4A880A0F2F6A6E0F00EBEE3D /* Features */,
 				EE000010AAAABBBBCCCC0001 /* Services */,
+				UTL00005AAAABBBBCCCC0001 /* Utils */,
 				4A880A102F6A6E0F00EBEE3D /* README.md */,
 				4A880A122F6A6E0F00EBEE3D /* Resources */,
 				4A302E722F6BCEFB0097FBCA /* Frameworks */,
@@ -578,8 +701,75 @@
 				EE000013AAAABBBBCCCC0001 /* API */,
 				PPAY000010000000000000CC00 /* Payment */,
 				EE000014AAAABBBBCCCC0001 /* Orders */,
+				POB00005AAAABBBBCCCC0001 /* Provider */,
+				LOC00005AAAABBBBCCCC0001 /* Location */,
+				PRM00005AAAABBBBCCCC0001 /* Promo */,
+				CHT00005AAAABBBBCCCC0001 /* Chat */,
+				ANL00005AAAABBBBCCCC0001 /* Analytics */,
+				DLR00005AAAABBBBCCCC0001 /* DeepLink */,
+				NWM00005AAAABBBBCCCC0001 /* Network */,
+				GEO00005AAAABBBBCCCC0001 /* Geo */,
+				SCN00005AAAABBBBCCCC0001 /* Stripe */,
+				NTF00006AAAABBBBCCCC0001 /* Notifications */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		NTF00005AAAABBBBCCCC0001 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				NTF0000300000000000003AA00 /* NotificationCenterView.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		NTF00006AAAABBBBCCCC0001 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				NTF0000200000000000002AA00 /* NotificationFeedStore.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		POB00005AAAABBBBCCCC0001 /* Provider */ = {
+			isa = PBXGroup;
+			children = (
+				POB0000200000000000002AA00 /* ProviderProfileManager.swift */,
+				POB0000210000000000002AA00 /* ProviderProfilePhotoStorage.swift */,
+			);
+			path = Provider;
+			sourceTree = "<group>";
+		};
+		LOC00005AAAABBBBCCCC0001 /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				LOC0000100000000000001AA00 /* LocationManager.swift */,
+			);
+			path = Location;
+			sourceTree = "<group>";
+		};
+		PRM00005AAAABBBBCCCC0001 /* Promo */ = {
+			isa = PBXGroup;
+			children = (
+				PRM0000200000000000002BB00 /* PromoCodeService.swift */,
+			);
+			path = Promo;
+			sourceTree = "<group>";
+		};
+		CHT00005AAAABBBBCCCC0001 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				CHT0000200000000000002BB00 /* ChatManager.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		ANL00005AAAABBBBCCCC0001 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				ANL0000100000000000001CC00 /* AnalyticsManager.swift */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 		EE000011AAAABBBBCCCC0001 /* Auth */ = {
@@ -615,6 +805,7 @@
 			isa = PBXGroup;
 			children = (
 				EE000008000000000000B100 /* OrderManager.swift */,
+				DSP0000200000000000002CC00 /* DisputeService.swift */,
 			);
 			path = Orders;
 			sourceTree = "<group>";
@@ -626,6 +817,9 @@
 				PP000002000000000000BB00 /* ProviderScheduleView.swift */,
 				PP000003000000000000CC00 /* ProviderAccountView.swift */,
 				PP000004000000000000DD00 /* ProviderServicesView.swift */,
+				POB0000300000000000003AA00 /* ProviderOnboardingView.swift */,
+				POB0000400000000000004AA00 /* ProviderPublicProfileView.swift */,
+				PPV0000100000000000001BB00 /* ProviderPayoutView.swift */,
 			);
 			path = Provider;
 			sourceTree = "<group>";
@@ -637,6 +831,66 @@
 				PPAY000010000000000000BB00 /* CheckoutPaymentCoordinator.swift */,
 			);
 			path = Payment;
+			sourceTree = "<group>";
+		};
+		DLR00005AAAABBBBCCCC0001 /* DeepLink */ = {
+			isa = PBXGroup;
+			children = (
+				DLR0000100000000000001FF00 /* DeepLinkRouter.swift */,
+			);
+			path = DeepLink;
+			sourceTree = "<group>";
+		};
+		NWM00005AAAABBBBCCCC0001 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				NWM0000100000000000001FF00 /* NetworkMonitor.swift */,
+				RTQ0000100000000000001FF00 /* RetryQueue.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		GEO00005AAAABBBBCCCC0001 /* Geo */ = {
+			isa = PBXGroup;
+			children = (
+				GEO0000100000000000001FF00 /* GeoSortService.swift */,
+			);
+			path = Geo;
+			sourceTree = "<group>";
+		};
+		MAP00005AAAABBBBCCCC0001 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				MAP0000100000000000001FF00 /* NearbyProvidersMapView.swift */,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
+		UTL00005AAAABBBBCCCC0001 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				SAN0000100000000000002FF00 /* InputSanitizer.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		SCN00005AAAABBBBCCCC0001 /* Stripe */ = {
+			isa = PBXGroup;
+			children = (
+				SCN0000100000000000001BB00 /* StripeConnectService.swift */,
+			);
+			path = Stripe;
+			sourceTree = "<group>";
+		};
+		TST00005AAAABBBBCCCC0001 /* SwifterXTests */ = {
+			isa = PBXGroup;
+			children = (
+				TST0000100000000000001AA00 /* InputSanitizerTests.swift */,
+				TST0000200000000000002AA00 /* GeoSortServiceTests.swift */,
+				TST0000300000000000003AA00 /* DeepLinkRouterTests.swift */,
+				TST0000400000000000004AA00 /* PromoCodeTests.swift */,
+			);
+			path = SwifterXTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -658,6 +912,21 @@
 			productName = SwifterX;
 			productReference = B00000000000000000000041 /* SwifterX.app */;
 			productType = "com.apple.product-type.application";
+		};
+		TST0000700000000000007AA00 /* SwifterXTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = TST0000800000000000008AA00 /* Build configuration list for PBXNativeTarget "SwifterXTests" */;
+			buildPhases = (
+				TST0000600000000000006AA90 /* Sources (Tests) */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwifterXTests;
+			productName = SwifterXTests;
+			productReference = TST0000500000000000005AA00 /* SwifterXTests.app */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -700,6 +969,7 @@
 			projectRoot = "";
 			targets = (
 				B00000000000000000000032 /* SwifterX */,
+				TST0000700000000000007AA00 /* SwifterXTests */,
 			);
 		};
 /* End PBXProject section */
@@ -711,6 +981,7 @@
 			files = (
 				AA000001000000000000AA02 /* Assets.xcassets in Resources */,
 				FF000001000000000000AA01 /* GoogleService-Info.plist in Resources */,
+				PRV0000100000000000001EE01 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -774,6 +1045,48 @@
 				FAV0000200000000000002AA01 /* FavoritesView.swift in Sources */,
 				FAV0000300000000000003AA01 /* WalletView.swift in Sources */,
 				REV0000100000000000001AA01 /* ReviewSheet.swift in Sources */,
+				POB0000100000000000001AA01 /* ProviderProfile.swift in Sources */,
+				POB0000200000000000002AA01 /* ProviderProfileManager.swift in Sources */,
+				POB0000210000000000002AA01 /* ProviderProfilePhotoStorage.swift in Sources */,
+				POB0000300000000000003AA01 /* ProviderOnboardingView.swift in Sources */,
+				POB0000400000000000004AA01 /* ProviderPublicProfileView.swift in Sources */,
+				LOC0000100000000000001AA01 /* LocationManager.swift in Sources */,
+				LOC0000200000000000002AA01 /* ProviderTrackingCard.swift in Sources */,
+				PRM0000100000000000001BB01 /* PromoCode.swift in Sources */,
+				PRM0000200000000000002BB01 /* PromoCodeService.swift in Sources */,
+				CHT0000100000000000001BB01 /* ChatMessage.swift in Sources */,
+				CHT0000200000000000002BB01 /* ChatManager.swift in Sources */,
+				CHT0000300000000000003BB01 /* ChatView.swift in Sources */,
+				REF0000100000000000001BB01 /* ReferralView.swift in Sources */,
+				ANL0000100000000000001CC01 /* AnalyticsManager.swift in Sources */,
+				SHM0000100000000000001DD01 /* ShimmerView.swift in Sources */,
+				EMP0000100000000000001DD01 /* EmptyStateView.swift in Sources */,
+				ONB0000100000000000001DD01 /* OnboardingView.swift in Sources */,
+				DLR0000100000000000001FF01 /* DeepLinkRouter.swift in Sources */,
+				NWM0000100000000000001FF01 /* NetworkMonitor.swift in Sources */,
+				RTQ0000100000000000001FF01 /* RetryQueue.swift in Sources */,
+				GEO0000100000000000001FF01 /* GeoSortService.swift in Sources */,
+				MAP0000100000000000001FF01 /* NearbyProvidersMapView.swift in Sources */,
+				SAN0000100000000000002FF01 /* InputSanitizer.swift in Sources */,
+				SCN0000100000000000001BB01 /* StripeConnectService.swift in Sources */,
+				PPV0000100000000000001BB01 /* ProviderPayoutView.swift in Sources */,
+				DSP0000100000000000001CC01 /* Dispute.swift in Sources */,
+				DSP0000200000000000002CC01 /* DisputeService.swift in Sources */,
+				DSP0000300000000000003CC01 /* DisputeView.swift in Sources */,
+				NTF0000100000000000001AA01 /* InAppNotificationItem.swift in Sources */,
+				NTF0000200000000000002AA01 /* NotificationFeedStore.swift in Sources */,
+				NTF0000300000000000003AA01 /* NotificationCenterView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		TST0000600000000000006AA90 /* Sources (Tests) */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				TST0000100000000000001AA01 /* InputSanitizerTests.swift in Sources */,
+				TST0000200000000000002AA01 /* GeoSortServiceTests.swift in Sources */,
+				TST0000300000000000003AA01 /* DeepLinkRouterTests.swift in Sources */,
+				TST0000400000000000004AA01 /* PromoCodeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -881,6 +1194,7 @@
 		};
 		B00000000000000000000083 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CFG0000100000000000001CC00 /* Shared.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -913,6 +1227,7 @@
 		};
 		B00000000000000000000084 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CFG0000100000000000001CC00 /* Shared.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -920,7 +1235,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z855T78S6X;
-				ENABLE_PREVIEWS = YES;
+				ENABLE_PREVIEWS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SwifterX-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -932,14 +1247,58 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swifterx.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		TST0000910000000000009AA00 /* Debug (Tests) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Z855T78S6X;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swifterx.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwifterX.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwifterX";
+			};
+			name = Debug;
+		};
+		TST0000920000000000009BB00 /* Release (Tests) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Z855T78S6X;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swifterx.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwifterX.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwifterX";
 			};
 			name = Release;
 		};
@@ -951,6 +1310,15 @@
 			buildConfigurations = (
 				B00000000000000000000081 /* Debug */,
 				B00000000000000000000082 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		TST0000800000000000008AA00 /* Build configuration list for PBXNativeTarget "SwifterXTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				TST0000910000000000009AA00 /* Debug (Tests) */,
+				TST0000920000000000009BB00 /* Release (Tests) */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1011,16 +1379,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4AB987362F6BC61E0083F30E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
-		};
-		4A302E772F6BCF850097FBCA /* FirebaseAI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4AB987362F6BC61E0083F30E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAI;
-		};
-		4A302E792F6BCF850097FBCA /* FirebaseAILogic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4AB987362F6BC61E0083F30E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAILogic;
 		};
 		4A302E7B2F6BCF850097FBCA /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;

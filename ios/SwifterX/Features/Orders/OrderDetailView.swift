@@ -13,10 +13,20 @@ struct OrderDetailView: View {
     @State private var showReviewSheet  = false
     @State private var hasReviewed      = false
     @State private var isCheckingReview = true
+    @State private var showChat         = false
+    // Dispute
+    @State private var showDisputeSheet  = false
+    @State private var existingDispute:  Dispute? = nil
+    @State private var isLoadingDispute  = false
 
     private var matchedProvider: ServiceProvider? {
         dataService.providers.first { $0.id == order.providerID }
             ?? dataService.providers.first { $0.name == order.providerName }
+    }
+
+    /// Always use the live order from OrderManager so location updates propagate.
+    private var liveOrder: ServiceOrder {
+        orderManager.customerOrders.first { $0.id == order.id } ?? order
     }
 
     var canCancel: Bool {
@@ -52,14 +62,43 @@ struct OrderDetailView: View {
                         }
                     }
                     Spacer()
+
+                    // Chat button — visible for active orders
+                    if liveOrder.status == .confirmed || liveOrder.status == .inProgress {
+                        Button { showChat = true } label: {
+                            Image(systemName: "bubble.left.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(.black)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Open chat with provider")
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 20)
+                .sheet(isPresented: $showChat) {
+                    NavigationStack {
+                        ChatView(
+                            orderID:     order.id,
+                            orderTitle:  order.providerName,
+                            currentUID:  authManager.userUID ?? "",
+                            currentName: profileManager.profile?.name ?? "Customer",
+                            isProvider:  false
+                        )
+                    }
+                }
 
                 // Status timeline
-                OrderStatusTimeline(status: order.status)
+                OrderStatusTimeline(status: liveOrder.status)
                     .padding(.horizontal, 20)
                     .padding(.bottom, 20)
+
+                // Live tracking card — only while job is inProgress
+                if liveOrder.status == .inProgress {
+                    ProviderTrackingCard(order: liveOrder)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
+                }
 
                 Divider().padding(.horizontal, 20)
 
@@ -123,6 +162,11 @@ struct OrderDetailView: View {
                         .padding(.top, 20)
                 }
 
+                // Dispute badge / button section
+                disputeSection
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+
                 // Actions
                 VStack(spacing: 12) {
                     if canCancel {
@@ -166,15 +210,30 @@ struct OrderDetailView: View {
         .navigationTitle("Order Details")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            guard order.status == .completed,
-                  let uid = authManager.userUID,
-                  !order.providerID.isEmpty else {
-                isCheckingReview = false
-                return
+            let uid = authManager.userUID ?? ""
+            // Review check
+            if order.status == .completed, !order.providerID.isEmpty, !uid.isEmpty {
+                hasReviewed = await dataService.hasReview(
+                    orderID: order.id, providerID: order.providerID, uid: uid)
             }
-            hasReviewed = await dataService.hasReview(
-                orderID: order.id, providerID: order.providerID, uid: uid)
             isCheckingReview = false
+            // Dispute check — load for any settled order
+            if canShowDisputeButton || order.status == .completed, !uid.isEmpty {
+                isLoadingDispute = true
+                existingDispute = try? await DisputeService.shared
+                    .fetchDispute(orderID: order.id, customerUID: uid)
+                isLoadingDispute = false
+            }
+        }
+        .sheet(isPresented: $showDisputeSheet) {
+            DisputeView(
+                order: order,
+                customerUID: authManager.userUID ?? "",
+                onSubmitted: { dispute in
+                    existingDispute = dispute
+                    showDisputeSheet = false
+                }
+            )
         }
         .sheet(isPresented: $showReviewSheet) {
             ReviewSheet(
@@ -198,6 +257,45 @@ struct OrderDetailView: View {
             Button("OK") { cancelError = nil }
         } message: {
             Text(cancelError ?? "")
+        }
+    }
+
+    // MARK: - Dispute helpers
+
+    /// Show the dispute button for completed or cancelled-but-paid orders.
+    private var canShowDisputeButton: Bool {
+        (order.status == .completed || order.status == .cancelled)
+        && (order.paymentStatus == .paid || order.paymentStatus == .processing)
+    }
+
+    @ViewBuilder
+    private var disputeSection: some View {
+        if isLoadingDispute {
+            EmptyView()
+        } else if let dispute = existingDispute {
+            DisputeStatusBadge(dispute: dispute)
+        } else if canShowDisputeButton {
+            Button {
+                showDisputeSheet = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.bubble")
+                        .font(.system(size: 14))
+                    Text("Report an Issue")
+                        .font(.system(size: 14, weight: .semibold))
+                }
+                .foregroundStyle(Color(hex: "#cc3333"))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 13)
+                .background(Color(hex: "#fff0f0"))
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color(hex: "#fecaca"), lineWidth: 1)
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Report a problem with this order")
         }
     }
 
