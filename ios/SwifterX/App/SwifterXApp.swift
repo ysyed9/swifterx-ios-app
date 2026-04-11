@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseAnalytics
 import FirebaseAppCheck
 import FirebaseCore
 import FirebaseFirestore
@@ -34,6 +35,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         AppCheckBootstrap.install()
         FirebaseApp.configure()
 
+        // Hold Analytics until ATT completes on first launch (see TrackingTransparencyCoordinator).
+        Analytics.setAnalyticsCollectionEnabled(false)
+
         // Disable In-App Messaging auto-init (not used in this app)
         FirebaseApp.app()?.isDataCollectionDefaultEnabled = true
 
@@ -43,12 +47,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         settings.cacheSizeBytes = FirestoreCacheSizeUnlimited
         Firestore.firestore().settings = settings
 
-        // Push notifications
+        // Push notifications — delegate only here; permission is requested **after** ATT
+        // (see `TrackingTransparencyCoordinator`) so the tracking dialog is not masked at launch.
         UNUserNotificationCenter.current().delegate = NotificationManager.shared
         Messaging.messaging().delegate = NotificationManager.shared
-        NotificationManager.shared.requestPermission()
 
         return true
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        Task { await TrackingTransparencyCoordinator.runLaunchFlowIfNeeded() }
     }
 
     func application(

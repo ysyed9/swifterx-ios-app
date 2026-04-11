@@ -1,23 +1,28 @@
-SwifterX connects customers with skilled, vetted home-service professionals — on demand.
+SwifterX connects you with skilled home-service professionals—when you need them.
 
-Book a cleaner, plumber, electrician, or handyman in minutes. Track your provider in real time, pay securely through the app, and leave a review when the job is done.
+BOOK IN MINUTES
+Find cleaners, plumbers, electricians, handymen, and more. Compare providers, pick a time, and confirm your booking from your phone.
 
-CUSTOMERS
-• Browse hundreds of local, background-checked providers
-• Book same-day or schedule in advance
-• Real-time GPS tracking while your provider is en route
-• Pay with Apple Pay or any major card — powered by Stripe
-• Full order history and one-tap rebooking
+STAY IN THE LOOP
+Follow your job from booking to completion. See when your provider is on the way and message them in the app when you have questions.
+
+PAY WITH CONFIDENCE
+Pay securely in the app with Apple Pay or your card—payments are processed safely so you can focus on the work, not the paperwork.
+
+FOR CUSTOMERS
+• Browse local providers and services
+• Schedule jobs and track order status
+• Real-time location updates during active jobs
 • In-app chat with your provider
+• Order history and easy rebooking
 
-PROVIDERS
-• Set your own schedule and service radius
-• Accept or decline jobs from your job inbox
-• Mark jobs in-progress and complete them from the app
-• Receive payouts directly to your bank account via Stripe
-• Build your reputation with verified customer reviews
+FOR SERVICE PROVIDERS
+• Set your services, rate, and service area
+• Get job requests and manage your schedule
+• Update job status and stay in touch with customers
+• Payouts to your bank with Stripe
+• Build your reputation with customer reviews
 
-EMPOWERMENT THROUGH OPPORTUNITY
-SwifterX is built for both sides of the marketplace — giving customers convenience and providers a reliable, flexible income stream.
+SwifterX is built for both sides of the marketplace—convenience for homeowners and a flexible way to grow your business.
 
-Your privacy matters. SwifterX never sells your personal data. Read our full privacy policy at https://swifterx.app/privacy.
+Privacy: we don’t sell your personal data. Learn more at https://swifterx.app/privacy

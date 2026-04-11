@@ -63,6 +63,9 @@ struct AppRootView: View {
             OfflineBanner()
             contentBody
         }
+        .task {
+            await TrackingTransparencyCoordinator.runLaunchFlowIfNeeded()
+        }
     }
 
     @ViewBuilder

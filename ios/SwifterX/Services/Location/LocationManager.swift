@@ -3,15 +3,15 @@ import CoreLocation
 import FirebaseFirestore
 
 // MARK: - LocationManager
-// Wraps CLLocationManager. When a provider starts a job:
-//   1. Requests WhenInUse permission (once)
-//   2. Streams location updates to Firestore orders/{orderID}
-//      with keys providerLat / providerLng
-// The customer's existing Firestore listener picks up those changes automatically.
+// Wraps CLLocationManager.
+// - **Customer:** optional When In Use prompt on Home for nearby / map; light foreground updates when authorized.
+// - **Provider:** When In Use + `startUpdatingLocation` while sharing live location on an active order.
 
 @MainActor
 final class LocationManager: NSObject, ObservableObject {
     static let shared = LocationManager()
+
+    private static let customerAuthPromptedKey = "swifterx_customer_location_auth_prompted"
 
     @Published var location: CLLocation?
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
@@ -19,6 +19,8 @@ final class LocationManager: NSObject, ObservableObject {
     private let manager = CLLocationManager()
     private let db      = Firestore.firestore()
     private(set) var sharingOrderID: String?
+    /// Customer opted into location for discovery / map (does not write Firestore unless sharing).
+    private var customerDiscoveryLocationEnabled = false
 
     private override init() {
         super.init()
@@ -29,6 +31,21 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     // MARK: - Public API
+
+    /// One-time When In Use prompt for customers (e.g. first Home visit) so nearby / map can use the user dot.
+    func requestWhenInUseForCustomerIfNeeded() {
+        guard !UserDefaults.standard.bool(forKey: Self.customerAuthPromptedKey) else { return }
+        UserDefaults.standard.set(true, forKey: Self.customerAuthPromptedKey)
+        customerDiscoveryLocationEnabled = true
+        switch manager.authorizationStatus {
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse, .authorizedAlways:
+            manager.startUpdatingLocation()
+        default:
+            break
+        }
+    }
 
     func startSharing(orderID: String) {
         sharingOrderID = orderID
@@ -44,7 +61,9 @@ final class LocationManager: NSObject, ObservableObject {
 
     func stopSharing() {
         sharingOrderID = nil
-        manager.stopUpdatingLocation()
+        if !customerDiscoveryLocationEnabled {
+            manager.stopUpdatingLocation()
+        }
     }
 
     // MARK: - Internal write
@@ -74,10 +93,12 @@ extension LocationManager: CLLocationManagerDelegate {
         Task { @MainActor [weak self] in
             guard let self else { return }
             self.authorizationStatus = manager.authorizationStatus
-            if (manager.authorizationStatus == .authorizedWhenInUse ||
-                manager.authorizationStatus == .authorizedAlways),
-               self.sharingOrderID != nil {
+            let authorized = manager.authorizationStatus == .authorizedWhenInUse
+                || manager.authorizationStatus == .authorizedAlways
+            if authorized, self.sharingOrderID != nil || self.customerDiscoveryLocationEnabled {
                 manager.startUpdatingLocation()
+            } else if !authorized {
+                manager.stopUpdatingLocation()
             }
         }
     }

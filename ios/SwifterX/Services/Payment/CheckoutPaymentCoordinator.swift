@@ -81,7 +81,7 @@ final class CheckoutPaymentCoordinator: ObservableObject {
         var configuration = PaymentSheet.Configuration()
         configuration.merchantDisplayName = "SwifterX"
         configuration.allowsDelayedPaymentMethods = true
-        // Apple Pay
+        // Apple Pay (PassKit) — shown by Stripe PaymentSheet when Wallet can pay; same merchant as entitlements.
         configuration.applePay = .init(
             merchantId: "merchant.com.swifterx.app",
             merchantCountryCode: "US"

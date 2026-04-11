@@ -38,6 +38,14 @@
     ],
     "rewrites": [
       {
+        "source": "/support",
+        "destination": "/support.html"
+      },
+      {
+        "source": "/privacy",
+        "destination": "/privacy.html"
+      },
+      {
         "source": "/order/:id",
         "destination": "/deeplink.html"
       },

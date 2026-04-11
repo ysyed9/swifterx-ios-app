@@ -4,6 +4,7 @@ struct HomeView: View {
     @EnvironmentObject private var dataService: DataService
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var geoSort: GeoSortService
+    @EnvironmentObject private var locationManager: LocationManager
 
     private var topProviders: [ServiceProvider] {
         Array(geoSort.sorted(dataService.providers).prefix(3))
@@ -115,6 +116,9 @@ struct HomeView: View {
                 async let c: () = dataService.loadCategories()
                 _ = await (p, c)
             }
+        }
+        .onAppear {
+            locationManager.requestWhenInUseForCustomerIfNeeded()
         }
     }
 }
@@ -387,4 +391,5 @@ extension Color {
         .environmentObject(DataService(client: MockAPIClient.shared))
         .environmentObject(AppState())
         .environmentObject(GeoSortService.shared)
+        .environmentObject(LocationManager.shared)
 }

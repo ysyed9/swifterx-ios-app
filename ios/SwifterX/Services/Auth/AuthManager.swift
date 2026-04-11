@@ -1,4 +1,8 @@
 import SwiftUI
+import UIKit
+import Security
+import CryptoKit
+import AuthenticationServices
 import FirebaseCore
 import FirebaseAuth
 import GoogleSignIn
@@ -14,6 +18,7 @@ enum AuthError: LocalizedError {
     case weakPassword
     case networkError
     case googleSignInFailed
+    case appleSignInFailed
     case unknown(String)
 
     var errorDescription: String? {
@@ -25,6 +30,7 @@ enum AuthError: LocalizedError {
         case .weakPassword:        return "Password must be at least 6 characters."
         case .networkError:        return "Network error. Please check your connection."
         case .googleSignInFailed:  return "Google sign-in failed. Please try again."
+        case .appleSignInFailed:   return "Sign in with Apple failed. On a real device, enable Sign in with Apple for this app in Firebase and Apple Developer. If this persists, try again."
         case .unknown(let msg):    return msg
         }
     }
@@ -120,6 +126,50 @@ final class AuthManager: ObservableObject {
         }
     }
 
+    // MARK: - Sign in with Apple (Guideline 4.8 — equivalent option alongside Google)
+
+    /// Random nonce for the Apple request; SHA256 hash is sent to Apple, raw value is passed to Firebase.
+    nonisolated static func newAppleSignInRawNonce(length: Int = 32) -> String {
+        var bytes = [UInt8](repeating: 0, count: max(1, length))
+        let status = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        guard status == errSecSuccess else {
+            return UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        }
+        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._")
+        return String(bytes.map { charset[Int($0) % charset.count] })
+    }
+
+    nonisolated static func sha256HexForAppleNonce(_ raw: String) -> String {
+        let data = Data(raw.utf8)
+        let hash = SHA256.hash(data: data)
+        return hash.map { String(format: "%02x", $0) }.joined()
+    }
+
+    func signInWithApple(idToken: String, rawNonce: String, fullName: PersonNameComponents?) async throws {
+        guard !idToken.isEmpty, !rawNonce.isEmpty else {
+            throw AuthError.appleSignInFailed
+        }
+        let credential = OAuthProvider.appleCredential(
+            withIDToken: idToken,
+            rawNonce: rawNonce,
+            fullName: fullName
+        )
+        do {
+            try await Auth.auth().signIn(with: credential)
+            AnalyticsManager.shared.logLogin(method: "apple")
+        } catch {
+            AnalyticsManager.shared.recordError(error, context: "appleSignIn")
+            throw AuthError.from(error)
+        }
+    }
+
+    /// Presents the system Sign in with Apple sheet (custom UI can call this like `signInWithGoogle()`).
+    func signInWithAppleUsingSystemPrompt() async throws {
+        let rawNonce = Self.newAppleSignInRawNonce()
+        let result = try await AppleSignInPresentation.perform(rawNonce: rawNonce)
+        try await signInWithApple(idToken: result.idToken, rawNonce: rawNonce, fullName: result.fullName)
+    }
+
     // MARK: - Create Account
 
     func createAccount(email: String, password: String, name: String) async throws {
@@ -155,6 +205,100 @@ final class AuthManager: ObservableObject {
             AnalyticsManager.shared.log("User signed out")
         } catch {
             throw AuthError.from(error)
+        }
+    }
+}
+
+// MARK: - Sign in with Apple (ASAuthorizationController)
+
+private enum AppleSignInPresentation {
+    private static var retentionKey: UInt8 = 0
+
+    struct AppleSignInResult {
+        let idToken: String
+        let fullName: PersonNameComponents?
+    }
+
+    /// `ASAuthorizationController` often returns **error 1000 (ASAuthorizationError.unknown)** if `performRequests()` runs off the main thread or there is no key window.
+    @MainActor
+    static func perform(rawNonce: String) async throws -> AppleSignInResult {
+        guard signInAnchorWindow() != nil else {
+            throw AuthError.appleSignInFailed
+        }
+        return try await withCheckedThrowingContinuation { continuation in
+            let box = AppleSignInControllerBox(continuation: continuation)
+            let provider = ASAuthorizationAppleIDProvider()
+            let request = provider.createRequest()
+            request.requestedScopes = [.fullName, .email]
+            request.nonce = AuthManager.sha256HexForAppleNonce(rawNonce)
+            let controller = ASAuthorizationController(authorizationRequests: [request])
+            controller.delegate = box
+            controller.presentationContextProvider = box
+            objc_setAssociatedObject(controller, &retentionKey, box, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            box.controller = controller
+            controller.performRequests()
+        }
+    }
+
+    /// Only use from the main thread (Sign in with Apple calls `presentationAnchor` on main).
+    private static func signInAnchorWindow() -> UIWindow? {
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let foreground = scenes.filter { $0.activationState == .foregroundActive }
+        let pool = foreground.isEmpty ? scenes : foreground
+        let windows = pool.flatMap(\.windows)
+        return windows.first(where: { $0.isKeyWindow })
+            ?? windows.first
+            ?? scenes.flatMap(\.windows).first
+    }
+
+    private static func signInPresentationAnchor() -> ASPresentationAnchor {
+        signInAnchorWindow() ?? UIWindow(frame: UIScreen.main.bounds)
+    }
+
+    private final class AppleSignInControllerBox: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+        private let continuation: CheckedContinuation<AppleSignInResult, Error>
+        weak var controller: ASAuthorizationController?
+
+        init(continuation: CheckedContinuation<AppleSignInResult, Error>) {
+            self.continuation = continuation
+        }
+
+        private func finishRetaining() {
+            if let c = controller {
+                objc_setAssociatedObject(c, &AppleSignInPresentation.retentionKey, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            }
+            controller = nil
+        }
+
+        func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+            AppleSignInPresentation.signInPresentationAnchor()
+        }
+
+        func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+            finishRetaining()
+            guard let cred = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let tokenData = cred.identityToken,
+                  let idToken = String(data: tokenData, encoding: .utf8), !idToken.isEmpty else {
+                continuation.resume(throwing: AuthError.appleSignInFailed)
+                return
+            }
+            continuation.resume(returning: AppleSignInResult(idToken: idToken, fullName: cred.fullName))
+        }
+
+        func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+            finishRetaining()
+            if let authErr = error as? ASAuthorizationError {
+                if authErr.code == .canceled {
+                    continuation.resume(throwing: CancellationError())
+                    return
+                }
+                // Code 1000 == .unknown — common when presentation is invalid or capability / Firebase Apple provider is misconfigured.
+                if authErr.code == .unknown || authErr.code == .failed {
+                    continuation.resume(throwing: AuthError.appleSignInFailed)
+                    return
+                }
+            }
+            continuation.resume(throwing: error)
         }
     }
 }

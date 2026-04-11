@@ -174,7 +174,7 @@ struct DisputeView: View {
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
-                .sanitized($description, using: .reviewComment)
+                .sanitized($description, using: InputSanitizer.reviewComment)
                 .overlay(alignment: .topLeading) {
                     if description.isEmpty {
                         Text(selectedReason.descriptionHint)

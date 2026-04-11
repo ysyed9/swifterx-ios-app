@@ -5,6 +5,13 @@ struct LoginView: View {
 
     @EnvironmentObject private var authManager: AuthManager
 
+    private enum AuthScreen {
+        case signIn
+        case signUp
+    }
+
+    @State private var authScreen: AuthScreen = .signIn
+    @State private var name: String = ""
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var isLoading: Bool = false
@@ -12,12 +19,16 @@ struct LoginView: View {
     @State private var showForgotPassword: Bool = false
     @FocusState private var focusedField: Field?
 
-    enum Field { case email, password }
+    private enum Field {
+        case name
+        case email
+        case password
+    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                Spacer().frame(height: 80)
+                Spacer().frame(height: 56)
 
                 Image("Logo")
                     .resizable()
@@ -26,20 +37,29 @@ struct LoginView: View {
 
                 Spacer().frame(height: 24)
 
-                Text("Welcome Back!")
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundStyle(.black)
-                    .multilineTextAlignment(.center)
+                Group {
+                    switch authScreen {
+                    case .signIn:
+                        Text("Welcome Back!")
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundStyle(.black)
+                        Spacer().frame(height: 8)
+                        Text("Sign in to book services near you.")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.black)
+                    case .signUp:
+                        Text("Create your account")
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundStyle(.black)
+                        Spacer().frame(height: 8)
+                        Text("Join SwifterX to book trusted help near you.")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.black)
+                    }
+                }
+                .multilineTextAlignment(.center)
+                .frame(width: 301)
 
-                Spacer().frame(height: 8)
-
-                Text("Sign in to book services near you.")
-                    .font(.system(size: 13))
-                    .foregroundStyle(.black)
-                    .multilineTextAlignment(.center)
-                    .frame(width: 301)
-
-                // Error banner
                 if let error = errorMessage {
                     HStack(spacing: 8) {
                         Image(systemName: "exclamationmark.circle.fill")
@@ -60,6 +80,16 @@ struct LoginView: View {
                 Spacer().frame(height: 24)
 
                 VStack(alignment: .leading, spacing: 24) {
+                    if authScreen == .signUp {
+                        SxInputField(title: "Name", placeholder: "Your name", text: $name) {
+                            TextField("", text: $name)
+                                .textInputAutocapitalization(.words)
+                                .focused($focusedField, equals: .name)
+                                .submitLabel(.next)
+                                .onSubmit { focusedField = .email }
+                        }
+                    }
+
                     SxInputField(title: "Email", placeholder: "example@gmail.com", text: $email) {
                         TextField("", text: $email)
                             .keyboardType(.emailAddress)
@@ -75,17 +105,24 @@ struct LoginView: View {
                         SecureField("", text: $password)
                             .textInputAutocapitalization(.never)
                             .focused($focusedField, equals: .password)
-                            .submitLabel(.go)
-                            .onSubmit { Task { await signIn() } }
+                            .submitLabel(authScreen == .signIn ? .go : .done)
+                            .onSubmit {
+                                Task {
+                                    if authScreen == .signIn { await signIn() }
+                                    else { await signUp() }
+                                }
+                            }
                             .sanitized($password, using: InputSanitizer.password)
                     }
 
-                    // Sign In button
                     Button {
-                        Task { await signIn() }
+                        Task {
+                            if authScreen == .signIn { await signIn() }
+                            else { await signUp() }
+                        }
                     } label: {
                         ZStack {
-                            Text("Sign In")
+                            Text(authScreen == .signIn ? "Sign In" : "Create account")
                                 .font(.system(size: 16, weight: .semibold))
                                 .foregroundStyle(.white)
                                 .opacity(isLoading ? 0 : 1)
@@ -103,17 +140,18 @@ struct LoginView: View {
                     .buttonStyle(.plain)
                     .disabled(isLoading)
 
-                    // Forgot password
-                    Button {
-                        showForgotPassword = true
-                    } label: {
-                        Text("Forgot password?")
-                            .font(.system(size: 16))
-                            .foregroundStyle(.black)
-                            .underline()
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                    if authScreen == .signIn {
+                        Button {
+                            showForgotPassword = true
+                        } label: {
+                            Text("Forgot password?")
+                                .font(.system(size: 16))
+                                .foregroundStyle(.black)
+                                .underline()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
                 .padding(24)
                 .frame(width: 320)
@@ -128,51 +166,116 @@ struct LoginView: View {
 
                 Spacer().frame(height: 24)
 
-                // Google Sign In
-                Button {
-                    Task { await signInWithGoogle() }
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "g.circle.fill")
-                            .font(.system(size: 18))
-                            .foregroundStyle(.black)
-                        Text("Sign In With Google")
-                            .font(.system(size: 16))
-                            .foregroundStyle(.black)
-                    }
-                    .frame(width: 272, height: 40)
-                    .background(Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(Color.black, lineWidth: 1)
-                    )
+                socialButton(
+                    title: authScreen == .signIn ? "Sign In With Apple" : "Sign Up With Apple",
+                    systemImage: "apple.logo"
+                ) {
+                    Task { await signInWithApple() }
                 }
-                .buttonStyle(.plain)
-                .disabled(isLoading)
 
-                Spacer().frame(height: 40)
+                Spacer().frame(height: 12)
+
+                socialButton(
+                    title: authScreen == .signIn ? "Sign In With Google" : "Sign Up With Google",
+                    systemImage: "g.circle.fill"
+                ) {
+                    Task { await signInWithGoogle() }
+                }
+
+                Spacer().frame(height: 28)
+
+                authModeFooter
+
+                Spacer().frame(height: 32)
             }
             .frame(maxWidth: .infinity)
         }
         .scrollIndicators(.hidden)
         .background(Color.white)
         .animation(.easeInOut(duration: 0.25), value: errorMessage)
+        .animation(.easeInOut(duration: 0.2), value: authScreen)
+        .onChange(of: authScreen) { _, _ in
+            errorMessage = nil
+            focusedField = nil
+        }
         .sheet(isPresented: $showForgotPassword) {
             ForgotPasswordView()
         }
     }
 
+    // MARK: - Footer (sign in or create an account)
+
+    private var authModeFooter: some View {
+        VStack(spacing: 10) {
+            Text("Sign in or create an account")
+                .font(.system(size: 13))
+                .foregroundStyle(Color(red: 0.45, green: 0.45, blue: 0.45))
+
+            HStack(spacing: 6) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) { authScreen = .signIn }
+                } label: {
+                    Text("Sign in")
+                        .font(.system(size: 15, weight: authScreen == .signIn ? .semibold : .regular))
+                        .foregroundStyle(.black)
+                        .underline(authScreen == .signIn)
+                }
+                .buttonStyle(.plain)
+
+                Text("or")
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color(red: 0.45, green: 0.45, blue: 0.45))
+
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) { authScreen = .signUp }
+                } label: {
+                    Text("create an account")
+                        .font(.system(size: 15, weight: authScreen == .signUp ? .semibold : .regular))
+                        .foregroundStyle(.black)
+                        .underline(authScreen == .signUp)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, 24)
+    }
+
+    @ViewBuilder
+    private func socialButton(title: String, systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 18))
+                    .foregroundStyle(.black)
+                Text(title)
+                    .font(.system(size: 16))
+                    .foregroundStyle(.black)
+            }
+            .frame(width: 272, height: 40)
+            .background(Color.white)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color.black, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(isLoading)
+    }
+
     // MARK: - Actions
 
     private func signIn() async {
-        let cleanEmail    = InputSanitizer.email(email)
+        let cleanEmail = InputSanitizer.email(email)
         let cleanPassword = InputSanitizer.password(password)
 
         if let err = InputSanitizer.validateEmail(cleanEmail) {
-            errorMessage = err; return
+            errorMessage = err
+            return
         }
         guard !cleanPassword.isEmpty else {
-            errorMessage = "Please enter your password."; return
+            errorMessage = "Please enter your password."
+            return
         }
         isLoading = true
         errorMessage = nil
@@ -180,6 +283,49 @@ struct LoginView: View {
         do {
             try await authManager.signIn(email: cleanEmail, password: cleanPassword)
             onSignedIn()
+        } catch {
+            errorMessage = (error as? AuthError)?.errorDescription ?? error.localizedDescription
+        }
+        isLoading = false
+    }
+
+    private func signUp() async {
+        let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanEmail = InputSanitizer.email(email)
+        let cleanPassword = InputSanitizer.password(password)
+
+        guard !cleanName.isEmpty else {
+            errorMessage = "Please enter your name."
+            return
+        }
+        if let err = InputSanitizer.validateEmail(cleanEmail) {
+            errorMessage = err
+            return
+        }
+        guard cleanPassword.count >= 6 else {
+            errorMessage = AuthError.weakPassword.errorDescription
+            return
+        }
+        isLoading = true
+        errorMessage = nil
+        focusedField = nil
+        do {
+            try await authManager.createAccount(email: cleanEmail, password: cleanPassword, name: cleanName)
+            onSignedIn()
+        } catch {
+            errorMessage = (error as? AuthError)?.errorDescription ?? error.localizedDescription
+        }
+        isLoading = false
+    }
+
+    private func signInWithApple() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            try await authManager.signInWithAppleUsingSystemPrompt()
+            onSignedIn()
+        } catch is CancellationError {
+            ()
         } catch {
             errorMessage = (error as? AuthError)?.errorDescription ?? error.localizedDescription
         }

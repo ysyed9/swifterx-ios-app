@@ -63,13 +63,22 @@
 		AA000004000000000000DD01 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000004000000000000DD00 /* AccountView.swift */; };
 		AA000005000000000000EE01 /* PersonalInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000005000000000000EE00 /* PersonalInfoView.swift */; };
 		AA000006000000000000FF01 /* ServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000006000000000000FF00 /* ServiceProvider.swift */; };
+		ANL0000100000000000001CC01 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ANL0000100000000000001CC00 /* AnalyticsManager.swift */; };
+		ATT0000100000000000001TT01 /* TrackingTransparencyCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATT0000100000000000001TT00 /* TrackingTransparencyCoordinator.swift */; };
 		B6F1E0012F6D000100110003 /* StripePaymentSheet in Frameworks */ = {isa = PBXBuildFile; productRef = B6F1E0012F6D000100110002 /* StripePaymentSheet */; };
 		BB000001000000000000AA01 /* CartStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000001000000000000AA00 /* CartStore.swift */; };
 		BB000002000000000000BB01 /* ProviderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000002000000000000BB00 /* ProviderDetailView.swift */; };
 		BB000003000000000000CC01 /* CartCheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000003000000000000CC00 /* CartCheckoutView.swift */; };
 		CC000001000000000000AA01 /* ServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000001000000000000AA00 /* ServicesView.swift */; };
 		CC000002000000000000BB01 /* OrderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000002000000000000BB00 /* OrderDetailView.swift */; };
+		CHT0000100000000000001BB01 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHT0000100000000000001BB00 /* ChatMessage.swift */; };
+		CHT0000200000000000002BB01 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHT0000200000000000002BB00 /* ChatManager.swift */; };
+		CHT0000300000000000003BB01 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHT0000300000000000003BB00 /* ChatView.swift */; };
 		DD000001000000000000AA01 /* RoleSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD000001000000000000AA00 /* RoleSelectView.swift */; };
+		DLR0000100000000000001FF01 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DLR0000100000000000001FF00 /* DeepLinkRouter.swift */; };
+		DSP0000100000000000001CC01 /* Dispute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DSP0000100000000000001CC00 /* Dispute.swift */; };
+		DSP0000200000000000002CC01 /* DisputeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DSP0000200000000000002CC00 /* DisputeService.swift */; };
+		DSP0000300000000000003CC01 /* DisputeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DSP0000300000000000003CC00 /* DisputeView.swift */; };
 		EE000001000000000000AA01 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000001000000000000AA00 /* AuthManager.swift */; };
 		EE000002000000000000BB01 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000002000000000000BB00 /* UserProfile.swift */; };
 		EE000003000000000000CC01 /* UserProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000003000000000000CC00 /* UserProfileManager.swift */; };
@@ -79,54 +88,46 @@
 		EE000007000000000000A101 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000007000000000000A100 /* DataService.swift */; };
 		EE000008000000000000B101 /* OrderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000008000000000000B100 /* OrderManager.swift */; };
 		EE000009000000000000C101 /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000009000000000000C100 /* Review.swift */; };
+		EMP0000100000000000001DD01 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EMP0000100000000000001DD00 /* EmptyStateView.swift */; };
+		FAV0000100000000000001AA01 /* FavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAV0000100000000000001AA00 /* FavoritesStore.swift */; };
+		FAV0000200000000000002AA01 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAV0000200000000000002AA00 /* FavoritesView.swift */; };
+		FAV0000300000000000003AA01 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAV0000300000000000003AA00 /* WalletView.swift */; };
 		FF000001000000000000AA01 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FF000001000000000000AA00 /* GoogleService-Info.plist */; };
+		GEO0000100000000000001FF01 /* GeoSortService.swift in Sources */ = {isa = PBXBuildFile; fileRef = GEO0000100000000000001FF00 /* GeoSortService.swift */; };
+		LOC0000100000000000001AA01 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOC0000100000000000001AA00 /* LocationManager.swift */; };
+		LOC0000200000000000002AA01 /* ProviderTrackingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOC0000200000000000002AA00 /* ProviderTrackingCard.swift */; };
+		MAP0000100000000000001FF01 /* NearbyProvidersMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MAP0000100000000000001FF00 /* NearbyProvidersMapView.swift */; };
+		NOTIF00001000000000000AA01 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTIF00001000000000000AA00 /* NotificationManager.swift */; };
+		NTF0000100000000000001AA01 /* InAppNotificationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = NTF0000100000000000001AA00 /* InAppNotificationItem.swift */; };
+		NTF0000200000000000002AA01 /* NotificationFeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = NTF0000200000000000002AA00 /* NotificationFeedStore.swift */; };
+		NTF0000300000000000003AA01 /* NotificationCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NTF0000300000000000003AA00 /* NotificationCenterView.swift */; };
+		NWM0000100000000000001FF01 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = NWM0000100000000000001FF00 /* NetworkMonitor.swift */; };
+		ONB0000100000000000001DD01 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONB0000100000000000001DD00 /* OnboardingView.swift */; };
+		POB0000100000000000001AA01 /* ProviderProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000100000000000001AA00 /* ProviderProfile.swift */; };
+		POB0000200000000000002AA01 /* ProviderProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000200000000000002AA00 /* ProviderProfileManager.swift */; };
+		POB0000210000000000002AA01 /* ProviderProfilePhotoStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000210000000000002AA00 /* ProviderProfilePhotoStorage.swift */; };
+		POB0000300000000000003AA01 /* Onboarding/ProviderOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000300000000000003AA00 /* Onboarding/ProviderOnboardingView.swift */; };
+		POB0000400000000000004AA01 /* ProviderPublicProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000400000000000004AA00 /* ProviderPublicProfileView.swift */; };
 		PP000001000000000000AA01 /* ProviderHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PP000001000000000000AA00 /* ProviderHomeView.swift */; };
 		PP000002000000000000BB01 /* ProviderScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PP000002000000000000BB00 /* ProviderScheduleView.swift */; };
 		PP000003000000000000CC01 /* ProviderAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PP000003000000000000CC00 /* ProviderAccountView.swift */; };
 		PP000004000000000000DD01 /* ProviderServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PP000004000000000000DD00 /* ProviderServicesView.swift */; };
 		PPAY000010000000000000AA01 /* StripeConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPAY000010000000000000AA00 /* StripeConfig.swift */; };
 		PPAY000010000000000000BB01 /* CheckoutPaymentCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPAY000010000000000000BB00 /* CheckoutPaymentCoordinator.swift */; };
-		NOTIF00001000000000000AA01 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTIF00001000000000000AA00 /* NotificationManager.swift */; };
-		FAV0000100000000000001AA01 /* FavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAV0000100000000000001AA00 /* FavoritesStore.swift */; };
-		FAV0000200000000000002AA01 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAV0000200000000000002AA00 /* FavoritesView.swift */; };
-		FAV0000300000000000003AA01 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAV0000300000000000003AA00 /* WalletView.swift */; };
-		REV0000100000000000001AA01 /* ReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = REV0000100000000000001AA00 /* ReviewSheet.swift */; };
-		POB0000100000000000001AA01 /* ProviderProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000100000000000001AA00 /* ProviderProfile.swift */; };
-		POB0000200000000000002AA01 /* ProviderProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000200000000000002AA00 /* ProviderProfileManager.swift */; };
-		POB0000210000000000002AA01 /* ProviderProfilePhotoStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000210000000000002AA00 /* ProviderProfilePhotoStorage.swift */; };
-		POB0000300000000000003AA01 /* ProviderOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000300000000000003AA00 /* ProviderOnboardingView.swift */; };
-		POB0000400000000000004AA01 /* ProviderPublicProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = POB0000400000000000004AA00 /* ProviderPublicProfileView.swift */; };
-		LOC0000100000000000001AA01 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOC0000100000000000001AA00 /* LocationManager.swift */; };
-		LOC0000200000000000002AA01 /* ProviderTrackingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOC0000200000000000002AA00 /* ProviderTrackingCard.swift */; };
+		PPV0000100000000000001BB01 /* ProviderPayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPV0000100000000000001BB00 /* ProviderPayoutView.swift */; };
 		PRM0000100000000000001BB01 /* PromoCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRM0000100000000000001BB00 /* PromoCode.swift */; };
 		PRM0000200000000000002BB01 /* PromoCodeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRM0000200000000000002BB00 /* PromoCodeService.swift */; };
-		CHT0000100000000000001BB01 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHT0000100000000000001BB00 /* ChatMessage.swift */; };
-		CHT0000200000000000002BB01 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHT0000200000000000002BB00 /* ChatManager.swift */; };
-		CHT0000300000000000003BB01 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHT0000300000000000003BB00 /* ChatView.swift */; };
-		REF0000100000000000001BB01 /* ReferralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REF0000100000000000001BB00 /* ReferralView.swift */; };
-		ANL0000100000000000001CC01 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ANL0000100000000000001CC00 /* AnalyticsManager.swift */; };
-		SHM0000100000000000001DD01 /* ShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SHM0000100000000000001DD00 /* ShimmerView.swift */; };
-		EMP0000100000000000001DD01 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EMP0000100000000000001DD00 /* EmptyStateView.swift */; };
-		ONB0000100000000000001DD01 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONB0000100000000000001DD00 /* OnboardingView.swift */; };
 		PRV0000100000000000001EE01 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PRV0000100000000000001EE00 /* PrivacyInfo.xcprivacy */; };
-		DLR0000100000000000001FF01 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DLR0000100000000000001FF00 /* DeepLinkRouter.swift */; };
-		NWM0000100000000000001FF01 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = NWM0000100000000000001FF00 /* NetworkMonitor.swift */; };
+		REF0000100000000000001BB01 /* ReferralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REF0000100000000000001BB00 /* ReferralView.swift */; };
+		REV0000100000000000001AA01 /* ReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = REV0000100000000000001AA00 /* ReviewSheet.swift */; };
 		RTQ0000100000000000001FF01 /* RetryQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = RTQ0000100000000000001FF00 /* RetryQueue.swift */; };
-		GEO0000100000000000001FF01 /* GeoSortService.swift in Sources */ = {isa = PBXBuildFile; fileRef = GEO0000100000000000001FF00 /* GeoSortService.swift */; };
-		MAP0000100000000000001FF01 /* NearbyProvidersMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MAP0000100000000000001FF00 /* NearbyProvidersMapView.swift */; };
 		SAN0000100000000000002FF01 /* InputSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = SAN0000100000000000002FF00 /* InputSanitizer.swift */; };
+		SCN0000100000000000001BB01 /* StripeConnectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SCN0000100000000000001BB00 /* StripeConnectService.swift */; };
+		SHM0000100000000000001DD01 /* ShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SHM0000100000000000001DD00 /* ShimmerView.swift */; };
 		TST0000100000000000001AA01 /* InputSanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000100000000000001AA00 /* InputSanitizerTests.swift */; };
 		TST0000200000000000002AA01 /* GeoSortServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000200000000000002AA00 /* GeoSortServiceTests.swift */; };
 		TST0000300000000000003AA01 /* DeepLinkRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000300000000000003AA00 /* DeepLinkRouterTests.swift */; };
 		TST0000400000000000004AA01 /* PromoCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000400000000000004AA00 /* PromoCodeTests.swift */; };
-		SCN0000100000000000001BB01 /* StripeConnectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SCN0000100000000000001BB00 /* StripeConnectService.swift */; };
-		PPV0000100000000000001BB01 /* ProviderPayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPV0000100000000000001BB00 /* ProviderPayoutView.swift */; };
-		DSP0000100000000000001CC01 /* Dispute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DSP0000100000000000001CC00 /* Dispute.swift */; };
-		DSP0000200000000000002CC01 /* DisputeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DSP0000200000000000002CC00 /* DisputeService.swift */; };
-		DSP0000300000000000003CC01 /* DisputeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DSP0000300000000000003CC00 /* DisputeView.swift */; };
-		NTF0000100000000000001AA01 /* InAppNotificationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = NTF0000100000000000001AA00 /* InAppNotificationItem.swift */; };
-		NTF0000200000000000002AA01 /* NotificationFeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = NTF0000200000000000002AA00 /* NotificationFeedStore.swift */; };
-		NTF0000300000000000003AA01 /* NotificationCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NTF0000300000000000003AA00 /* NotificationCenterView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -178,20 +179,29 @@
 		4AAD03912F6A75EA00E18C05 /* ServiceCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategory.swift; sourceTree = "<group>"; };
 		4AAD03952F6A75EA00E18C05 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4AAD03972F6A75EA00E18C05 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		4AAD03982F6A75EA00E18C05 /* SwifterX.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SwifterX.xcodeproj; sourceTree = "<group>"; };
 		AA000001000000000000AA00 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		AA000002000000000000BB00 /* SelectServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectServicesView.swift; sourceTree = "<group>"; };
 		AA000003000000000000CC00 /* OrdersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersView.swift; sourceTree = "<group>"; };
 		AA000004000000000000DD00 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		AA000005000000000000EE00 /* PersonalInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalInfoView.swift; sourceTree = "<group>"; };
 		AA000006000000000000FF00 /* ServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProvider.swift; sourceTree = "<group>"; };
+		ANL0000100000000000001CC00 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
+		ATT0000100000000000001TT00 /* TrackingTransparencyCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingTransparencyCoordinator.swift; sourceTree = "<group>"; };
 		B00000000000000000000041 /* SwifterX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwifterX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB000001000000000000AA00 /* CartStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartStore.swift; sourceTree = "<group>"; };
 		BB000002000000000000BB00 /* ProviderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDetailView.swift; sourceTree = "<group>"; };
 		BB000003000000000000CC00 /* CartCheckoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartCheckoutView.swift; sourceTree = "<group>"; };
 		CC000001000000000000AA00 /* ServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesView.swift; sourceTree = "<group>"; };
 		CC000002000000000000BB00 /* OrderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailView.swift; sourceTree = "<group>"; };
+		CFG0000100000000000001CC00 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		CHT0000100000000000001BB00 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		CHT0000200000000000002BB00 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
+		CHT0000300000000000003BB00 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		DD000001000000000000AA00 /* RoleSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleSelectView.swift; sourceTree = "<group>"; };
+		DLR0000100000000000001FF00 /* DeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouter.swift; sourceTree = "<group>"; };
+		DSP0000100000000000001CC00 /* Dispute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dispute.swift; sourceTree = "<group>"; };
+		DSP0000200000000000002CC00 /* DisputeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisputeService.swift; sourceTree = "<group>"; };
+		DSP0000300000000000003CC00 /* DisputeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisputeView.swift; sourceTree = "<group>"; };
 		EE000001000000000000AA00 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		EE000002000000000000BB00 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		EE000003000000000000CC00 /* UserProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileManager.swift; sourceTree = "<group>"; };
@@ -201,57 +211,48 @@
 		EE000007000000000000A100 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 		EE000008000000000000B100 /* OrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderManager.swift; sourceTree = "<group>"; };
 		EE000009000000000000C100 /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
+		EMP0000100000000000001DD00 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		ENTL000010000000000000AA00 /* SwifterX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwifterX.entitlements; sourceTree = "<group>"; };
+		FAV0000100000000000001AA00 /* FavoritesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStore.swift; sourceTree = "<group>"; };
+		FAV0000200000000000002AA00 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
+		FAV0000300000000000003AA00 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		FF000001000000000000AA00 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		CFG0000100000000000001CC00 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		GEO0000100000000000001FF00 /* GeoSortService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoSortService.swift; sourceTree = "<group>"; };
+		LOC0000100000000000001AA00 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		LOC0000200000000000002AA00 /* ProviderTrackingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderTrackingCard.swift; sourceTree = "<group>"; };
+		MAP0000100000000000001FF00 /* NearbyProvidersMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyProvidersMapView.swift; sourceTree = "<group>"; };
+		NOTIF00001000000000000AA00 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		NTF0000100000000000001AA00 /* InAppNotificationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotificationItem.swift; sourceTree = "<group>"; };
+		NTF0000200000000000002AA00 /* NotificationFeedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationFeedStore.swift; sourceTree = "<group>"; };
+		NTF0000300000000000003AA00 /* NotificationCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterView.swift; sourceTree = "<group>"; };
+		NWM0000100000000000001FF00 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		ONB0000100000000000001DD00 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		POB0000100000000000001AA00 /* ProviderProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfile.swift; sourceTree = "<group>"; };
+		POB0000200000000000002AA00 /* ProviderProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfileManager.swift; sourceTree = "<group>"; };
+		POB0000210000000000002AA00 /* ProviderProfilePhotoStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfilePhotoStorage.swift; sourceTree = "<group>"; };
+		POB0000300000000000003AA00 /* Onboarding/ProviderOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding/ProviderOnboardingView.swift; sourceTree = "<group>"; };
+		POB0000400000000000004AA00 /* ProviderPublicProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderPublicProfileView.swift; sourceTree = "<group>"; };
 		PP000001000000000000AA00 /* ProviderHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderHomeView.swift; sourceTree = "<group>"; };
 		PP000002000000000000BB00 /* ProviderScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderScheduleView.swift; sourceTree = "<group>"; };
 		PP000003000000000000CC00 /* ProviderAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderAccountView.swift; sourceTree = "<group>"; };
 		PP000004000000000000DD00 /* ProviderServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderServicesView.swift; sourceTree = "<group>"; };
 		PPAY000010000000000000AA00 /* StripeConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeConfig.swift; sourceTree = "<group>"; };
 		PPAY000010000000000000BB00 /* CheckoutPaymentCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutPaymentCoordinator.swift; sourceTree = "<group>"; };
-		NOTIF00001000000000000AA00 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
-		ENTL000010000000000000AA00 /* SwifterX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SwifterX.entitlements"; sourceTree = "<group>"; };
-		FAV0000100000000000001AA00 /* FavoritesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStore.swift; sourceTree = "<group>"; };
-		FAV0000200000000000002AA00 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
-		FAV0000300000000000003AA00 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
-		REV0000100000000000001AA00 /* ReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSheet.swift; sourceTree = "<group>"; };
-		POB0000100000000000001AA00 /* ProviderProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfile.swift; sourceTree = "<group>"; };
-		POB0000200000000000002AA00 /* ProviderProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfileManager.swift; sourceTree = "<group>"; };
-		POB0000210000000000002AA00 /* ProviderProfilePhotoStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfilePhotoStorage.swift; sourceTree = "<group>"; };
-		POB0000300000000000003AA00 /* ProviderOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding/ProviderOnboardingView.swift; sourceTree = "<group>"; };
-		POB0000400000000000004AA00 /* ProviderPublicProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderPublicProfileView.swift; sourceTree = "<group>"; };
-		LOC0000100000000000001AA00 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		LOC0000200000000000002AA00 /* ProviderTrackingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderTrackingCard.swift; sourceTree = "<group>"; };
+		PPV0000100000000000001BB00 /* ProviderPayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderPayoutView.swift; sourceTree = "<group>"; };
 		PRM0000100000000000001BB00 /* PromoCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCode.swift; sourceTree = "<group>"; };
 		PRM0000200000000000002BB00 /* PromoCodeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCodeService.swift; sourceTree = "<group>"; };
-		CHT0000100000000000001BB00 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
-		CHT0000200000000000002BB00 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
-		CHT0000300000000000003BB00 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		PRV0000100000000000001EE00 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		REF0000100000000000001BB00 /* ReferralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralView.swift; sourceTree = "<group>"; };
-		ANL0000100000000000001CC00 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
-		SHM0000100000000000001DD00 /* ShimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmerView.swift; sourceTree = "<group>"; };
-		EMP0000100000000000001DD00 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
-		ONB0000100000000000001DD00 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
-		PRV0000100000000000001EE00 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = "text.xml"; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		DLR0000100000000000001FF00 /* DeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouter.swift; sourceTree = "<group>"; };
-		NWM0000100000000000001FF00 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		REV0000100000000000001AA00 /* ReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSheet.swift; sourceTree = "<group>"; };
 		RTQ0000100000000000001FF00 /* RetryQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryQueue.swift; sourceTree = "<group>"; };
-		GEO0000100000000000001FF00 /* GeoSortService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoSortService.swift; sourceTree = "<group>"; };
-		MAP0000100000000000001FF00 /* NearbyProvidersMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyProvidersMapView.swift; sourceTree = "<group>"; };
 		SAN0000100000000000002FF00 /* InputSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputSanitizer.swift; sourceTree = "<group>"; };
+		SCN0000100000000000001BB00 /* StripeConnectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeConnectService.swift; sourceTree = "<group>"; };
+		SHM0000100000000000001DD00 /* ShimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmerView.swift; sourceTree = "<group>"; };
 		TST0000100000000000001AA00 /* InputSanitizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputSanitizerTests.swift; sourceTree = "<group>"; };
 		TST0000200000000000002AA00 /* GeoSortServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoSortServiceTests.swift; sourceTree = "<group>"; };
 		TST0000300000000000003AA00 /* DeepLinkRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouterTests.swift; sourceTree = "<group>"; };
 		TST0000400000000000004AA00 /* PromoCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCodeTests.swift; sourceTree = "<group>"; };
-		TST0000500000000000005AA00 /* SwifterXTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwifterXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		SCN0000100000000000001BB00 /* StripeConnectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeConnectService.swift; sourceTree = "<group>"; };
-		PPV0000100000000000001BB00 /* ProviderPayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderPayoutView.swift; sourceTree = "<group>"; };
-		DSP0000100000000000001CC00 /* Dispute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dispute.swift; sourceTree = "<group>"; };
-		DSP0000200000000000002CC00 /* DisputeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisputeService.swift; sourceTree = "<group>"; };
-		DSP0000300000000000003CC00 /* DisputeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisputeView.swift; sourceTree = "<group>"; };
-		NTF0000100000000000001AA00 /* InAppNotificationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotificationItem.swift; sourceTree = "<group>"; };
-		NTF0000200000000000002AA00 /* NotificationFeedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationFeedStore.swift; sourceTree = "<group>"; };
-		NTF0000300000000000003AA00 /* NotificationCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterView.swift; sourceTree = "<group>"; };
+		TST0000500000000000005AA00 /* SwifterXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwifterXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -552,15 +553,6 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
-		SHM00005AAAABBBBCCCC0001 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				SHM0000100000000000001DD00 /* ShimmerView.swift */,
-				EMP0000100000000000001DD00 /* EmptyStateView.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
 		4AAD03942F6A75EA00E18C05 /* Features */ = {
 			isa = PBXGroup;
 			children = (
@@ -597,18 +589,9 @@
 				4AAD03942F6A75EA00E18C05 /* Features */,
 				4AAD03962F6A75EA00E18C05 /* Resources */,
 				4AAD03972F6A75EA00E18C05 /* README.md */,
-				4AAD03982F6A75EA00E18C05 /* SwifterX.xcodeproj */,
 				TST00005AAAABBBBCCCC0001 /* SwifterXTests */,
 			);
 			name = SwifterX;
-			sourceTree = "<group>";
-		};
-		4AAD039A2F6A75EA00E18C05 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				TST0000500000000000005AA00 /* SwifterXTests.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		AA000004AAAABBBBCCCC0001 /* Orders */ = {
@@ -623,22 +606,6 @@
 			path = Orders;
 			sourceTree = "<group>";
 		};
-		CHT0000FFFFAAAA00000001BB /* Chat */ = {
-			isa = PBXGroup;
-			children = (
-				CHT0000300000000000003BB00 /* ChatView.swift */,
-			);
-			path = Chat;
-			sourceTree = "<group>";
-		};
-		ONB00005AAAABBBBCCCC0001 /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				ONB0000100000000000001DD00 /* OnboardingView.swift */,
-			);
-			path = Onboarding;
-			sourceTree = "<group>";
-		};
 		AA000004AAAABBBBCCCC0002 /* Account */ = {
 			isa = PBXGroup;
 			children = (
@@ -651,12 +618,13 @@
 			path = Account;
 			sourceTree = "<group>";
 		};
-		CFGGRP00000000000000001CC /* Config */ = {
+		ANL00005AAAABBBBCCCC0001 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
-				CFG0000100000000000001CC00 /* Shared.xcconfig */,
+				ANL0000100000000000001CC00 /* AnalyticsManager.swift */,
+				ATT0000100000000000001TT00 /* TrackingTransparencyCoordinator.swift */,
 			);
-			path = Config;
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 		B00000000000000000000001 = {
@@ -681,6 +649,7 @@
 			isa = PBXGroup;
 			children = (
 				B00000000000000000000041 /* SwifterX.app */,
+				TST0000500000000000005AA00 /* SwifterXTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -691,6 +660,38 @@
 				CC000001000000000000AA00 /* ServicesView.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		CFGGRP00000000000000001CC /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				CFG0000100000000000001CC00 /* Shared.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		CHT00005AAAABBBBCCCC0001 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				CHT0000200000000000002BB00 /* ChatManager.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		CHT0000FFFFAAAA00000001BB /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				CHT0000300000000000003BB00 /* ChatView.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		DLR00005AAAABBBBCCCC0001 /* DeepLink */ = {
+			isa = PBXGroup;
+			children = (
+				DLR0000100000000000001FF00 /* DeepLinkRouter.swift */,
+			);
+			path = DeepLink;
 			sourceTree = "<group>";
 		};
 		EE000010AAAABBBBCCCC0001 /* Services */ = {
@@ -713,63 +714,6 @@
 				NTF00006AAAABBBBCCCC0001 /* Notifications */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		NTF00005AAAABBBBCCCC0001 /* Notifications */ = {
-			isa = PBXGroup;
-			children = (
-				NTF0000300000000000003AA00 /* NotificationCenterView.swift */,
-			);
-			path = Notifications;
-			sourceTree = "<group>";
-		};
-		NTF00006AAAABBBBCCCC0001 /* Notifications */ = {
-			isa = PBXGroup;
-			children = (
-				NTF0000200000000000002AA00 /* NotificationFeedStore.swift */,
-			);
-			path = Notifications;
-			sourceTree = "<group>";
-		};
-		POB00005AAAABBBBCCCC0001 /* Provider */ = {
-			isa = PBXGroup;
-			children = (
-				POB0000200000000000002AA00 /* ProviderProfileManager.swift */,
-				POB0000210000000000002AA00 /* ProviderProfilePhotoStorage.swift */,
-			);
-			path = Provider;
-			sourceTree = "<group>";
-		};
-		LOC00005AAAABBBBCCCC0001 /* Location */ = {
-			isa = PBXGroup;
-			children = (
-				LOC0000100000000000001AA00 /* LocationManager.swift */,
-			);
-			path = Location;
-			sourceTree = "<group>";
-		};
-		PRM00005AAAABBBBCCCC0001 /* Promo */ = {
-			isa = PBXGroup;
-			children = (
-				PRM0000200000000000002BB00 /* PromoCodeService.swift */,
-			);
-			path = Promo;
-			sourceTree = "<group>";
-		};
-		CHT00005AAAABBBBCCCC0001 /* Chat */ = {
-			isa = PBXGroup;
-			children = (
-				CHT0000200000000000002BB00 /* ChatManager.swift */,
-			);
-			path = Chat;
-			sourceTree = "<group>";
-		};
-		ANL00005AAAABBBBCCCC0001 /* Analytics */ = {
-			isa = PBXGroup;
-			children = (
-				ANL0000100000000000001CC00 /* AnalyticsManager.swift */,
-			);
-			path = Analytics;
 			sourceTree = "<group>";
 		};
 		EE000011AAAABBBBCCCC0001 /* Auth */ = {
@@ -810,6 +754,72 @@
 			path = Orders;
 			sourceTree = "<group>";
 		};
+		GEO00005AAAABBBBCCCC0001 /* Geo */ = {
+			isa = PBXGroup;
+			children = (
+				GEO0000100000000000001FF00 /* GeoSortService.swift */,
+			);
+			path = Geo;
+			sourceTree = "<group>";
+		};
+		LOC00005AAAABBBBCCCC0001 /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				LOC0000100000000000001AA00 /* LocationManager.swift */,
+			);
+			path = Location;
+			sourceTree = "<group>";
+		};
+		MAP00005AAAABBBBCCCC0001 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				MAP0000100000000000001FF00 /* NearbyProvidersMapView.swift */,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
+		NTF00005AAAABBBBCCCC0001 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				NTF0000300000000000003AA00 /* NotificationCenterView.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		NTF00006AAAABBBBCCCC0001 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				NTF0000200000000000002AA00 /* NotificationFeedStore.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		NWM00005AAAABBBBCCCC0001 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				NWM0000100000000000001FF00 /* NetworkMonitor.swift */,
+				RTQ0000100000000000001FF00 /* RetryQueue.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		ONB00005AAAABBBBCCCC0001 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				ONB0000100000000000001DD00 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		POB00005AAAABBBBCCCC0001 /* Provider */ = {
+			isa = PBXGroup;
+			children = (
+				POB0000200000000000002AA00 /* ProviderProfileManager.swift */,
+				POB0000210000000000002AA00 /* ProviderProfilePhotoStorage.swift */,
+			);
+			path = Provider;
+			sourceTree = "<group>";
+		};
 		PP000000AAAABBBBCCCC0001 /* Provider */ = {
 			isa = PBXGroup;
 			children = (
@@ -817,7 +827,7 @@
 				PP000002000000000000BB00 /* ProviderScheduleView.swift */,
 				PP000003000000000000CC00 /* ProviderAccountView.swift */,
 				PP000004000000000000DD00 /* ProviderServicesView.swift */,
-				POB0000300000000000003AA00 /* ProviderOnboardingView.swift */,
+				POB0000300000000000003AA00 /* Onboarding/ProviderOnboardingView.swift */,
 				POB0000400000000000004AA00 /* ProviderPublicProfileView.swift */,
 				PPV0000100000000000001BB00 /* ProviderPayoutView.swift */,
 			);
@@ -833,45 +843,12 @@
 			path = Payment;
 			sourceTree = "<group>";
 		};
-		DLR00005AAAABBBBCCCC0001 /* DeepLink */ = {
+		PRM00005AAAABBBBCCCC0001 /* Promo */ = {
 			isa = PBXGroup;
 			children = (
-				DLR0000100000000000001FF00 /* DeepLinkRouter.swift */,
+				PRM0000200000000000002BB00 /* PromoCodeService.swift */,
 			);
-			path = DeepLink;
-			sourceTree = "<group>";
-		};
-		NWM00005AAAABBBBCCCC0001 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				NWM0000100000000000001FF00 /* NetworkMonitor.swift */,
-				RTQ0000100000000000001FF00 /* RetryQueue.swift */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
-		GEO00005AAAABBBBCCCC0001 /* Geo */ = {
-			isa = PBXGroup;
-			children = (
-				GEO0000100000000000001FF00 /* GeoSortService.swift */,
-			);
-			path = Geo;
-			sourceTree = "<group>";
-		};
-		MAP00005AAAABBBBCCCC0001 /* Map */ = {
-			isa = PBXGroup;
-			children = (
-				MAP0000100000000000001FF00 /* NearbyProvidersMapView.swift */,
-			);
-			path = Map;
-			sourceTree = "<group>";
-		};
-		UTL00005AAAABBBBCCCC0001 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				SAN0000100000000000002FF00 /* InputSanitizer.swift */,
-			);
-			path = Utils;
+			path = Promo;
 			sourceTree = "<group>";
 		};
 		SCN00005AAAABBBBCCCC0001 /* Stripe */ = {
@@ -880,6 +857,15 @@
 				SCN0000100000000000001BB00 /* StripeConnectService.swift */,
 			);
 			path = Stripe;
+			sourceTree = "<group>";
+		};
+		SHM00005AAAABBBBCCCC0001 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				SHM0000100000000000001DD00 /* ShimmerView.swift */,
+				EMP0000100000000000001DD00 /* EmptyStateView.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		TST00005AAAABBBBCCCC0001 /* SwifterXTests */ = {
@@ -893,6 +879,14 @@
 			path = SwifterXTests;
 			sourceTree = "<group>";
 		};
+		UTL00005AAAABBBBCCCC0001 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				SAN0000100000000000002FF00 /* InputSanitizer.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -903,6 +897,7 @@
 				B00000000000000000000033 /* Frameworks */,
 				B00000000000000000000034 /* Sources */,
 				B00000000000000000000035 /* Resources */,
+				CRS0000100000000000001BB00 /* Crashlytics symbol upload */,
 			);
 			buildRules = (
 			);
@@ -917,7 +912,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = TST0000800000000000008AA00 /* Build configuration list for PBXNativeTarget "SwifterXTests" */;
 			buildPhases = (
-				TST0000600000000000006AA90 /* Sources (Tests) */,
+				TST0000600000000000006AA90 /* Sources */,
 			);
 			buildRules = (
 			);
@@ -925,7 +920,7 @@
 			);
 			name = SwifterXTests;
 			productName = SwifterXTests;
-			productReference = TST0000500000000000005AA00 /* SwifterXTests.app */;
+			productReference = TST0000500000000000005AA00 /* SwifterXTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -960,12 +955,6 @@
 			);
 			productRefGroup = B00000000000000000000040 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 4AAD039A2F6A75EA00E18C05 /* Products */;
-					ProjectRef = 4AAD03982F6A75EA00E18C05 /* SwifterX.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				B00000000000000000000032 /* SwifterX */,
@@ -986,6 +975,30 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		CRS0000100000000000001BB00 /* Crashlytics symbol upload */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "Crashlytics symbol upload";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Firebase Crashlytics (SPM) — uploads SwifterX dSYMs to Crashlytics\nCRASHLYTICS=\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nif [ -f \"$CRASHLYTICS\" ]; then\n  \"$CRASHLYTICS\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B00000000000000000000034 /* Sources */ = {
@@ -1048,7 +1061,7 @@
 				POB0000100000000000001AA01 /* ProviderProfile.swift in Sources */,
 				POB0000200000000000002AA01 /* ProviderProfileManager.swift in Sources */,
 				POB0000210000000000002AA01 /* ProviderProfilePhotoStorage.swift in Sources */,
-				POB0000300000000000003AA01 /* ProviderOnboardingView.swift in Sources */,
+				POB0000300000000000003AA01 /* Onboarding/ProviderOnboardingView.swift in Sources */,
 				POB0000400000000000004AA01 /* ProviderPublicProfileView.swift in Sources */,
 				LOC0000100000000000001AA01 /* LocationManager.swift in Sources */,
 				LOC0000200000000000002AA01 /* ProviderTrackingCard.swift in Sources */,
@@ -1059,6 +1072,7 @@
 				CHT0000300000000000003BB01 /* ChatView.swift in Sources */,
 				REF0000100000000000001BB01 /* ReferralView.swift in Sources */,
 				ANL0000100000000000001CC01 /* AnalyticsManager.swift in Sources */,
+				ATT0000100000000000001TT01 /* TrackingTransparencyCoordinator.swift in Sources */,
 				SHM0000100000000000001DD01 /* ShimmerView.swift in Sources */,
 				EMP0000100000000000001DD01 /* EmptyStateView.swift in Sources */,
 				ONB0000100000000000001DD01 /* OnboardingView.swift in Sources */,
@@ -1079,7 +1093,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		TST0000600000000000006AA90 /* Sources (Tests) */ = {
+		TST0000600000000000006AA90 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1123,7 +1137,7 @@
 				ENABLE_NS_ASSERTIONS = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1175,7 +1189,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1198,7 +1212,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
-				CODE_SIGN_ENTITLEMENTS = "SwifterX.entitlements";
+				CODE_SIGN_ENTITLEMENTS = SwifterX.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z855T78S6X;
@@ -1217,6 +1232,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swifterx.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1231,7 +1247,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
-				CODE_SIGN_ENTITLEMENTS = "SwifterX.entitlements";
+				CODE_SIGN_ENTITLEMENTS = SwifterX.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z855T78S6X;
@@ -1250,6 +1267,7 @@
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swifterx.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1259,7 +1277,7 @@
 			};
 			name = Release;
 		};
-		TST0000910000000000009AA00 /* Debug (Tests) */ = {
+		TST0000910000000000009AA00 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1280,7 +1298,7 @@
 			};
 			name = Debug;
 		};
-		TST0000920000000000009BB00 /* Release (Tests) */ = {
+		TST0000920000000000009BB00 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -1314,20 +1332,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		TST0000800000000000008AA00 /* Build configuration list for PBXNativeTarget "SwifterXTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				TST0000910000000000009AA00 /* Debug (Tests) */,
-				TST0000920000000000009BB00 /* Release (Tests) */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		B00000000000000000000072 /* Build configuration list for PBXNativeTarget "SwifterX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B00000000000000000000083 /* Debug */,
 				B00000000000000000000084 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		TST0000800000000000008AA00 /* Build configuration list for PBXNativeTarget "SwifterXTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				TST0000910000000000009AA00 /* Debug */,
+				TST0000920000000000009BB00 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

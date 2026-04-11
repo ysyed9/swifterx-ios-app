@@ -18,7 +18,7 @@
 	<key>FirebaseInAppMessagingAutomaticDataCollectionEnabled</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>SwifterX shares your location with the customer while you are on the way to their job so they can track your arrival.</string>
+	<string>SwifterX uses your location to show nearby providers and distance on the map. If you are a service provider on an active job, we share your live location with the customer while you are on the way so they can track your arrival.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>SwifterX uses your photo library so you can set a profile photo.</string>
 	<key>NSCameraUsageDescription</key>

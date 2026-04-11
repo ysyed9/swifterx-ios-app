@@ -1,5 +1,5 @@
 {
   "review_demo_user": "reviewer@swifterx.app",
   "review_demo_password": "TestFlight2025!",
-  "review_notes": "This is a two-sided marketplace app for home services. To test the customer side, use the demo account above. To test the provider side, select 'Service Provider' on the role selection screen and use the same credentials. The app uses live Stripe test mode — no real charges are made during App Review."
+  "review_notes": "This is a two-sided marketplace app for home services. To test the customer side, use the demo account above. To test the provider side, select 'Service Provider' on the role selection screen and use the same credentials. The app uses live Stripe test mode — no real charges are made during App Review.\n\nAPPLE PAY / PASSKIT: PassKit is linked by the Stripe SDK. Apple Pay is enabled on the Stripe Payment Sheet after checkout. Path: sign in as customer → Home → open any provider → add a service with + → View cart → Checkout → pick date and time → Place Order. The Stripe sheet appears; on a device with Apple Pay set up, Apple Pay is offered there (otherwise pay with card 4242 4242 4242 4242)."
 }

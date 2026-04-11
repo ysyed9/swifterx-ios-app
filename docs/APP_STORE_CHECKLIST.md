@@ -127,7 +127,47 @@ If you use any custom encryption beyond standard HTTPS, you need to file an ERN 
 
 ## 9. App Review Notes (to submit with your review request)
 
-Prepare a note for the Apple reviewer:
+You **cannot** create Firebase users from this repo alone. Create the accounts below in **Firebase Console** (or sign up once in the app), then paste the same credentials into App Store Connect → **App Review Information** → **Notes**.
+
+### 9a. Dummy accounts to use (register these yourself)
+
+Use these **exact emails** so your review notes match what you configure in Firebase. Set passwords to **at least 8 characters** with a number (matches typical app validation).
+
+| Role | Email | Password (example — set the same in Firebase Auth) |
+|------|--------|------------------------------------------------------|
+| Customer | `reviewer@swifterx.app` | `ReviewerPass123!` |
+| Provider | `provider-reviewer@swifterx.app` | `ProviderPass123!` |
+
+**Create users in Firebase Authentication**
+
+1. Open [Firebase Console](https://console.firebase.google.com) → your project → **Build** → **Authentication** → **Users**.
+2. Click **Add user** → enter **Email** and **Password** from the table → **Add user**.
+3. Repeat for the second account.
+4. **Email/Password** sign-in must be enabled: **Authentication** → **Sign-in method** → **Email/Password** → On.
+
+**Customer account — profile document**
+
+- Sign in to the **SwifterX** app once as `reviewer@swifterx.app` and complete onboarding if prompted, **or** ensure Firestore has `users/{customerUid}` (the app usually creates this on first sign-in).
+
+**Provider account — approval so search & jobs work**
+
+After the provider finishes onboarding (or you create `providerProfiles/{providerUid}` manually):
+
+1. In **Firestore** → `providerProfiles` → document ID = the provider’s **Auth UID** → set:
+   - `approved` = `true`
+   - `approvedAt` = server timestamp or ISO date string (optional but helpful)
+2. Ensure **`providers/{sameUid}`** exists with `listingApproved` = `true` (the **`onProviderProfileWrite`** Cloud Function usually syncs this when the profile is saved from the app; otherwise set it manually in the console).
+
+Without approval, the provider **will not appear** in customer search or be able to claim jobs.
+
+**Sanity check before submit**
+
+- Log in as **customer** → browse providers → start a booking flow.  
+- Log in as **provider** → see job inbox / account (depending on your build).
+
+---
+
+### 9b. Text to paste into App Store Connect (Review Notes)
 
 ```
 SwifterX is a home-services marketplace that connects customers with local service providers.
@@ -140,22 +180,19 @@ TEST ACCOUNT (Provider):
   Email: provider-reviewer@swifterx.app
   Password: ProviderPass123!
 
-  IMPORTANT — Provider approval (marketplace gate):
-  In Firestore, set provider-reviewer’s `providerProfiles/{uid}.approved` = true
-  (and optional `approvedAt`). Ensure `providers/{uid}` exists with `listingApproved` true
-  (the `onProviderProfileWrite` Cloud Function syncs this when the profile is saved).
-  Otherwise the provider cannot claim jobs or appear in customer search.
+IMPORTANT — Provider approval:
+The provider account is approved for the marketplace. If search is empty, pull to refresh on Home or wait a few seconds after login.
 
-Payments: The app uses Stripe in test mode for the review build.
-  Use card: 4242 4242 4242 4242 / any future expiry / any CVV.
+Payments: Stripe test mode for review. Use card 4242 4242 4242 4242, any future expiry, any CVV.
 
-Location: The app requests location permission to show nearby providers.
-  Approve when prompted.
+APPLE PAY (PassKit): The app binary includes PassKit because Stripe PaymentSheet integrates Apple Pay (see `CheckoutPaymentCoordinator.presentPaymentSheet`). After you tap Place Order on checkout, the Stripe payment sheet is presented; Apple Pay appears on that sheet when the review device has Wallet / Apple Pay available (US merchant). If Apple Pay is not shown, complete payment with the test card above — the same sheet is the Apple Pay integration point.
 
-Push Notifications: Used for order status updates. Approve when prompted.
+Location: Please allow location when prompted (nearby providers).
+
+Push notifications: Optional for review; allow if prompted for order updates.
 ```
 
-Create these test accounts in Firebase before submission.
+Change passwords in the note **only if** you used different passwords in Firebase Auth.
 
 ---
 
