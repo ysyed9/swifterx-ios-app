@@ -4,13 +4,31 @@ Track each item to complete before submitting to App Store review.
 
 ---
 
+## Phase 1 — Launch hardening (do in this order)
+
+| Order | What | Where |
+|------:|------|--------|
+| 1 | App record + URLs + categories + description/keywords | **§1** below + `fastlane/metadata/` (sync with `fastlane release` or paste in ASC) |
+| 2 | Screenshots (3–10 per size) | **§2** — run `fastlane screenshots` (scheme **`SwifterXUITests`** + `SwifterXUITests/SwifterXUITests.swift`); add more `snapshot("…")` steps as needed; set `skip_screenshots: false` in `Fastfile` `release` when `fastlane/screenshots` is populated |
+| 3 | 1024 icon opaque RGB | **§3** — `AppIcon.appiconset` |
+| 4 | Capabilities + APNs + profiles | **§4** — Apple Developer |
+| 5 | Stripe live + webhooks | **§5** — Stripe + `firebase functions:secrets:set` |
+| 6 | Deploy rules/indexes/functions; App Check DeviceCheck + debug tokens | **§6** + **§6a** — Firebase Console |
+| 7 | Privacy manifest + export compliance | **§7**–**§8** |
+| 8 | Firebase review accounts + paste review notes | **§9** |
+| 9 | `fastlane beta` → internal TestFlight smoke → App Check enforcement **on** → `fastlane release` | **§10** |
+
+**Fastlane:** set `APP_STORE_CONNECT_API_*` env vars; replace placeholder `apple_id` in `fastlane/Appfile`. `beta` / `release` run `bump_build` then `build_release` (single bump per lane).
+
+---
+
 ## 1. App Store Connect Setup
 
 | Task | Status | Notes |
 |------|--------|-------|
 | Create app record in ASC (bundle ID: `com.swifterx.app`) | ⬜ | App Store Connect → My Apps → + |
 | Set primary language to English (U.S.) | ⬜ | |
-| Set primary category: **Lifestyle** / secondary: **Business** | ⬜ | |
+| Set primary category: **Lifestyle** / secondary: **Business** | ⬜ | Matches `fastlane/metadata/primary_category.txt` + `secondary_category.txt` |
 | Add app description (see `fastlane/metadata/en-US/description.txt`) | ⬜ | ≤ 4000 chars |
 | Add keywords (see `fastlane/metadata/en-US/keywords.txt`) | ⬜ | ≤ 100 chars |
 | Add support URL: `https://swifterx.app/support` | ⬜ | Required |
@@ -21,7 +39,7 @@ Track each item to complete before submitting to App Store review.
 
 ## 2. Screenshots (Required Device Sizes)
 
-Run `fastlane screenshots` after creating a `SwifterXUITests` scheme.  
+Run `fastlane screenshots` from the repo root (shared scheme **`SwifterXUITests`**; UI tests live in `ios/SwifterX/SwifterXUITests/`).  
 Or capture manually in Simulator and export.
 
 | Device | Size | Status |
@@ -205,7 +223,7 @@ export APP_STORE_CONNECT_API_ISSUER_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 export APP_STORE_CONNECT_API_KEY_CONTENT=$(base64 -i AuthKey_XXXXXXXXXX.p8)
 
 # Push to TestFlight first for internal testing
-cd /path/to/swifterx-ios
+cd /path/to/swifterx-ios   # repo root (Fastfile uses ios/SwifterX/… paths)
 fastlane beta
 
 # When ready for App Store review

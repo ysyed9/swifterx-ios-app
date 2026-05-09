@@ -10,6 +10,7 @@ struct ProviderAccountView: View {
     @State private var showPersonalInfo = false
     @State private var showLogOutAlert  = false
     @State private var showDeleteAlert  = false
+    @State private var showSwitchAccountAlert = false
 
     private var displayName: String {
         profileManager.profile?.name.isEmpty == false
@@ -29,7 +30,7 @@ struct ProviderAccountView: View {
                 // Header — Figma: grey circle, Hi name, edit
                 HStack(alignment: .center, spacing: 19) {
                     Circle()
-                        .fill(Color(hex: "#dbdbdb"))
+                        .fill(Color(sxHex: "#dbdbdb"))
                         .frame(width: 55, height: 55)
                         .overlay(
                             Text(initials)
@@ -108,34 +109,20 @@ struct ProviderAccountView: View {
                             }
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 13))
-                                .foregroundStyle(Color(hex: "#aaaaaa"))
+                                .foregroundStyle(Color(sxHex: "#aaaaaa"))
                         }
                     }
                     .buttonStyle(.plain)
                 }
                 .padding(.top, 28)
 
-                // Manage Services
+                // Manage Services — same catalog customers see on your profile (live in Firestore).
                 providerSection(title: "Manage Services") {
                     VStack(spacing: 20) {
                         NavigationLink {
-                            ProviderPlaceholderDetail(title: "Leak Repair", message: "Edit pricing, duration, and description for this service.")
+                            ProviderServicesView()
                         } label: {
-                            ProviderChevronRow(title: "Leak Repair")
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            ProviderPlaceholderDetail(title: "Drain Cleaning", message: "Edit pricing, duration, and description for this service.")
-                        } label: {
-                            ProviderChevronRow(title: "Drain Cleaning")
-                        }
-                        .buttonStyle(.plain)
-
-                        NavigationLink {
-                            ProviderPlaceholderDetail(title: "Fixture Installation", message: "Edit pricing, duration, and description for this service.")
-                        } label: {
-                            ProviderChevronRow(title: "Fixture Installation")
+                            ProviderChevronRow(title: "Your services & pricing")
                         }
                         .buttonStyle(.plain)
                     }
@@ -186,6 +173,11 @@ struct ProviderAccountView: View {
                         }
                         .buttonStyle(.plain)
 
+                        Button { showSwitchAccountAlert = true } label: {
+                            ProviderChevronRow(title: "Switch account")
+                        }
+                        .buttonStyle(.plain)
+
                         Button { showLogOutAlert = true } label: {
                             ProviderChevronRow(title: "Log Out")
                         }
@@ -228,6 +220,14 @@ struct ProviderAccountView: View {
             }
         } message: {
             Text("This will permanently delete your account and all data. This cannot be undone.")
+        }
+        .alert("Switch account?", isPresented: $showSwitchAccountAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Continue", role: .destructive) {
+                try? authManager.signOut()
+            }
+        } message: {
+            Text("You’ll return to the sign-in screen so you can use a different Apple, Google, or email account.")
         }
         .alert("Log Out?", isPresented: $showLogOutAlert) {
             Button("Cancel", role: .cancel) {}
@@ -279,7 +279,7 @@ private struct ProviderPlaceholderDetail: View {
         ScrollView {
             Text(message)
                 .font(.system(size: 15))
-                .foregroundStyle(Color(hex: "#383838"))
+                .foregroundStyle(Color(sxHex: "#383838"))
                 .padding(24)
         }
         .background(Color.white)

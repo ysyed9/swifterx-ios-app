@@ -28,25 +28,22 @@ struct WalletView: View {
                     .cornerRadius(14)
                     .padding(.horizontal, 20)
 
-                    // Apple Pay notice
                     HStack(spacing: 12) {
-                        Image(systemName: "applelogo")
+                        Image(systemName: "creditcard.fill")
                             .font(.system(size: 22))
                             .foregroundStyle(.black)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Apple Pay")
+                            Text("Checkout")
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(.black)
-                            Text("Available at checkout automatically")
+                            Text("Payments run in Stripe when you place an order.")
                                 .font(.system(size: 12))
-                                .foregroundStyle(Color(hex: "#828282"))
+                                .foregroundStyle(Color(sxHex: "#828282"))
                         }
                         Spacer()
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
                     }
                     .padding(16)
-                    .background(Color(hex: "#f6f6f6"))
+                    .background(Color(sxHex: "#f6f6f6"))
                     .cornerRadius(14)
                     .padding(.horizontal, 20)
 
@@ -60,7 +57,7 @@ struct WalletView: View {
                         if savedCards.isEmpty {
                             Text("No cards saved yet. Cards added during checkout appear here.")
                                 .font(.system(size: 13))
-                                .foregroundStyle(Color(hex: "#828282"))
+                                .foregroundStyle(Color(sxHex: "#828282"))
                                 .padding(.horizontal, 20)
                         } else {
                             ForEach(savedCards) { card in
@@ -162,7 +159,7 @@ private struct CardRow: View {
                     .foregroundStyle(.black)
                 Text("•••• \(card.last4)")
                     .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#828282"))
+                    .foregroundStyle(Color(sxHex: "#828282"))
             }
 
             Spacer()
@@ -175,7 +172,7 @@ private struct CardRow: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .background(Color(hex: "#f6f6f6"))
+        .background(Color(sxHex: "#f6f6f6"))
         .cornerRadius(10)
         .padding(.horizontal, 20)
     }

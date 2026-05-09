@@ -28,7 +28,7 @@ struct FavoritesView: View {
             icon: "heart.slash",
             title: "No favourites yet",
             subtitle: "Tap the heart on any provider to save them here.",
-            accentColor: Color(hex: "#e63946")
+            accentColor: Color(sxHex: "#e63946")
         )
     }
 
@@ -41,12 +41,12 @@ struct FavoritesView: View {
                     NavigationLink(destination: ProviderDetailView(provider: provider)) {
                         HStack(spacing: 12) {
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color(hex: "#dbdbdb"))
+                                .fill(Color(sxHex: "#dbdbdb"))
                                 .frame(width: 60, height: 60)
                                 .overlay(
                                     Image(systemName: "person.fill")
                                         .font(.system(size: 22))
-                                        .foregroundStyle(Color(hex: "#999999"))
+                                        .foregroundStyle(Color(sxHex: "#999999"))
                                 )
 
                             VStack(alignment: .leading, spacing: 4) {
@@ -55,7 +55,7 @@ struct FavoritesView: View {
                                     .foregroundStyle(.black)
                                 Text(provider.category)
                                     .font(.system(size: 13))
-                                    .foregroundStyle(Color(hex: "#828282"))
+                                    .foregroundStyle(Color(sxHex: "#828282"))
                                 HStack(spacing: 3) {
                                     Image(systemName: "star.fill")
                                         .font(.system(size: 10))
@@ -95,5 +95,5 @@ struct FavoritesView: View {
         FavoritesView()
     }
     .environmentObject(FavoritesStore())
-    .environmentObject(DataService(client: MockAPIClient.shared))
+    .environmentObject(DataService(client: PreviewAPIClient.shared))
 }

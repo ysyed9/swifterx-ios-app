@@ -1,7 +1,7 @@
 {
   "name": "swifterx-functions",
   "description": "Stripe PaymentIntent + order confirmation for SwifterX",
-  "engines": { "node": ">=20" },
+  "engines": { "node": "20" },
   "main": "index.js",
   "dependencies": {
     "firebase-admin": "^13.0.0",

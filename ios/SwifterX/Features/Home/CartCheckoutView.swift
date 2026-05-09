@@ -91,7 +91,7 @@ struct CartCheckoutView: View {
     private var providerHeader: some View {
         HStack(spacing: 12) {
             Circle()
-                .fill(Color(hex: "f6f6f6"))
+                .fill(Color(sxHex: "f6f6f6"))
                 .frame(width: 44, height: 44)
                 .overlay(
                     Image(systemName: "wrench.and.screwdriver")
@@ -104,7 +104,7 @@ struct CartCheckoutView: View {
                     .foregroundColor(.black)
                 Text("\(cart.items.count) service\(cart.items.count == 1 ? "" : "s") • $\(Int(cart.subtotal))")
                     .font(.system(size: 13))
-                    .foregroundColor(Color(hex: "828282"))
+                    .foregroundColor(Color(sxHex: "828282"))
             }
             Spacer()
         }
@@ -153,7 +153,7 @@ struct CartCheckoutView: View {
                 Spacer()
                 Text(formattedDate(selectedDate))
                     .font(.system(size: 13))
-                    .foregroundColor(Color(hex: "828282"))
+                    .foregroundColor(Color(sxHex: "828282"))
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
@@ -211,16 +211,16 @@ struct CartCheckoutView: View {
                     if let profile = profileManager.profile, !profile.fullAddress.isEmpty {
                         Text(profile.fullAddress)
                             .font(.system(size: 13))
-                            .foregroundColor(Color(hex: "828282"))
+                            .foregroundColor(Color(sxHex: "828282"))
                     } else {
                         Text("Add your address")
                             .font(.system(size: 13))
-                            .foregroundColor(Color(hex: "cc3333"))
+                            .foregroundColor(Color(sxHex: "cc3333"))
                     }
                     if let phone = profileManager.profile?.phone, !phone.isEmpty {
                         Text(phone)
                             .font(.system(size: 13))
-                            .foregroundColor(Color(hex: "828282"))
+                            .foregroundColor(Color(sxHex: "828282"))
                     }
                 }
                 Spacer()
@@ -245,7 +245,7 @@ struct CartCheckoutView: View {
                 .font(.system(size: 14))
                 .foregroundColor(.black)
                 .padding(12)
-                .background(Color(hex: "f6f6f6"))
+                .background(Color(sxHex: "f6f6f6"))
                 .cornerRadius(8)
                 .lineLimit(3...5)
                 .sanitized($specialInstructions, using: InputSanitizer.specialInstructions)
@@ -257,27 +257,40 @@ struct CartCheckoutView: View {
     // MARK: - Payment
 
     private var paymentSection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text("Payment method")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.black)
                 if StripeConfig.isLivePaymentsEnabled {
-                    Text("Card / Apple Pay via Stripe")
-                        .font(.system(size: 13))
-                        .foregroundColor(Color(hex: "828282"))
-                } else {
-                    Text(StripeConfig.canSimulatePaidCheckoutWithoutStripe
-                         ? "Dev mode — no charge (add StripePublishableKey + Cloud Functions for live pay)"
-                         : "Payments are not configured for this build.")
+                    (Text("After you tap ")
+                        + Text("Place Order").font(.system(size: 12, weight: .semibold))
+                        + Text(", Stripe opens so you can pay."))
                         .font(.system(size: 12))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
+                        .fixedSize(horizontal: false, vertical: true)
+                } else if StripeConfig.canSimulatePaidCheckoutWithoutStripe {
+                    Text("Dev build — Place Order skips Stripe (add publishable key + Cloud Functions to test checkout).")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(sxHex: "828282"))
+                } else {
+                    Text("Payments are not configured for this build. Update the app once the developer adds Stripe keys.")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(sxHex: "cc3333"))
                 }
             }
-            Spacer()
-            Image(systemName: "lock.fill")
-                .font(.system(size: 13))
-                .foregroundColor(Color(hex: "828282"))
+            Spacer(minLength: 8)
+            if checkoutPaymentsConfigured {
+                Image(systemName: "creditcard.fill")
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(Color(sxHex: "#635bff"))
+                    .accessibilityLabel("Stripe payment after placing order")
+            } else {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(Color(sxHex: "828282"))
+                    .accessibilityLabel("Payments unavailable")
+            }
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -298,7 +311,7 @@ struct CartCheckoutView: View {
                     .autocorrectionDisabled()
                     .padding(.horizontal, 12)
                     .frame(height: 42)
-                    .background(Color(hex: "f6f6f6"))
+                    .background(Color(sxHex: "f6f6f6"))
                     .cornerRadius(8)
                     .sanitized($promoInput, using: InputSanitizer.promoCode)
 
@@ -410,7 +423,9 @@ struct CartCheckoutView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
         }
-        .disabled(selectedTime.isEmpty || isPlacingOrder || !checkoutPaymentsConfigured)
+        .disabled(
+            selectedTime.isEmpty || isPlacingOrder || !checkoutPaymentsConfigured
+        )
     }
 
     private var placeOrderButtonTitle: String {
@@ -476,7 +491,7 @@ struct CartCheckoutView: View {
         } catch {
             checkoutTrace?.stop()
             AnalyticsManager.shared.recordError(error, context: "submitOrder")
-            orderError = error.localizedDescription
+            orderError = UserFacingError.message(from: error)
         }
         isPlacingOrder = false
     }
@@ -502,7 +517,7 @@ private struct TimeChip: View {
                 .foregroundColor(isSelected ? .white : .black)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.black : Color(hex: "f6f6f6"))
+                .background(isSelected ? Color.black : Color(sxHex: "f6f6f6"))
                 .cornerRadius(20)
         }
     }
@@ -515,7 +530,7 @@ private struct SummaryRow: View {
         HStack {
             Text(label)
                 .font(.system(size: 14))
-                .foregroundColor(amount < 0 ? Color.green : Color(hex: "828282"))
+                .foregroundColor(amount < 0 ? Color.green : Color(sxHex: "828282"))
             Spacer()
             Text(amount < 0
                  ? "-$\(String(format: "%.2f", abs(amount)))"
@@ -528,15 +543,26 @@ private struct SummaryRow: View {
 }
 
 #Preview {
-    let cart = CartStore.shared
-    cart.provider = MockData.providers[0]
-    let services = MockData.serviceItems(for: "Plumbing")
-    cart.items = [CartItem(service: services[0]), CartItem(service: services[1])]
-    return CartCheckoutView()
-        .environmentObject(DataService(client: MockAPIClient.shared))
+    CartCheckoutView()
+        .environmentObject(DataService(client: PreviewAPIClient.shared))
         .environmentObject(OrderManager())
         .environmentObject(AuthManager())
         .environmentObject(UserProfileManager())
         .environmentObject(CheckoutPaymentCoordinator())
         .environmentObject(NotificationFeedStore.shared)
+        .onAppear {
+            let cart = CartStore.shared
+            cart.provider = ServiceProvider(
+                id: "preview-provider",
+                name: "Preview Pro",
+                category: "Cleaning",
+                description: "Preview",
+                rating: 4.5,
+                distanceMi: 1
+            )
+            cart.items = [
+                CartItem(service: ServiceItem(name: "Standard clean", price: 80)),
+                CartItem(service: ServiceItem(name: "Deep clean", price: 150))
+            ]
+        }
 }

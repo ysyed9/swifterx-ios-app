@@ -4,7 +4,7 @@ struct SplashView: View {
     var onFinished: () -> Void
 
     @State private var opacity: Double = 0
-    @State private var scale: Double = 0.85
+    @State private var scale: Double = 0.92
 
     var body: some View {
         ZStack {
@@ -18,18 +18,21 @@ struct SplashView: View {
                 .scaleEffect(scale)
                 .opacity(opacity)
         }
-        .onAppear {
-            withAnimation(.easeOut(duration: 0.5)) {
+        .task {
+            withAnimation(.spring(response: 0.52, dampingFraction: 0.82, blendDuration: 0)) {
                 opacity = 1
                 scale = 1
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                withAnimation(.easeIn(duration: 0.3)) {
+            try? await Task.sleep(nanoseconds: 1_450_000_000)
+            await MainActor.run {
+                withAnimation(.easeInOut(duration: 0.32)) {
                     opacity = 0
+                    scale = 1.04
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    onFinished()
-                }
+            }
+            try? await Task.sleep(nanoseconds: 320_000_000)
+            await MainActor.run {
+                onFinished()
             }
         }
     }

@@ -30,6 +30,16 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "providerUID", "order": "ASCENDING" },
+        { "fieldPath": "providerID",  "order": "ASCENDING" },
+        { "fieldPath": "status",      "order": "ASCENDING" },
+        { "fieldPath": "createdAt",   "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "providerUID", "order": "ASCENDING" },
         { "fieldPath": "status",      "order": "ASCENDING" }
       ]
     },

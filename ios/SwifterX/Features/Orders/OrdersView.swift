@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OrdersView: View {
     @EnvironmentObject private var orderManager: OrderManager
+    @EnvironmentObject private var authManager: AuthManager
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -71,6 +72,12 @@ struct OrdersView: View {
         }
         .background(Color.white)
         .navigationBarHidden(true)
+        .refreshable {
+            if let uid = authManager.userUID {
+                orderManager.startListening(uid: uid)
+            }
+            try? await Task.sleep(nanoseconds: 400_000_000)
+        }
     }
 }
 
@@ -88,7 +95,7 @@ private struct OrderCardView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color(hex: "#dbdbdb"))
+                    .fill(Color(sxHex: "#dbdbdb"))
                     .overlay {
                         if let p = matchedProvider, !p.imageName.isEmpty {
                             Image(p.imageName).resizable().scaledToFill()
@@ -96,10 +103,10 @@ private struct OrderCardView: View {
                                   let url = URL(string: urlStr) {
                             AsyncImage(url: url) { phase in
                                 if case .success(let img) = phase { img.resizable().scaledToFill() }
-                                else { Image(systemName: "person.fill").font(.system(size: 24)).foregroundStyle(Color(hex: "#999999")) }
+                                else { Image(systemName: "person.fill").font(.system(size: 24)).foregroundStyle(Color(sxHex: "#999999")) }
                             }
                         } else {
-                            Image(systemName: "person.fill").font(.system(size: 24)).foregroundStyle(Color(hex: "#999999"))
+                            Image(systemName: "person.fill").font(.system(size: 24)).foregroundStyle(Color(sxHex: "#999999"))
                         }
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -111,17 +118,22 @@ private struct OrderCardView: View {
                         .foregroundStyle(.black)
                     Text("$\(Int(order.price))")
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundStyle(Color(hex: "#828282"))
+                        .foregroundStyle(Color(sxHex: "#828282"))
                     HStack(spacing: 4) {
                         Text(order.date)
                             .font(.system(size: 14, weight: .regular))
-                            .foregroundStyle(Color(hex: "#828282"))
+                            .foregroundStyle(Color(sxHex: "#828282"))
                         Text("•")
                             .font(.system(size: 11))
-                            .foregroundStyle(Color(hex: "#828282"))
+                            .foregroundStyle(Color(sxHex: "#828282"))
                         Text(order.status.label)
                             .font(.system(size: 14, weight: .regular))
                             .foregroundStyle(statusColor(order.status))
+                    }
+                    if let paymentNote = order.customerPaymentSubtitle {
+                        Text(paymentNote)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(paymentSubtitleColor(order.paymentStatus))
                     }
                 }
 
@@ -160,11 +172,21 @@ private struct OrderCardView: View {
 
     private func statusColor(_ status: ServiceOrder.OrderStatus) -> Color {
         switch status {
-        case .pending:    return Color(hex: "#f59e0b")
-        case .confirmed:  return Color(hex: "#20a655")
-        case .inProgress: return Color(hex: "#3b82f6")
-        case .completed:  return Color(hex: "#828282")
-        case .cancelled:  return Color(hex: "#cc3333")
+        case .pending:    return Color(sxHex: "#f59e0b")
+        case .confirmed:  return Color(sxHex: "#20a655")
+        case .inProgress: return Color(sxHex: "#3b82f6")
+        case .completed:  return Color(sxHex: "#828282")
+        case .cancelled:  return Color(sxHex: "#cc3333")
+        }
+    }
+
+    private func paymentSubtitleColor(_ payment: OrderPaymentStatus) -> Color {
+        switch payment {
+        case .unpaid:     return Color(sxHex: "#d97706")
+        case .processing: return Color(sxHex: "#2563eb")
+        case .failed:     return Color(sxHex: "#cc3333")
+        case .refunded:   return Color(sxHex: "#828282")
+        case .paid:       return Color(sxHex: "#828282")
         }
     }
 }
@@ -183,7 +205,7 @@ private struct ServiceChipView: View {
                     .textCase(.none)
                 Text("$\(Int(price))")
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(Color(hex: "#828282"))
+                    .foregroundStyle(Color(sxHex: "#828282"))
             }
             Spacer()
             Button(action: onAdd) {
@@ -200,7 +222,7 @@ private struct ServiceChipView: View {
         }
         .padding(10)
         .frame(maxWidth: .infinity)
-        .background(Color(hex: "#f6f6f6"))
+        .background(Color(sxHex: "#f6f6f6"))
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
@@ -208,5 +230,6 @@ private struct ServiceChipView: View {
 #Preview {
     NavigationStack { OrdersView() }
         .environmentObject(OrderManager())
-        .environmentObject(DataService(client: MockAPIClient.shared))
+        .environmentObject(AuthManager())
+        .environmentObject(DataService(client: PreviewAPIClient.shared))
 }

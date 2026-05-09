@@ -47,10 +47,10 @@ struct ProviderTrackingCard: View {
                 Spacer()
                 Text(etaText)
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#1e7a34"))
+                    .foregroundStyle(Color(sxHex: "#1e7a34"))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(Color(hex: "#e6f4ea"))
+                    .background(Color(sxHex: "#e6f4ea"))
                     .clipShape(Capsule())
             }
             .padding(.horizontal, 16)
@@ -76,13 +76,13 @@ struct ProviderTrackingCard: View {
                     // Waiting for first location ping
                     ZStack {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color(hex: "#f5f5f5"))
+                            .fill(Color(sxHex: "#f5f5f5"))
                             .frame(height: 180)
                         VStack(spacing: 8) {
                             ProgressView()
                             Text("Waiting for provider location…")
                                 .font(.system(size: 12))
-                                .foregroundStyle(Color(hex: "#888888"))
+                                .foregroundStyle(Color(sxHex: "#888888"))
                         }
                     }
                     .padding(.horizontal, 16)
@@ -94,7 +94,7 @@ struct ProviderTrackingCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(Color(hex: "#e8f5e9"), lineWidth: 1.5)
+                .stroke(Color(sxHex: "#e8f5e9"), lineWidth: 1.5)
         )
         .shadow(color: .black.opacity(0.06), radius: 8, y: 3)
     }

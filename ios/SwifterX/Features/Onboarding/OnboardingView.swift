@@ -144,19 +144,19 @@ private struct OnboardingPage {
             icon:     "house.and.flag.fill",
             title:    "Home services,\non demand",
             subtitle: "Book trusted professionals for plumbing, cleaning, electrical work, and more — in minutes.",
-            background: Color(hex: "#111111")
+            background: Color(sxHex: "#111111")
         ),
         OnboardingPage(
             icon:     "bolt.shield.fill",
             title:    "Vetted &\ntransparent",
             subtitle: "Every provider is background-checked. See real reviews, ratings, and upfront pricing before you book.",
-            background: Color(hex: "#1a1a2e")
+            background: Color(sxHex: "#1a1a2e")
         ),
         OnboardingPage(
             icon:     "mappin.and.ellipse",
             title:    "Track in\nreal time",
             subtitle: "Know exactly when your provider is on the way. Chat, track, and pay — all in one place.",
-            background: Color(hex: "#0f3460")
+            background: Color(sxHex: "#0f3460")
         )
     ]
 }

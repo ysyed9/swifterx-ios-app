@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseFirestore
 
 struct ProviderDetailView: View {
     let provider: ServiceProvider
@@ -11,6 +12,7 @@ struct ProviderDetailView: View {
     @State private var reviews:    [Review] = []
     @State private var services:   [ServiceItem] = []
     @State private var isLoading   = true
+    @State private var servicesListener: ListenerRegistration?
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -35,11 +37,32 @@ struct ProviderDetailView: View {
             AllReviewsSheet(provider: provider, reviews: reviews)
         }
         .task {
-            async let r = dataService.fetchReviews(for: provider.id)
-            let fetchedReviews = await r
-            reviews  = fetchedReviews.isEmpty ? MockData.mockReviews.filter { $0.providerID == provider.id } : fetchedReviews
-            services = MockData.serviceItems(for: provider.category)
-            isLoading = false
+            reviews = await dataService.fetchReviews(for: provider.id)
+        }
+        .onAppear {
+            attachServicesListener()
+        }
+        .onDisappear {
+            servicesListener?.remove()
+            servicesListener = nil
+        }
+        .id(provider.id)
+    }
+
+    /// Live updates when the provider edits `providers/{id}/services` on another device.
+    private func attachServicesListener() {
+        servicesListener?.remove()
+        isLoading = true
+        let ref = Firestore.firestore()
+            .collection("providers").document(provider.id)
+            .collection("services")
+        servicesListener = ref.addSnapshotListener { snapshot, _ in
+            let docs = snapshot?.documents ?? []
+            let items = ServiceItemFirestore.sortedItems(from: docs)
+            Task { @MainActor in
+                services = items
+                isLoading = false
+            }
         }
     }
 
@@ -140,7 +163,7 @@ struct ProviderDetailView: View {
                     if provider.showsVerifiedBadge {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.system(size: 15))
-                            .foregroundStyle(Color(hex: "2563eb"))
+                            .foregroundStyle(Color(sxHex: "2563eb"))
                             .accessibilityLabel("Verified provider")
                     }
                 }
@@ -148,19 +171,19 @@ struct ProviderDetailView: View {
                 HStack(spacing: 4) {
                     Text("\(provider.rating, specifier: "%.1f")")
                         .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
                     Image(systemName: "star.fill")
                         .font(.system(size: 9))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
                     Text("(\(reviews.isEmpty ? provider.reviewCount : reviews.count))")
                         .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
                     Text("•")
                         .font(.system(size: 11))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
                     Text(String(format: "%.1fmi", provider.distanceMi))
                         .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
                 }
 
                 HStack(spacing: 8) {
@@ -184,9 +207,9 @@ struct ProviderDetailView: View {
                 HStack(spacing: 20) {
                     Image(systemName: "clock").font(.system(size: 14)).foregroundColor(.black)
                     HStack(spacing: 4) {
-                        Text("Open").font(.system(size: 14)).foregroundColor(Color(hex: "3ab130"))
-                        Text("•").font(.system(size: 9)).foregroundColor(Color(hex: "383838"))
-                        Text("Closes 6 PM").font(.system(size: 14)).foregroundColor(Color(hex: "383838"))
+                        Text("Open").font(.system(size: 14)).foregroundColor(Color(sxHex: "3ab130"))
+                        Text("•").font(.system(size: 9)).foregroundColor(Color(sxHex: "383838"))
+                        Text("Closes 6 PM").font(.system(size: 14)).foregroundColor(Color(sxHex: "383838"))
                     }
                     Spacer()
                     Image(systemName: "chevron.right").font(.system(size: 12)).foregroundColor(.gray)
@@ -197,7 +220,7 @@ struct ProviderDetailView: View {
 
                 HStack(spacing: 20) {
                     Image(systemName: "phone").font(.system(size: 14)).foregroundColor(.black)
-                    Text("(555) 123-4567").font(.system(size: 14)).foregroundColor(Color(hex: "383838"))
+                    Text("(555) 123-4567").font(.system(size: 14)).foregroundColor(Color(sxHex: "383838"))
                     Spacer()
                 }
                 .padding(.vertical, 15)
@@ -227,13 +250,13 @@ struct ProviderDetailView: View {
                 HStack(spacing: 4) {
                     Text("\(provider.rating, specifier: "%.1f")")
                         .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
                     Image(systemName: "star.fill")
                         .font(.system(size: 9))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
                     Text("\(reviews.isEmpty ? provider.reviewCount : reviews.count) Ratings")
                         .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
                     Spacer()
                     Button { showAllReviews = true } label: {
                         Text("view all")
@@ -246,7 +269,7 @@ struct ProviderDetailView: View {
                 if reviews.isEmpty {
                     Text("No reviews yet.")
                         .font(.system(size: 13))
-                        .foregroundColor(Color(hex: "828282"))
+                        .foregroundColor(Color(sxHex: "828282"))
                         .padding(.top, 4)
                 } else {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -272,6 +295,11 @@ struct ProviderDetailView: View {
 
             if isLoading {
                 ProgressView().frame(maxWidth: .infinity).padding(.vertical, 20)
+            } else if services.isEmpty {
+                Text("No services listed yet.")
+                    .font(.system(size: 13))
+                    .foregroundColor(Color(sxHex: "828282"))
+                    .padding(.vertical, 16)
             } else {
                 ForEach(services) { service in
                     VStack(spacing: 0) {
@@ -283,7 +311,7 @@ struct ProviderDetailView: View {
                                     .foregroundColor(.black)
                                 Text("$\(Int(service.price))")
                                     .font(.system(size: 14))
-                                    .foregroundColor(Color(hex: "828282"))
+                                    .foregroundColor(Color(sxHex: "828282"))
                             }
                             Spacer()
                             Button {
@@ -296,7 +324,7 @@ struct ProviderDetailView: View {
                                 }
                             } label: {
                                 Circle()
-                                    .fill(cart.contains(service) ? Color.black : Color(hex: "f6f6f6"))
+                                    .fill(cart.contains(service) ? Color.black : Color(sxHex: "f6f6f6"))
                                     .frame(width: 38, height: 38)
                                     .overlay(
                                         Image(systemName: cart.contains(service) ? "checkmark" : "plus")
@@ -345,7 +373,7 @@ private struct TagChip: View {
             .foregroundColor(.black)
             .padding(.horizontal, 12)
             .padding(.vertical, 5)
-            .background(Color(hex: "f6f6f6"))
+            .background(Color(sxHex: "f6f6f6"))
             .cornerRadius(8)
     }
 }
@@ -357,7 +385,7 @@ private struct ReviewCard: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Circle()
-                    .fill(Color(hex: "f6f6f6"))
+                    .fill(Color(sxHex: "f6f6f6"))
                     .frame(width: 30, height: 30)
                     .overlay(Image(systemName: "person.fill")
                         .font(.system(size: 14))
@@ -371,12 +399,12 @@ private struct ReviewCard: View {
                             ForEach(1...5, id: \.self) { i in
                                 Image(systemName: i <= review.rating ? "star.fill" : "star")
                                     .font(.system(size: 9))
-                                    .foregroundColor(Color(hex: "828282"))
+                                    .foregroundColor(Color(sxHex: "828282"))
                             }
                         }
                         Text(review.timeAgo)
                             .font(.system(size: 12))
-                            .foregroundColor(Color(hex: "828282"))
+                            .foregroundColor(Color(sxHex: "828282"))
                     }
                 }
             }
@@ -387,7 +415,7 @@ private struct ReviewCard: View {
         }
         .padding(15)
         .frame(width: 300)
-        .background(Color(hex: "f6f6f6"))
+        .background(Color(sxHex: "f6f6f6"))
         .cornerRadius(8)
     }
 }
@@ -406,14 +434,14 @@ private struct AllReviewsSheet: View {
                     if reviews.isEmpty {
                         Text("No reviews yet.")
                             .font(.system(size: 14))
-                            .foregroundColor(Color(hex: "828282"))
+                            .foregroundColor(Color(sxHex: "828282"))
                             .padding(.top, 40)
                     } else {
                         ForEach(reviews) { review in
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack(spacing: 8) {
                                     Circle()
-                                        .fill(Color(hex: "f6f6f6"))
+                                        .fill(Color(sxHex: "f6f6f6"))
                                         .frame(width: 36, height: 36)
                                         .overlay(Image(systemName: "person.fill")
                                             .font(.system(size: 16))
@@ -425,14 +453,14 @@ private struct AllReviewsSheet: View {
                                             ForEach(1...5, id: \.self) { i in
                                                 Image(systemName: i <= review.rating ? "star.fill" : "star")
                                                     .font(.system(size: 10))
-                                                    .foregroundColor(Color(hex: "828282"))
+                                                    .foregroundColor(Color(sxHex: "828282"))
                                             }
                                         }
                                     }
                                     Spacer()
                                     Text(review.timeAgo)
                                         .font(.system(size: 12))
-                                        .foregroundColor(Color(hex: "828282"))
+                                        .foregroundColor(Color(sxHex: "828282"))
                                 }
                                 Text(review.comment)
                                     .font(.system(size: 13))
@@ -459,8 +487,15 @@ private struct AllReviewsSheet: View {
 
 #Preview {
     NavigationStack {
-        ProviderDetailView(provider: MockData.providers[0])
+        ProviderDetailView(provider: ServiceProvider(
+            id: "preview-1",
+            name: "Sample Provider",
+            category: "Cleaning",
+            description: "Preview listing",
+            rating: 4.8,
+            distanceMi: 2.1
+        ))
     }
-    .environmentObject(DataService(client: MockAPIClient.shared))
+    .environmentObject(DataService(client: PreviewAPIClient.shared))
     .environmentObject(FavoritesStore())
 }

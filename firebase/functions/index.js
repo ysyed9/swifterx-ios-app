@@ -739,8 +739,17 @@ exports.onProviderProfileWrite = functions.firestore
     }
 
     const after = change.after.data();
-    const approved = after.approved !== false;
-    const listingApproved = approved === true;
+
+    // A provider is visible to customers as soon as they finish onboarding.
+    // An admin can still hide a provider by setting `approved: false` explicitly in the console,
+    // but we do not require manual approval before a provider can be discovered (launch policy).
+    const explicitlyRejected = after.approved === false && after.isOnboarded === true
+      && change.before.exists && change.before.data().approved === false
+      && change.before.data().isOnboarded === true;
+    // Auto-approve once onboarding completes; preserve an admin rejection once set.
+    const listingApproved = after.isOnboarded === true && !explicitlyRejected
+      ? true
+      : (after.approved === true);
 
     const categories = Array.isArray(after.serviceCategories) ? after.serviceCategories : [];
     const primaryCategory = sanitizeStr(categories[0], 80) || "Services";
@@ -796,6 +805,12 @@ exports.onProviderProfileApprovalNotify = functions.firestore
     return null;
   });
 
+// Backfill run on 2026-05-05 — updated 3 providers. Endpoint disabled; re-enable only if new
+// pre-existing providers need backfilling after a schema migration.
+exports.backfillProviderListingApproved = functions.https.onRequest((req, res) => {
+  res.status(410).send("Backfill already completed.");
+});
+
 exports.onReviewCreated = functions.firestore
   .document("providers/{providerID}/reviews/{reviewID}")
   .onCreate(async (snap, context) => {
@@ -819,6 +834,37 @@ exports.onReviewCreated = functions.firestore
     return null;
   });
 
+// ─── Order created — immediately notify the booked provider (demo / instant-confirm path) ──
+exports.onOrderCreated = functions.firestore
+  .document("orders/{orderId}")
+  .onCreate(async (snap, context) => {
+    const order   = snap.data();
+    const orderId = context.params.orderId;
+
+    // Only notify when the order is already confirmed (demo / simulate mode — no Stripe).
+    // For the Stripe path (status: "pending"), the notification fires in onOrderStatusChange
+    // once the webhook flips status to "confirmed".
+    if (order.status !== "confirmed") return null;
+
+    const providerID = sanitizeFirebaseUid(order.providerID);
+    if (!providerID) return null;
+
+    const scheduledDate = order.scheduledDate
+      ? (typeof order.scheduledDate.toDate === "function"
+          ? order.scheduledDate.toDate().toLocaleDateString("en-US", { month: "short", day: "numeric" })
+          : String(order.scheduledDate))
+      : "an upcoming date";
+
+    await notifyUser(
+      providerID,
+      "New Booking Request",
+      `A customer booked your services for ${scheduledDate}. Open the app to accept or decline.`,
+      { category: "order", orderId }
+    );
+    console.log("[onOrderCreated] Notified provider", providerID, "of order", orderId);
+    return null;
+  });
+
 exports.onOrderStatusChange = functions.firestore
   .document("orders/{orderId}")
   .onUpdate(async (change, context) => {
@@ -833,7 +879,23 @@ exports.onOrderStatusChange = functions.firestore
     const customerUID  = after.customerUID;
     const providerName = sanitizeStr(after.providerName, 120) || "Your provider";
 
-    if (providerClaimed && after.status === "confirmed") {
+    // Stripe webhook path: payment confirmed → order becomes bookable. Notify booked provider.
+    if (before.status === "pending" && after.status === "confirmed" && after.providerUID === "") {
+      const pid = sanitizeFirebaseUid(after.providerID);
+      if (pid) {
+        const scheduledDate = after.scheduledDate
+          ? (typeof after.scheduledDate.toDate === "function"
+              ? after.scheduledDate.toDate().toLocaleDateString("en-US", { month: "short", day: "numeric" })
+              : String(after.scheduledDate))
+          : "an upcoming date";
+        await notifyUser(
+          pid,
+          "New Booking Request",
+          `A customer booked your services for ${scheduledDate}. Open the app to accept or decline.`,
+          { category: "order", orderId }
+        );
+      }
+    } else if (providerClaimed && after.status === "confirmed") {
       await sendOrderNotification(customerUID, "Provider Assigned! 🚗", `${providerName} has accepted your booking.`, orderId);
       const pid = after.providerUID;
       if (pid) {

@@ -48,7 +48,6 @@
 		4AAD03692F6A72AB00E18C05 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A880A042F6A6E0F00EBEE3D /* HomeView.swift */; };
 		4AAD036A2F6A72AB00E18C05 /* ServiceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A880A052F6A6E0F00EBEE3D /* ServiceDetailView.swift */; };
 		4AAD036B2F6A72AB00E18C05 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A880A072F6A6E0F00EBEE3D /* ProfileView.swift */; };
-		4AAD036C2F6A72AB00E18C05 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A880A092F6A6E0F00EBEE3D /* MockData.swift */; };
 		4AAD036D2F6A72AB00E18C05 /* Recommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A880A0B2F6A6E0F00EBEE3D /* Recommendation.swift */; };
 		4AAD036E2F6A72AB00E18C05 /* ServiceCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A880A0C2F6A6E0F00EBEE3D /* ServiceCategory.swift */; };
 		4AAD039C2F6A760700E18C05 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAD03852F6A75EA00E18C05 /* LoginView.swift */; };
@@ -64,6 +63,7 @@
 		AA000005000000000000EE01 /* PersonalInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000005000000000000EE00 /* PersonalInfoView.swift */; };
 		AA000006000000000000FF01 /* ServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000006000000000000FF00 /* ServiceProvider.swift */; };
 		ANL0000100000000000001CC01 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ANL0000100000000000001CC00 /* AnalyticsManager.swift */; };
+		APPFUN00000000000001AA01 /* AppFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPFUN00000000000001AA00 /* AppFunctions.swift */; };
 		ATT0000100000000000001TT01 /* TrackingTransparencyCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = ATT0000100000000000001TT00 /* TrackingTransparencyCoordinator.swift */; };
 		B6F1E0012F6D000100110003 /* StripePaymentSheet in Frameworks */ = {isa = PBXBuildFile; productRef = B6F1E0012F6D000100110002 /* StripePaymentSheet */; };
 		BB000001000000000000AA01 /* CartStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000001000000000000AA00 /* CartStore.swift */; };
@@ -83,7 +83,6 @@
 		EE000002000000000000BB01 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000002000000000000BB00 /* UserProfile.swift */; };
 		EE000003000000000000CC01 /* UserProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000003000000000000CC00 /* UserProfileManager.swift */; };
 		EE000004000000000000DD01 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000004000000000000DD00 /* APIClient.swift */; };
-		EE000005000000000000EE01 /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000005000000000000EE00 /* MockAPIClient.swift */; };
 		EE000006000000000000FF01 /* FirestoreAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000006000000000000FF00 /* FirestoreAPIClient.swift */; };
 		EE000007000000000000A101 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000007000000000000A100 /* DataService.swift */; };
 		EE000008000000000000B101 /* OrderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000008000000000000B100 /* OrderManager.swift */; };
@@ -112,6 +111,7 @@
 		PP000002000000000000BB01 /* ProviderScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PP000002000000000000BB00 /* ProviderScheduleView.swift */; };
 		PP000003000000000000CC01 /* ProviderAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PP000003000000000000CC00 /* ProviderAccountView.swift */; };
 		PP000004000000000000DD01 /* ProviderServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PP000004000000000000DD00 /* ProviderServicesView.swift */; };
+		SVC0000100000000000001F01 /* ServiceItemFirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = SVC0000100000000000001F00 /* ServiceItemFirestore.swift */; };
 		PPAY000010000000000000AA01 /* StripeConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPAY000010000000000000AA00 /* StripeConfig.swift */; };
 		PPAY000010000000000000BB01 /* CheckoutPaymentCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPAY000010000000000000BB00 /* CheckoutPaymentCoordinator.swift */; };
 		PPV0000100000000000001BB01 /* ProviderPayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPV0000100000000000001BB00 /* ProviderPayoutView.swift */; };
@@ -128,7 +128,19 @@
 		TST0000200000000000002AA01 /* GeoSortServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000200000000000002AA00 /* GeoSortServiceTests.swift */; };
 		TST0000300000000000003AA01 /* DeepLinkRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000300000000000003AA00 /* DeepLinkRouterTests.swift */; };
 		TST0000400000000000004AA01 /* PromoCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TST0000400000000000004AA00 /* PromoCodeTests.swift */; };
+		UIUX010000000000000001AA01 /* SwifterXUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = UIUX010000000000000001AA00 /* SwifterXUITests.swift */; };
+		UIUX020000000000000002AA01 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = UIUX020000000000000002AA00 /* SnapshotHelper.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		UIUXPRO00000000000001AA00 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B00000000000000000000031 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B00000000000000000000032;
+			remoteInfo = SwifterX;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		4A1E568F2F6F738100B9F8BD /* SwifterX-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "SwifterX-Info.plist"; sourceTree = "<group>"; };
@@ -150,7 +162,6 @@
 		4A880A042F6A6E0F00EBEE3D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		4A880A052F6A6E0F00EBEE3D /* ServiceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceDetailView.swift; sourceTree = "<group>"; };
 		4A880A072F6A6E0F00EBEE3D /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		4A880A092F6A6E0F00EBEE3D /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		4A880A0B2F6A6E0F00EBEE3D /* Recommendation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recommendation.swift; sourceTree = "<group>"; };
 		4A880A0C2F6A6E0F00EBEE3D /* ServiceCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategory.swift; sourceTree = "<group>"; };
 		4A880A102F6A6E0F00EBEE3D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -174,7 +185,6 @@
 		4AAD03892F6A75EA00E18C05 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		4AAD038A2F6A75EA00E18C05 /* ServiceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceDetailView.swift; sourceTree = "<group>"; };
 		4AAD038C2F6A75EA00E18C05 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		4AAD038E2F6A75EA00E18C05 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		4AAD03902F6A75EA00E18C05 /* Recommendation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recommendation.swift; sourceTree = "<group>"; };
 		4AAD03912F6A75EA00E18C05 /* ServiceCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategory.swift; sourceTree = "<group>"; };
 		4AAD03952F6A75EA00E18C05 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -186,6 +196,7 @@
 		AA000005000000000000EE00 /* PersonalInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalInfoView.swift; sourceTree = "<group>"; };
 		AA000006000000000000FF00 /* ServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProvider.swift; sourceTree = "<group>"; };
 		ANL0000100000000000001CC00 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
+		APPFUN00000000000001AA00 /* AppFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFunctions.swift; sourceTree = "<group>"; };
 		ATT0000100000000000001TT00 /* TrackingTransparencyCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingTransparencyCoordinator.swift; sourceTree = "<group>"; };
 		B00000000000000000000041 /* SwifterX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwifterX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB000001000000000000AA00 /* CartStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartStore.swift; sourceTree = "<group>"; };
@@ -206,7 +217,6 @@
 		EE000002000000000000BB00 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		EE000003000000000000CC00 /* UserProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileManager.swift; sourceTree = "<group>"; };
 		EE000004000000000000DD00 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
-		EE000005000000000000EE00 /* MockAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAPIClient.swift; sourceTree = "<group>"; };
 		EE000006000000000000FF00 /* FirestoreAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreAPIClient.swift; sourceTree = "<group>"; };
 		EE000007000000000000A100 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 		EE000008000000000000B100 /* OrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderManager.swift; sourceTree = "<group>"; };
@@ -236,6 +246,7 @@
 		PP000002000000000000BB00 /* ProviderScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderScheduleView.swift; sourceTree = "<group>"; };
 		PP000003000000000000CC00 /* ProviderAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderAccountView.swift; sourceTree = "<group>"; };
 		PP000004000000000000DD00 /* ProviderServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderServicesView.swift; sourceTree = "<group>"; };
+		SVC0000100000000000001F00 /* ServiceItemFirestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceItemFirestore.swift; sourceTree = "<group>"; };
 		PPAY000010000000000000AA00 /* StripeConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeConfig.swift; sourceTree = "<group>"; };
 		PPAY000010000000000000BB00 /* CheckoutPaymentCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutPaymentCoordinator.swift; sourceTree = "<group>"; };
 		PPV0000100000000000001BB00 /* ProviderPayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderPayoutView.swift; sourceTree = "<group>"; };
@@ -253,6 +264,9 @@
 		TST0000300000000000003AA00 /* DeepLinkRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouterTests.swift; sourceTree = "<group>"; };
 		TST0000400000000000004AA00 /* PromoCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCodeTests.swift; sourceTree = "<group>"; };
 		TST0000500000000000005AA00 /* SwifterXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwifterXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		UIUX010000000000000001AA00 /* SwifterXUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwifterXUITests.swift; sourceTree = "<group>"; };
+		UIUX020000000000000002AA00 /* SnapshotHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
+		UIUX0P00000000000000071UT /* SwifterXUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwifterXUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -289,6 +303,13 @@
 				4A302E802F6BCF850097FBCA /* FirebaseAnalyticsIdentitySupport in Frameworks */,
 				4A302E762F6BCF0B0097FBCA /* FirebaseFirestore in Frameworks */,
 				4A302E7C2F6BCF850097FBCA /* FirebaseAnalytics in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		UIUX0F00000000000000071UT /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,14 +402,6 @@
 			path = Profile;
 			sourceTree = "<group>";
 		};
-		4A880A0A2F6A6E0F00EBEE3D /* MockData */ = {
-			isa = PBXGroup;
-			children = (
-				4A880A092F6A6E0F00EBEE3D /* MockData.swift */,
-			);
-			path = MockData;
-			sourceTree = "<group>";
-		};
 		4A880A0D2F6A6E0F00EBEE3D /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -396,6 +409,7 @@
 				4A880A0C2F6A6E0F00EBEE3D /* ServiceCategory.swift */,
 				AA000006000000000000FF00 /* ServiceProvider.swift */,
 				BB000001000000000000AA00 /* CartStore.swift */,
+				SVC0000100000000000001F00 /* ServiceItemFirestore.swift */,
 				EE000009000000000000C100 /* Review.swift */,
 				POB0000100000000000001AA00 /* ProviderProfile.swift */,
 				FAV0000100000000000001AA00 /* FavoritesStore.swift */,
@@ -410,7 +424,6 @@
 		4A880A0E2F6A6E0F00EBEE3D /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				4A880A0A2F6A6E0F00EBEE3D /* MockData */,
 				4A880A0D2F6A6E0F00EBEE3D /* Models */,
 			);
 			path = Shared;
@@ -526,14 +539,6 @@
 			path = Profile;
 			sourceTree = "<group>";
 		};
-		4AAD038F2F6A75EA00E18C05 /* MockData */ = {
-			isa = PBXGroup;
-			children = (
-				4AAD038E2F6A75EA00E18C05 /* MockData.swift */,
-			);
-			path = MockData;
-			sourceTree = "<group>";
-		};
 		4AAD03922F6A75EA00E18C05 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -546,7 +551,6 @@
 		4AAD03932F6A75EA00E18C05 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				4AAD038F2F6A75EA00E18C05 /* MockData */,
 				4AAD03922F6A75EA00E18C05 /* Models */,
 				SHM00005AAAABBBBCCCC0001 /* Components */,
 			);
@@ -590,6 +594,7 @@
 				4AAD03962F6A75EA00E18C05 /* Resources */,
 				4AAD03972F6A75EA00E18C05 /* README.md */,
 				TST00005AAAABBBBCCCC0001 /* SwifterXTests */,
+				UIUXGRP000000000000001UT /* SwifterXUITests */,
 			);
 			name = SwifterX;
 			sourceTree = "<group>";
@@ -650,6 +655,7 @@
 			children = (
 				B00000000000000000000041 /* SwifterX.app */,
 				TST0000500000000000005AA00 /* SwifterXTests.xctest */,
+				UIUX0P00000000000000071UT /* SwifterXUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -738,7 +744,6 @@
 			isa = PBXGroup;
 			children = (
 				EE000004000000000000DD00 /* APIClient.swift */,
-				EE000005000000000000EE00 /* MockAPIClient.swift */,
 				EE000006000000000000FF00 /* FirestoreAPIClient.swift */,
 				EE000007000000000000A100 /* DataService.swift */,
 			);
@@ -837,6 +842,7 @@
 		PPAY000010000000000000CC00 /* Payment */ = {
 			isa = PBXGroup;
 			children = (
+				APPFUN00000000000001AA00 /* AppFunctions.swift */,
 				PPAY000010000000000000AA00 /* StripeConfig.swift */,
 				PPAY000010000000000000BB00 /* CheckoutPaymentCoordinator.swift */,
 			);
@@ -877,6 +883,15 @@
 				TST0000400000000000004AA00 /* PromoCodeTests.swift */,
 			);
 			path = SwifterXTests;
+			sourceTree = "<group>";
+		};
+		UIUXGRP000000000000001UT /* SwifterXUITests */ = {
+			isa = PBXGroup;
+			children = (
+				UIUX010000000000000001AA00 /* SwifterXUITests.swift */,
+				UIUX020000000000000002AA00 /* SnapshotHelper.swift */,
+			);
+			path = SwifterXUITests;
 			sourceTree = "<group>";
 		};
 		UTL00005AAAABBBBCCCC0001 /* Utils */ = {
@@ -923,6 +938,23 @@
 			productReference = TST0000500000000000005AA00 /* SwifterXTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		UIUX0T00000000000000071UT /* SwifterXUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = UIUX0C00000000000000071UT /* Build configuration list for PBXNativeTarget "SwifterXUITests" */;
+			buildPhases = (
+				UIUX0S00000000000000071UT /* Sources */,
+				UIUX0F00000000000000071UT /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				UIUXDEP00000000000001AA00 /* PBXTargetDependency */,
+			);
+			name = SwifterXUITests;
+			productName = SwifterXUITests;
+			productReference = UIUX0P00000000000000071UT /* SwifterXUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -931,10 +963,14 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					B00000000000000000000032 = {
 						CreatedOnToolsVersion = 16.0;
+					};
+					UIUX0T00000000000000071UT = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = B00000000000000000000032;
 					};
 				};
 			};
@@ -959,6 +995,7 @@
 			targets = (
 				B00000000000000000000032 /* SwifterX */,
 				TST0000700000000000007AA00 /* SwifterXTests */,
+				UIUX0T00000000000000071UT /* SwifterXUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -1022,7 +1059,6 @@
 				4AAD03692F6A72AB00E18C05 /* HomeView.swift in Sources */,
 				4AAD036A2F6A72AB00E18C05 /* ServiceDetailView.swift in Sources */,
 				4AAD036B2F6A72AB00E18C05 /* ProfileView.swift in Sources */,
-				4AAD036C2F6A72AB00E18C05 /* MockData.swift in Sources */,
 				4AAD036D2F6A72AB00E18C05 /* Recommendation.swift in Sources */,
 				4AAD036E2F6A72AB00E18C05 /* ServiceCategory.swift in Sources */,
 				4AAD039C2F6A760700E18C05 /* LoginView.swift in Sources */,
@@ -1038,6 +1074,7 @@
 				AA000005000000000000EE01 /* PersonalInfoView.swift in Sources */,
 				AA000006000000000000FF01 /* ServiceProvider.swift in Sources */,
 				BB000001000000000000AA01 /* CartStore.swift in Sources */,
+				SVC0000100000000000001F01 /* ServiceItemFirestore.swift in Sources */,
 				BB000002000000000000BB01 /* ProviderDetailView.swift in Sources */,
 				BB000003000000000000CC01 /* CartCheckoutView.swift in Sources */,
 				CC000001000000000000AA01 /* ServicesView.swift in Sources */,
@@ -1046,11 +1083,11 @@
 				EE000002000000000000BB01 /* UserProfile.swift in Sources */,
 				EE000003000000000000CC01 /* UserProfileManager.swift in Sources */,
 				EE000004000000000000DD01 /* APIClient.swift in Sources */,
-				EE000005000000000000EE01 /* MockAPIClient.swift in Sources */,
 				EE000006000000000000FF01 /* FirestoreAPIClient.swift in Sources */,
 				EE000007000000000000A101 /* DataService.swift in Sources */,
 				EE000008000000000000B101 /* OrderManager.swift in Sources */,
 				EE000009000000000000C101 /* Review.swift in Sources */,
+				APPFUN00000000000001AA01 /* AppFunctions.swift in Sources */,
 				PPAY000010000000000000AA01 /* StripeConfig.swift in Sources */,
 				PPAY000010000000000000BB01 /* CheckoutPaymentCoordinator.swift in Sources */,
 				NOTIF00001000000000000AA01 /* NotificationManager.swift in Sources */,
@@ -1104,13 +1141,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		UIUX0S00000000000000071UT /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				UIUX010000000000000001AA01 /* SwifterXUITests.swift in Sources */,
+				UIUX020000000000000002AA01 /* SnapshotHelper.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		UIUXDEP00000000000001AA00 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B00000000000000000000032 /* SwifterX */;
+			targetProxy = UIUXPRO00000000000001AA00 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		B00000000000000000000081 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -1134,6 +1189,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Z855T78S6X;
 				ENABLE_NS_ASSERTIONS = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1164,6 +1220,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -1187,6 +1244,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Z855T78S6X;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -1215,8 +1273,7 @@
 				CODE_SIGN_ENTITLEMENTS = SwifterX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = Z855T78S6X;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SwifterX-Info.plist";
@@ -1229,7 +1286,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swifterx.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1250,8 +1307,7 @@
 				CODE_SIGN_ENTITLEMENTS = SwifterX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = Z855T78S6X;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_PREVIEWS = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SwifterX-Info.plist";
@@ -1264,7 +1320,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.2;
+				"MARKETING_VERSION[sdk=iphoneos*]" = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swifterx.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1283,7 +1340,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Z855T78S6X;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1304,7 +1360,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Z855T78S6X;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1317,6 +1372,43 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwifterX.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwifterX";
+			};
+			name = Release;
+		};
+		UIUX09100000000000009AA00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swifterx.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SwifterX;
+			};
+			name = Debug;
+		};
+		UIUX09200000000000009BB00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swifterx.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SwifterX;
 			};
 			name = Release;
 		};
@@ -1346,6 +1438,15 @@
 			buildConfigurations = (
 				TST0000910000000000009AA00 /* Debug */,
 				TST0000920000000000009BB00 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		UIUX0C00000000000000071UT /* Build configuration list for PBXNativeTarget "SwifterXUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				UIUX09100000000000009AA00 /* Debug */,
+				UIUX09200000000000009BB00 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

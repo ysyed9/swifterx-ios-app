@@ -21,7 +21,7 @@ struct NotificationCenterView: View {
                 notificationList
             }
         }
-        .background(Color(hex: "#f7f7f7"))
+        .background(Color(sxHex: "#f7f7f7"))
         .navigationTitle("Notifications")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -50,13 +50,13 @@ struct NotificationCenterView: View {
         VStack(spacing: 16) {
             Image(systemName: "bell.slash")
                 .font(.system(size: 48))
-                .foregroundStyle(Color(hex: "#cccccc"))
+                .foregroundStyle(Color(sxHex: "#cccccc"))
             Text("No notifications yet")
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(.black)
             Text("Order updates, chat messages, and promos will appear here.")
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "#888888"))
+                .foregroundStyle(Color(sxHex: "#888888"))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
         }
@@ -102,26 +102,26 @@ struct NotificationCenterView: View {
                         Spacer(minLength: 8)
                         if !item.read {
                             Circle()
-                                .fill(Color(hex: "#2563eb"))
+                                .fill(Color(sxHex: "#2563eb"))
                                 .frame(width: 8, height: 8)
                         }
                     }
                     Text(item.body)
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "#666666"))
+                        .foregroundStyle(Color(sxHex: "#666666"))
                         .multilineTextAlignment(.leading)
                         .lineLimit(4)
 
                     HStack(spacing: 6) {
                         Text(item.category.label.uppercased())
                             .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#999999"))
+                            .foregroundStyle(Color(sxHex: "#999999"))
                         if let t = item.createdAt {
                             Text("·")
-                                .foregroundStyle(Color(hex: "#cccccc"))
+                                .foregroundStyle(Color(sxHex: "#cccccc"))
                             Text(Self.timeFormatter.string(from: t))
                                 .font(.system(size: 10))
-                                .foregroundStyle(Color(hex: "#999999"))
+                                .foregroundStyle(Color(sxHex: "#999999"))
                         }
                     }
                     .padding(.top, 4)
@@ -159,11 +159,11 @@ struct NotificationCenterView: View {
 
     private func iconBackground(for item: InAppNotificationItem) -> Color {
         switch item.category {
-        case .order:   return Color(hex: "#e8f4ff")
-        case .chat:    return Color(hex: "#f0fdf4")
-        case .promo:   return Color(hex: "#fffbeb")
-        case .dispute: return Color(hex: "#fef2f2")
-        case .system:  return Color(hex: "#f3f4f6")
+        case .order:   return Color(sxHex: "#e8f4ff")
+        case .chat:    return Color(sxHex: "#f0fdf4")
+        case .promo:   return Color(sxHex: "#fffbeb")
+        case .dispute: return Color(sxHex: "#fef2f2")
+        case .system:  return Color(sxHex: "#f3f4f6")
         }
     }
 

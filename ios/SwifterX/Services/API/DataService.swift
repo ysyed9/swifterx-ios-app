@@ -13,9 +13,15 @@ final class DataService: ObservableObject {
     @Published private(set) var providers: [ServiceProvider] = []
     @Published private(set) var categories: [(name: String, icon: String)] = []
     @Published private(set) var isLoadingProviders = false
+    /// Shown on Home when a network/Firestore refresh fails (tap banner to dismiss).
+    @Published private(set) var lastFetchError: String?
 
     init(client: any APIClient = FirestoreAPIClient.shared) {
         self.client = client
+    }
+
+    func clearLastFetchError() {
+        lastFetchError = nil
     }
 
     // MARK: - Providers & Categories
@@ -23,15 +29,39 @@ final class DataService: ObservableObject {
     func loadProviders() async {
         isLoadingProviders = true
         let trace = PerformanceTracer(name: "load_providers")
-        providers = (try? await client.fetchProviders()) ?? MockData.providers
-        trace?.stop()
-        isLoadingProviders = false
+        defer {
+            trace?.stop()
+            isLoadingProviders = false
+        }
+        do {
+            providers = try await client.fetchProviders()
+        } catch {
+            lastFetchError = "Couldn’t refresh providers. Check your connection and try again."
+        }
     }
 
     func loadCategories() async {
         let trace = PerformanceTracer(name: "load_categories")
-        categories = (try? await client.fetchCategories()) ?? MockData.categories
-        trace?.stop()
+        defer { trace?.stop() }
+        do {
+            categories = try await client.fetchCategories()
+        } catch {
+            lastFetchError = "Couldn’t refresh categories. Check your connection and try again."
+        }
+    }
+
+    // MARK: - Provider services
+
+    func fetchServices(for providerID: String) async throws -> [ServiceItem] {
+        try await client.fetchServices(for: providerID)
+    }
+
+    func saveProviderService(providerID: String, item: ServiceItem) async throws {
+        try await client.saveProviderService(providerID: providerID, item: item)
+    }
+
+    func deleteProviderService(providerID: String, serviceId: String) async throws {
+        try await client.deleteProviderService(providerID: providerID, serviceId: serviceId)
     }
 
     func filteredProviders(category: String?, search: String) -> [ServiceProvider] {

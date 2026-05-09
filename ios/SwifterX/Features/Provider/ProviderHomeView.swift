@@ -153,7 +153,7 @@ struct ProviderHomeView: View {
         VStack(alignment: .leading, spacing: 0) {
             // Drag handle
             RoundedRectangle(cornerRadius: 2)
-                .fill(Color(hex: "#d0d0d0"))
+                .fill(Color(sxHex: "#d0d0d0"))
                 .frame(width: 36, height: 4)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 10)
@@ -166,7 +166,7 @@ struct ProviderHomeView: View {
                         .foregroundStyle(.black)
                     Text(job.services.map(\.name).joined(separator: ", "))
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "#828282"))
+                        .foregroundStyle(Color(sxHex: "#828282"))
                         .lineLimit(1)
                 }
                 Spacer()
@@ -199,10 +199,10 @@ struct ProviderHomeView: View {
             HStack(spacing: 8) {
                 Image(systemName: "calendar")
                     .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#828282"))
+                    .foregroundStyle(Color(sxHex: "#828282"))
                 Text(job.date + (job.scheduledTime.isEmpty ? "" : " • \(job.scheduledTime)"))
                     .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#828282"))
+                    .foregroundStyle(Color(sxHex: "#828282"))
                 Spacer()
                 Text("$\(Int(job.price))")
                     .font(.system(size: 15, weight: .semibold))
@@ -215,10 +215,10 @@ struct ProviderHomeView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "note.text")
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "#828282"))
+                        .foregroundStyle(Color(sxHex: "#828282"))
                     Text(job.specialInstructions)
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "#828282"))
+                        .foregroundStyle(Color(sxHex: "#828282"))
                         .lineLimit(2)
                 }
                 .padding(.horizontal, 20)
@@ -252,10 +252,10 @@ struct ProviderHomeView: View {
                     } label: {
                         Text("Release")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color(hex: "#cc3333"))
+                            .foregroundStyle(Color(sxHex: "#cc3333"))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 13)
-                            .background(Color(hex: "#fff0f0"))
+                            .background(Color(sxHex: "#fff0f0"))
                             .cornerRadius(10)
                     }
 
@@ -289,7 +289,7 @@ struct ProviderHomeView: View {
                         }
                     }
                     .padding(.vertical, 14)
-                    .background(Color(hex: "#20a655"))
+                    .background(Color(sxHex: "#20a655"))
                     .cornerRadius(10)
                     .disabled(isActioning)
                 }
@@ -305,7 +305,7 @@ struct ProviderHomeView: View {
     private func rejectionCard(reason: String) -> some View {
         VStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 2)
-                .fill(Color(hex: "#d0d0d0"))
+                .fill(Color(sxHex: "#d0d0d0"))
                 .frame(width: 36, height: 4)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 10)
@@ -313,18 +313,18 @@ struct ProviderHomeView: View {
 
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 32))
-                .foregroundStyle(Color(hex: "#ca8a04"))
+                .foregroundStyle(Color(sxHex: "#ca8a04"))
             Text("Profile not approved")
                 .font(.system(size: 17, weight: .bold))
                 .foregroundStyle(.black)
             Text(reason)
                 .font(.system(size: 13))
-                .foregroundStyle(Color(hex: "#444444"))
+                .foregroundStyle(Color(sxHex: "#444444"))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 16)
             Text("Update your profile if needed, or contact support if you have questions.")
                 .font(.system(size: 12))
-                .foregroundStyle(Color(hex: "#828282"))
+                .foregroundStyle(Color(sxHex: "#828282"))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 16)
         }
@@ -335,7 +335,7 @@ struct ProviderHomeView: View {
     private var underReviewCard: some View {
         VStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 2)
-                .fill(Color(hex: "#d0d0d0"))
+                .fill(Color(sxHex: "#d0d0d0"))
                 .frame(width: 36, height: 4)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 10)
@@ -343,13 +343,13 @@ struct ProviderHomeView: View {
 
             Image(systemName: "hourglass")
                 .font(.system(size: 32))
-                .foregroundStyle(Color(hex: "#888888"))
+                .foregroundStyle(Color(sxHex: "#888888"))
             Text("Under review")
                 .font(.system(size: 17, weight: .bold))
                 .foregroundStyle(.black)
             Text("Your profile is being verified. You will be able to accept paid jobs once SwifterX approves your account.")
                 .font(.system(size: 13))
-                .foregroundStyle(Color(hex: "#828282"))
+                .foregroundStyle(Color(sxHex: "#828282"))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 16)
         }
@@ -363,7 +363,7 @@ struct ProviderHomeView: View {
         VStack(spacing: 10) {
             Image(systemName: "checkmark.seal")
                 .font(.system(size: 34))
-                .foregroundStyle(Color(hex: "#bbbbbb"))
+                .foregroundStyle(Color(sxHex: "#bbbbbb"))
             Text("No active jobs")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.black)
@@ -371,7 +371,7 @@ struct ProviderHomeView: View {
                  ? "You're all caught up. New jobs will appear here."
                  : "Tap 'Available Jobs' above to claim a job.")
                 .font(.system(size: 13))
-                .foregroundStyle(Color(hex: "#828282"))
+                .foregroundStyle(Color(sxHex: "#828282"))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
@@ -393,11 +393,11 @@ struct ProviderHomeView: View {
 
     private func statusColor(_ status: ServiceOrder.OrderStatus) -> Color {
         switch status {
-        case .pending:    return Color(hex: "#f59e0b")
-        case .confirmed:  return Color(hex: "#3b82f6")
-        case .inProgress: return Color(hex: "#20a655")
-        case .completed:  return Color(hex: "#828282")
-        case .cancelled:  return Color(hex: "#cc3333")
+        case .pending:    return Color(sxHex: "#f59e0b")
+        case .confirmed:  return Color(sxHex: "#3b82f6")
+        case .inProgress: return Color(sxHex: "#20a655")
+        case .completed:  return Color(sxHex: "#828282")
+        case .cancelled:  return Color(sxHex: "#cc3333")
         }
     }
 
@@ -410,7 +410,7 @@ struct ProviderHomeView: View {
             showInbox = false
             selectedInboxJob = nil
         } catch {
-            actionError = error.localizedDescription
+            actionError = UserFacingError.message(from: error)
         }
         isActioning = false
     }
@@ -418,7 +418,7 @@ struct ProviderHomeView: View {
     private func releaseJob(_ job: ServiceOrder) async {
         isActioning = true
         do { try await orderManager.releaseOrder(job, providerUID: uid) }
-        catch { actionError = error.localizedDescription }
+        catch { actionError = UserFacingError.message(from: error) }
         isActioning = false
     }
 
@@ -428,7 +428,7 @@ struct ProviderHomeView: View {
             try await orderManager.startJob(job, providerUID: uid)
             // Begin streaming live location to this order's document
             locationManager.startSharing(orderID: job.id)
-        } catch { actionError = error.localizedDescription }
+        } catch { actionError = UserFacingError.message(from: error) }
         isActioning = false
     }
 
@@ -437,7 +437,7 @@ struct ProviderHomeView: View {
         do {
             try await orderManager.completeJob(job, providerUID: uid)
             locationManager.stopSharing()
-        } catch { actionError = error.localizedDescription }
+        } catch { actionError = UserFacingError.message(from: error) }
         isActioning = false
     }
 }
@@ -456,12 +456,12 @@ private struct InboxSheet: View {
                     VStack(spacing: 14) {
                         Image(systemName: "tray")
                             .font(.system(size: 44))
-                            .foregroundStyle(Color(hex: "#cccccc"))
+                            .foregroundStyle(Color(sxHex: "#cccccc"))
                         Text("Inbox is empty")
                             .font(.system(size: 16, weight: .semibold))
                         Text("No new jobs available right now.")
                             .font(.system(size: 14))
-                            .foregroundStyle(Color(hex: "#828282"))
+                            .foregroundStyle(Color(sxHex: "#828282"))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -502,7 +502,7 @@ private struct InboxJobRow: View {
                         .foregroundStyle(.black)
                     Text(job.services.map(\.name).joined(separator: " • "))
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "#828282"))
+                        .foregroundStyle(Color(sxHex: "#828282"))
                         .lineLimit(1)
                 }
                 Spacer()
@@ -515,7 +515,7 @@ private struct InboxJobRow: View {
                 Label(job.date + (job.scheduledTime.isEmpty ? "" : " • \(job.scheduledTime)"),
                       systemImage: "calendar")
                     .font(.system(size: 12))
-                    .foregroundStyle(Color(hex: "#828282"))
+                    .foregroundStyle(Color(sxHex: "#828282"))
                 Spacer()
             }
 
@@ -559,7 +559,7 @@ private struct JobDetailSheet: View {
                             .font(.system(size: 20, weight: .bold))
                         Text(job.date + (job.scheduledTime.isEmpty ? "" : " at \(job.scheduledTime)"))
                             .font(.system(size: 14))
-                            .foregroundStyle(Color(hex: "#828282"))
+                            .foregroundStyle(Color(sxHex: "#828282"))
                     }
                     .padding(.horizontal, 20)
 
@@ -596,7 +596,7 @@ private struct JobDetailSheet: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Customer Note")
                                 .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(Color(hex: "#828282"))
+                                .foregroundStyle(Color(sxHex: "#828282"))
                             Text(job.specialInstructions)
                                 .font(.system(size: 14))
                         }

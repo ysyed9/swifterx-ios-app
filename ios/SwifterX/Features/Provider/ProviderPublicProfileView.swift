@@ -109,13 +109,13 @@ struct ProviderPublicProfileView: View {
                 if let reason = p.trimmedRejectionReason {
                     Text("Not approved: \(reason)")
                         .font(.system(size: 12))
-                        .foregroundStyle(Color(hex: "#92400e"))
+                        .foregroundStyle(Color(sxHex: "#92400e"))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 20)
                 } else {
                     Text("Under review — you will appear in search and can accept jobs after SwifterX approves your profile.")
                         .font(.system(size: 12))
-                        .foregroundStyle(Color(hex: "#666666"))
+                        .foregroundStyle(Color(sxHex: "#666666"))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 20)
                 }
@@ -131,7 +131,7 @@ struct ProviderPublicProfileView: View {
                         .font(.system(size: 14, weight: .semibold))
                     Text("(\(p.reviewCount) reviews)")
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "#888888"))
+                        .foregroundStyle(Color(sxHex: "#888888"))
                 }
             }
 
@@ -145,7 +145,7 @@ struct ProviderPublicProfileView: View {
                                 .font(.system(size: 12, weight: .medium))
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(Color(hex: "#f2f2f2"))
+                                .background(Color(sxHex: "#f2f2f2"))
                                 .clipShape(Capsule())
                         }
                     }
@@ -198,11 +198,11 @@ struct ProviderPublicProfileView: View {
                             if day.isAvailable {
                                 Text("\(day.startLabel) – \(day.endLabel)")
                                     .font(.system(size: 13))
-                                    .foregroundStyle(Color(hex: "#444444"))
+                                    .foregroundStyle(Color(sxHex: "#444444"))
                             } else {
                                 Text("Unavailable")
                                     .font(.system(size: 13))
-                                    .foregroundStyle(Color(hex: "#bbbbbb"))
+                                    .foregroundStyle(Color(sxHex: "#bbbbbb"))
                             }
                         }
                         .padding(.horizontal, 62)
@@ -230,7 +230,7 @@ struct ProviderPublicProfileView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Services offered")
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#444444"))
+                    .foregroundStyle(Color(sxHex: "#444444"))
                     .padding(.horizontal, 24)
 
                 let cats = dataService.categories.map(\.name).isEmpty
@@ -256,10 +256,10 @@ struct ProviderPublicProfileView: View {
 
     private var placeholderAvatar: some View {
         Circle()
-            .fill(Color(hex: "#f2f2f2"))
+            .fill(Color(sxHex: "#f2f2f2"))
             .overlay(Image(systemName: "person.fill")
                 .font(.system(size: 36))
-                .foregroundStyle(Color(hex: "#cccccc")))
+                .foregroundStyle(Color(sxHex: "#cccccc")))
     }
 
     private func infoRow(icon: String, label: String, value: String) -> some View {
@@ -271,7 +271,7 @@ struct ProviderPublicProfileView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
                     .font(.system(size: 12))
-                    .foregroundStyle(Color(hex: "#888888"))
+                    .foregroundStyle(Color(sxHex: "#888888"))
                 Text(value)
                     .font(.system(size: 15))
                     .foregroundStyle(.black)
@@ -286,13 +286,13 @@ struct ProviderPublicProfileView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Color(hex: "#444444"))
+                .foregroundStyle(Color(sxHex: "#444444"))
             TextField("", text: text)
                 .keyboardType(keyboard)
                 .font(.system(size: 15))
                 .padding(.horizontal, 14)
                 .frame(height: 48)
-                .background(Color(hex: "#f5f5f5"))
+                .background(Color(sxHex: "#f5f5f5"))
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
     }
@@ -301,12 +301,12 @@ struct ProviderPublicProfileView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("About / Bio")
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Color(hex: "#444444"))
+                .foregroundStyle(Color(sxHex: "#444444"))
             ZStack(alignment: .topLeading) {
                 if editBio.isEmpty {
                     Text("Tell customers about yourself…")
                         .font(.system(size: 14))
-                        .foregroundStyle(Color(hex: "#cccccc"))
+                        .foregroundStyle(Color(sxHex: "#cccccc"))
                         .padding(14)
                 }
                 TextEditor(text: $editBio)
@@ -316,7 +316,7 @@ struct ProviderPublicProfileView: View {
                     .frame(minHeight: 90)
                     .scrollContentBackground(.hidden)
             }
-            .background(Color(hex: "#f5f5f5"))
+            .background(Color(sxHex: "#f5f5f5"))
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
     }
@@ -331,7 +331,7 @@ struct ProviderPublicProfileView: View {
                 .foregroundStyle(selected ? .white : .black)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
-                .background(selected ? Color.black : Color(hex: "#f2f2f2"))
+                .background(selected ? Color.black : Color(sxHex: "#f2f2f2"))
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -374,7 +374,7 @@ struct ProviderPublicProfileView: View {
             selectedPhoto = nil
             isEditing = false
         } catch {
-            saveError = error.localizedDescription
+            saveError = UserFacingError.message(from: error)
         }
         isSaving = false
     }

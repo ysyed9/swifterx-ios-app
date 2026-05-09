@@ -27,10 +27,19 @@ class AppState: ObservableObject {
     /// Persisted so relaunch restores customer vs provider experience.
     static let userRoleDefaultsKey = "swifterx_user_role"
 
-    @Published var screen: AppScreen = .splash
+    @Published var screen: AppScreen
     @Published var activeTab: AppTab = .home
     @Published var userRole: UserRole = .customer
     @Published var providerActiveTab: ProviderTab = .home
+
+    init() {
+        if ProcessInfo.processInfo.arguments.contains("-FASTLANE_SNAPSHOT") {
+            screen = .main
+            userRole = .customer
+        } else {
+            screen = .splash
+        }
+    }
 
     /// Switch between customer and provider dashboards (same login). Persists preference.
     func switchRole(to role: UserRole) {
@@ -63,7 +72,9 @@ struct AppRootView: View {
             OfflineBanner()
             contentBody
         }
-        .task {
+        // Run ATT after Firebase Auth has resolved initial state so the key window chain is stable (iPad / first launch).
+        .task(id: authManager.isLoading) {
+            guard authManager.isLoading == false else { return }
             await TrackingTransparencyCoordinator.runLaunchFlowIfNeeded()
         }
     }
@@ -71,7 +82,7 @@ struct AppRootView: View {
     @ViewBuilder
     private var contentBody: some View {
         Group {
-            if authManager.isLoading {
+            if authManager.isLoading, !ProcessInfo.processInfo.arguments.contains("-FASTLANE_SNAPSHOT") {
                 SplashView(onFinished: {})
             } else {
                 switch appState.screen {
@@ -151,7 +162,15 @@ struct AppRootView: View {
             syncOrderListening(for: appState.screen)
             syncNotificationFeed(for: appState.screen)
         }
+        .onChange(of: appState.screen) { _, screen in
+            guard screen == .main else { return }
+            Task {
+                await dataService.loadProviders()
+                await dataService.loadCategories()
+            }
+        }
         .onChange(of: authManager.isSignedIn) { isSignedIn in
+            guard !ProcessInfo.processInfo.arguments.contains("-FASTLANE_SNAPSHOT") else { return }
             if !isSignedIn {
                 profileManager.stopListening()
                 orderManager.stopListening()
@@ -313,7 +332,7 @@ struct AppRootView: View {
         .environmentObject(AuthManager())
         .environmentObject(UserProfileManager())
         .environmentObject(ProviderProfileManager.shared)
-        .environmentObject(DataService(client: MockAPIClient.shared))
+        .environmentObject(DataService(client: PreviewAPIClient.shared))
         .environmentObject(OrderManager())
         .environmentObject(NotificationFeedStore.shared)
 }

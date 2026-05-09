@@ -43,7 +43,7 @@ struct ReferralView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Your referral credits")
                             .font(.system(size: 13))
-                            .foregroundStyle(Color(hex: "#888888"))
+                            .foregroundStyle(Color(sxHex: "#888888"))
                         Text("$\(String(format: "%.2f", credits))")
                             .font(.system(size: 28, weight: .bold))
                             .foregroundStyle(.black)
@@ -51,20 +51,20 @@ struct ReferralView: View {
                     Spacer()
                     Image(systemName: "dollarsign.circle.fill")
                         .font(.system(size: 40))
-                        .foregroundStyle(Color(hex: "#f0c040"))
+                        .foregroundStyle(Color(sxHex: "#f0c040"))
                 }
                 .padding(20)
-                .background(Color(hex: "#fafafa"))
+                .background(Color(sxHex: "#fafafa"))
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(Color(hex: "#eeeeee"), lineWidth: 1))
+                    .stroke(Color(sxHex: "#eeeeee"), lineWidth: 1))
                 .padding(20)
 
                 // Code card
                 VStack(spacing: 14) {
                     Text("Your referral code")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#888888"))
+                        .foregroundStyle(Color(sxHex: "#888888"))
 
                     Text(referralCode)
                         .font(.system(size: 28, weight: .bold, design: .monospaced))
@@ -99,7 +99,7 @@ struct ReferralView: View {
                                 .foregroundStyle(.black)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 46)
-                                .background(Color(hex: "#f2f2f2"))
+                                .background(Color(sxHex: "#f2f2f2"))
                                 .clipShape(Capsule())
                         }
                         .buttonStyle(.plain)
@@ -109,7 +109,7 @@ struct ReferralView: View {
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(Color(hex: "#eeeeee"), lineWidth: 1))
+                    .stroke(Color(sxHex: "#eeeeee"), lineWidth: 1))
                 .padding(.horizontal, 20)
 
                 // How it works
@@ -145,7 +145,7 @@ struct ReferralView: View {
                 .overlay(Text(num).font(.system(size: 13, weight: .bold)).foregroundStyle(.white))
             Text(text)
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "#444444"))
+                .foregroundStyle(Color(sxHex: "#444444"))
                 .fixedSize(horizontal: false, vertical: true)
         }
     }

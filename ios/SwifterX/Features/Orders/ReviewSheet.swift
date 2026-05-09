@@ -70,11 +70,11 @@ struct ReviewSheet: View {
                     .foregroundStyle(.black)
                 Text(order.services.map(\.name).prefix(2).joined(separator: " • "))
                     .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#828282"))
+                    .foregroundStyle(Color(sxHex: "#828282"))
                     .lineLimit(1)
                 Text(order.date)
                     .font(.system(size: 12))
-                    .foregroundStyle(Color(hex: "#aaaaaa"))
+                    .foregroundStyle(Color(sxHex: "#aaaaaa"))
             }
             Spacer()
         }
@@ -84,7 +84,7 @@ struct ReviewSheet: View {
     @ViewBuilder
     private var providerThumb: some View {
         RoundedRectangle(cornerRadius: 10, style: .continuous)
-            .fill(Color(hex: "#dbdbdb"))
+            .fill(Color(sxHex: "#dbdbdb"))
             .overlay {
                 if let name = provider?.imageName, !name.isEmpty {
                     Image(name).resizable().scaledToFill()
@@ -102,7 +102,7 @@ struct ReviewSheet: View {
     private var fallbackIcon: some View {
         Image(systemName: "person.fill")
             .font(.system(size: 24))
-            .foregroundStyle(Color(hex: "#999999"))
+            .foregroundStyle(Color(sxHex: "#999999"))
     }
 
     // MARK: - Star Rating
@@ -136,7 +136,7 @@ struct ReviewSheet: View {
             } else {
                 Text("Tap to rate")
                     .font(.system(size: 14))
-                    .foregroundStyle(Color(hex: "#aaaaaa"))
+                    .foregroundStyle(Color(sxHex: "#aaaaaa"))
             }
         }
         .frame(maxWidth: .infinity)
@@ -149,17 +149,17 @@ struct ReviewSheet: View {
     }
 
     private func starColor(for star: Int) -> Color {
-        star <= selectedRating ? starColorForRating(selectedRating) : Color(hex: "#dddddd")
+        star <= selectedRating ? starColorForRating(selectedRating) : Color(sxHex: "#dddddd")
     }
 
     private func starColorForRating(_ r: Int) -> Color {
         switch r {
-        case 1: return Color(hex: "#ef4444")
-        case 2: return Color(hex: "#f97316")
-        case 3: return Color(hex: "#eab308")
-        case 4: return Color(hex: "#84cc16")
-        case 5: return Color(hex: "#22c55e")
-        default: return Color(hex: "#dddddd")
+        case 1: return Color(sxHex: "#ef4444")
+        case 2: return Color(sxHex: "#f97316")
+        case 3: return Color(sxHex: "#eab308")
+        case 4: return Color(sxHex: "#84cc16")
+        case 5: return Color(sxHex: "#22c55e")
+        default: return Color(sxHex: "#dddddd")
         }
     }
 
@@ -173,13 +173,13 @@ struct ReviewSheet: View {
 
             ZStack(alignment: .topLeading) {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color(hex: "#f6f6f6"))
+                    .fill(Color(sxHex: "#f6f6f6"))
                     .frame(minHeight: 110)
 
                 if comment.isEmpty {
                     Text("What did you think about the service?")
                         .font(.system(size: 14))
-                        .foregroundStyle(Color(hex: "#aaaaaa"))
+                        .foregroundStyle(Color(sxHex: "#aaaaaa"))
                         .padding(14)
                         .allowsHitTesting(false)
                 }
@@ -217,14 +217,14 @@ struct ReviewSheet: View {
                     Spacer()
                 }
                 .padding(.vertical, 15)
-                .background(selectedRating == 0 ? Color(hex: "#cccccc") : Color.black)
+                .background(selectedRating == 0 ? Color(sxHex: "#cccccc") : Color.black)
                 .cornerRadius(12)
             }
             .disabled(selectedRating == 0 || isSubmitting)
 
             Text("Your review helps others find great providers.")
                 .font(.system(size: 12))
-                .foregroundStyle(Color(hex: "#aaaaaa"))
+                .foregroundStyle(Color(sxHex: "#aaaaaa"))
                 .multilineTextAlignment(.center)
         }
         .padding(.top, 28)
@@ -239,18 +239,18 @@ struct ReviewSheet: View {
             Spacer().frame(height: 30)
             ZStack {
                 Circle()
-                    .fill(Color(hex: "#f0fdf4"))
+                    .fill(Color(sxHex: "#f0fdf4"))
                     .frame(width: 90, height: 90)
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 52))
-                    .foregroundStyle(Color(hex: "#22c55e"))
+                    .foregroundStyle(Color(sxHex: "#22c55e"))
             }
             Text("Review Submitted!")
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(.black)
             Text("Thank you for sharing your experience with \(order.providerName). Your feedback helps the community.")
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "#828282"))
+                .foregroundStyle(Color(sxHex: "#828282"))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
 
@@ -260,7 +260,7 @@ struct ReviewSheet: View {
                         .font(.system(size: 20))
                         .foregroundStyle(star <= selectedRating
                             ? starColorForRating(selectedRating)
-                            : Color(hex: "#dddddd"))
+                            : Color(sxHex: "#dddddd"))
                 }
             }
 
@@ -303,7 +303,7 @@ struct ReviewSheet: View {
             withAnimation(.spring(response: 0.4)) { showSuccess = true }
         } catch {
             AnalyticsManager.shared.recordError(error, context: "submitReview:\(order.providerID)")
-            submitError = error.localizedDescription
+            submitError = UserFacingError.message(from: error)
         }
         isSubmitting = false
     }

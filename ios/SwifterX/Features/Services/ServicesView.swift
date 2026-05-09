@@ -58,14 +58,14 @@ struct ServicesView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 15))
-                            .foregroundStyle(Color(hex: "#858585"))
+                            .foregroundStyle(Color(sxHex: "#858585"))
                         TextField("Search services...", text: $searchText)
                             .font(.system(size: 14))
                             .foregroundStyle(.black)
                     }
                     .padding(.horizontal, 16)
                     .frame(height: 42)
-                    .background(Color(hex: "#f6f6f6"))
+                    .background(Color(sxHex: "#f6f6f6"))
                     .clipShape(Capsule())
 
                     // Distance sort toggle (only shown when location available)
@@ -77,7 +77,7 @@ struct ServicesView: View {
                                 .font(.system(size: 15, weight: .medium))
                                 .foregroundStyle(sortByDistance ? .white : .black)
                                 .frame(width: 42, height: 42)
-                                .background(sortByDistance ? Color.black : Color(hex: "#f6f6f6"))
+                                .background(sortByDistance ? Color.black : Color(sxHex: "#f6f6f6"))
                                 .clipShape(Circle())
                         }
                         .accessibilityLabel(sortByDistance ? "Sort by rating" : "Sort by distance")
@@ -210,7 +210,7 @@ private struct ServiceCategoryTile: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 90)
-        .background(isSelected ? Color.black : Color(hex: "#f6f6f6"))
+        .background(isSelected ? Color.black : Color(sxHex: "#f6f6f6"))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 }
@@ -231,17 +231,17 @@ private struct ProviderListRow: View {
                     .foregroundStyle(.black)
                 Text(provider.category)
                     .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#828282"))
+                    .foregroundStyle(Color(sxHex: "#828282"))
                 HStack(spacing: 4) {
                     Image(systemName: "star.fill")
                         .font(.system(size: 10))
                         .foregroundStyle(.black)
                     Text("\(provider.rating, specifier: "%.1f")  •  \(provider.distanceMi, specifier: "%.1f")mi away")
                         .font(.system(size: 12))
-                        .foregroundStyle(Color(hex: "#828282"))
+                        .foregroundStyle(Color(sxHex: "#828282"))
                     Text("• \(provider.reviewCount) reviews")
                         .font(.system(size: 12))
-                        .foregroundStyle(Color(hex: "#aaaaaa"))
+                        .foregroundStyle(Color(sxHex: "#aaaaaa"))
                 }
             }
 
@@ -249,7 +249,7 @@ private struct ProviderListRow: View {
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 13))
-                .foregroundStyle(Color(hex: "#aaaaaa"))
+                .foregroundStyle(Color(sxHex: "#aaaaaa"))
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -263,7 +263,7 @@ private struct ProviderThumb: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: 10, style: .continuous)
-            .fill(Color(hex: "#dbdbdb"))
+            .fill(Color(sxHex: "#dbdbdb"))
             .overlay { imageContent }
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
@@ -290,12 +290,12 @@ private struct ProviderThumb: View {
     private var fallbackIcon: some View {
         Image(systemName: "person.fill")
             .font(.system(size: 24))
-            .foregroundStyle(Color(hex: "#999999"))
+            .foregroundStyle(Color(sxHex: "#999999"))
     }
 }
 
 #Preview {
     NavigationStack { ServicesView() }
-        .environmentObject(DataService(client: MockAPIClient.shared))
+        .environmentObject(DataService(client: PreviewAPIClient.shared))
         .environmentObject(GeoSortService.shared)
 }

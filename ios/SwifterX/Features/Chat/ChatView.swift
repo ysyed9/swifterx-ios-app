@@ -10,6 +10,7 @@ struct ChatView: View {
     @StateObject private var chatManager = ChatManager()
     @State private var inputText = ""
     @State private var isSending = false
+    @State private var sendError: String?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -28,7 +29,7 @@ struct ChatView: View {
                         .foregroundStyle(.black)
                     Text("Order chat")
                         .font(.system(size: 11))
-                        .foregroundStyle(Color(hex: "#888888"))
+                        .foregroundStyle(Color(sxHex: "#888888"))
                 }
                 Spacer()
                 // balance spacer
@@ -66,33 +67,62 @@ struct ChatView: View {
 
             // Input bar
             VStack(spacing: 0) {
+                if let sendError {
+                    HStack(spacing: 8) {
+                        Image(systemName: "exclamationmark.circle.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color.red.opacity(0.85))
+                        Text(sendError)
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color.red.opacity(0.9))
+                        Spacer()
+                        Button("Dismiss") {
+                            self.sendError = nil
+                        }
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.black)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.red.opacity(0.06))
+                }
                 Divider()
                 HStack(spacing: 12) {
                     TextField("Message…", text: $inputText, axis: .vertical)
                         .font(.system(size: 15))
                         .lineLimit(1...4)
+                        .scrollDismissesKeyboard(.interactively)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 10)
-                        .background(Color(hex: "#f2f2f2"))
+                        .background(Color(sxHex: "#f2f2f2"))
                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                         .sanitized($inputText, using: InputSanitizer.chatMessage)
 
                     Button {
                         Task { await sendMessage() }
                     } label: {
-                        Image(systemName: isSending ? "ellipsis" : "arrow.up.circle.fill")
-                            .font(.system(size: 30))
-                            .foregroundStyle(inputText.trimmingCharacters(in: .whitespaces).isEmpty
-                                             ? Color(hex: "#cccccc") : Color.black)
+                        Group {
+                            if isSending {
+                                ProgressView()
+                                    .scaleEffect(0.9)
+                                    .tint(.black)
+                            } else {
+                                Image(systemName: "arrow.up.circle.fill")
+                                    .font(.system(size: 30))
+                            }
+                        }
+                        .foregroundStyle(inputText.trimmingCharacters(in: .whitespaces).isEmpty
+                                         ? Color(sxHex: "#cccccc") : Color.black)
                     }
                     .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty || isSending)
+                    .animation(.easeInOut(duration: 0.2), value: isSending)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
                 .background(Color.white)
             }
         }
-        .background(Color(hex: "#fafafa"))
+        .background(Color(sxHex: "#fafafa"))
         .navigationBarHidden(true)
         .onAppear {
             chatManager.startListening(orderID: orderID)
@@ -117,15 +147,20 @@ struct ChatView: View {
     private func sendMessage() async {
         let text = InputSanitizer.chatMessage(inputText)
         guard !text.isEmpty else { return }
+        sendError = nil
         isSending = true
-        try? await chatManager.send(
-            text: text,
-            senderUID: currentUID,
-            senderName: InputSanitizer.name(currentName),
-            isProvider: isProvider
-        )
-        inputText = ""
-        isSending = false
+        defer { isSending = false }
+        do {
+            try await chatManager.send(
+                text: text,
+                senderUID: currentUID,
+                senderName: InputSanitizer.name(currentName),
+                isProvider: isProvider
+            )
+            inputText = ""
+        } catch {
+            sendError = UserFacingError.defaultMessage
+        }
     }
 }
 
@@ -142,7 +177,7 @@ private struct MessageBubble: View {
                 if !isMine {
                     Text(msg.senderName)
                         .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(Color(hex: "#888888"))
+                        .foregroundStyle(Color(sxHex: "#888888"))
                         .padding(.leading, 4)
                 }
                 Text(msg.text)
@@ -156,7 +191,7 @@ private struct MessageBubble: View {
 
                 Text(timeLabel(msg.sentAt))
                     .font(.system(size: 10))
-                    .foregroundStyle(Color(hex: "#bbbbbb"))
+                    .foregroundStyle(Color(sxHex: "#bbbbbb"))
                     .padding(.horizontal, 4)
             }
             if !isMine { Spacer(minLength: 60) }

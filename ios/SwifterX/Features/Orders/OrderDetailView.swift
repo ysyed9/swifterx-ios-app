@@ -30,7 +30,7 @@ struct OrderDetailView: View {
     }
 
     var canCancel: Bool {
-        order.status == .pending || order.status == .confirmed
+        liveOrder.status == .pending || liveOrder.status == .confirmed
     }
 
     var body: some View {
@@ -47,17 +47,17 @@ struct OrderDetailView: View {
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(.black)
                         HStack(spacing: 6) {
-                            StatusBadge(status: order.status)
+                            StatusBadge(status: liveOrder.status)
                             Text(order.date)
                                 .font(.system(size: 13))
-                                .foregroundStyle(Color(hex: "#828282"))
+                                .foregroundStyle(Color(sxHex: "#828282"))
                             if !order.scheduledTime.isEmpty {
                                 Text("•")
                                     .font(.system(size: 11))
-                                    .foregroundStyle(Color(hex: "#828282"))
+                                    .foregroundStyle(Color(sxHex: "#828282"))
                                 Text(order.scheduledTime)
                                     .font(.system(size: 13))
-                                    .foregroundStyle(Color(hex: "#828282"))
+                                    .foregroundStyle(Color(sxHex: "#828282"))
                             }
                         }
                     }
@@ -86,6 +86,24 @@ struct OrderDetailView: View {
                             isProvider:  false
                         )
                     }
+                }
+
+                if let banner = liveOrder.paymentStatusBanner {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(banner.title)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.black)
+                        Text(banner.detail)
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(sxHex: "#5c5c5c"))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(14)
+                    .background(paymentBannerBackground(for: liveOrder.paymentStatus))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
                 }
 
                 // Status timeline
@@ -156,7 +174,7 @@ struct OrderDetailView: View {
                     .padding(.top, 16)
 
                 // Review prompt (completed orders only)
-                if order.status == .completed {
+                if liveOrder.status == .completed {
                     reviewPromptCard
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
@@ -197,7 +215,7 @@ struct OrderDetailView: View {
                             .foregroundStyle(.black)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
-                            .background(Color(hex: "#f6f6f6"))
+                            .background(Color(sxHex: "#f6f6f6"))
                             .cornerRadius(8)
                     }
                 }
@@ -212,7 +230,7 @@ struct OrderDetailView: View {
         .task {
             let uid = authManager.userUID ?? ""
             // Review check
-            if order.status == .completed, !order.providerID.isEmpty, !uid.isEmpty {
+            if liveOrder.status == .completed, !order.providerID.isEmpty, !uid.isEmpty {
                 hasReviewed = await dataService.hasReview(
                     orderID: order.id, providerID: order.providerID, uid: uid)
             }
@@ -264,8 +282,8 @@ struct OrderDetailView: View {
 
     /// Show the dispute button for completed or cancelled-but-paid orders.
     private var canShowDisputeButton: Bool {
-        (order.status == .completed || order.status == .cancelled)
-        && (order.paymentStatus == .paid || order.paymentStatus == .processing)
+        (liveOrder.status == .completed || liveOrder.status == .cancelled)
+        && (liveOrder.paymentStatus == .paid || liveOrder.paymentStatus == .processing)
     }
 
     @ViewBuilder
@@ -284,14 +302,14 @@ struct OrderDetailView: View {
                     Text("Report an Issue")
                         .font(.system(size: 14, weight: .semibold))
                 }
-                .foregroundStyle(Color(hex: "#cc3333"))
+                .foregroundStyle(Color(sxHex: "#cc3333"))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 13)
-                .background(Color(hex: "#fff0f0"))
+                .background(Color(sxHex: "#fff0f0"))
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(Color(hex: "#fecaca"), lineWidth: 1)
+                        .stroke(Color(sxHex: "#fecaca"), lineWidth: 1)
                 )
             }
             .buttonStyle(.plain)
@@ -308,7 +326,7 @@ struct OrderDetailView: View {
         } else if hasReviewed {
             HStack(spacing: 10) {
                 Image(systemName: "checkmark.seal.fill")
-                    .foregroundStyle(Color(hex: "#22c55e"))
+                    .foregroundStyle(Color(sxHex: "#22c55e"))
                     .font(.system(size: 18))
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Review submitted")
@@ -316,26 +334,26 @@ struct OrderDetailView: View {
                         .foregroundStyle(.black)
                     Text("Thank you for your feedback!")
                         .font(.system(size: 12))
-                        .foregroundStyle(Color(hex: "#828282"))
+                        .foregroundStyle(Color(sxHex: "#828282"))
                 }
                 Spacer()
             }
             .padding(16)
-            .background(Color(hex: "#f0fdf4"))
+            .background(Color(sxHex: "#f0fdf4"))
             .cornerRadius(12)
         } else {
             VStack(spacing: 14) {
                 HStack(spacing: 12) {
                     Image(systemName: "star.bubble.fill")
                         .font(.system(size: 26))
-                        .foregroundStyle(Color(hex: "#f59e0b"))
+                        .foregroundStyle(Color(sxHex: "#f59e0b"))
                     VStack(alignment: .leading, spacing: 3) {
                         Text("How was your experience?")
                             .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(.black)
                         Text("Rate your visit with \(order.providerName)")
                             .font(.system(size: 13))
-                            .foregroundStyle(Color(hex: "#828282"))
+                            .foregroundStyle(Color(sxHex: "#828282"))
                     }
                     Spacer()
                 }
@@ -344,7 +362,7 @@ struct OrderDetailView: View {
                     ForEach(1...5, id: \.self) { _ in
                         Image(systemName: "star")
                             .font(.system(size: 22))
-                            .foregroundStyle(Color(hex: "#f59e0b"))
+                            .foregroundStyle(Color(sxHex: "#f59e0b"))
                     }
                     Spacer()
                     Button {
@@ -361,11 +379,11 @@ struct OrderDetailView: View {
                 }
             }
             .padding(16)
-            .background(Color(hex: "#fffbeb"))
+            .background(Color(sxHex: "#fffbeb"))
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color(hex: "#fde68a"), lineWidth: 1)
+                    .stroke(Color(sxHex: "#fde68a"), lineWidth: 1)
             )
         }
     }
@@ -374,20 +392,30 @@ struct OrderDetailView: View {
     private var providerThumb: some View {
         let p = matchedProvider
         RoundedRectangle(cornerRadius: 10, style: .continuous)
-            .fill(Color(hex: "#dbdbdb"))
+            .fill(Color(sxHex: "#dbdbdb"))
             .overlay {
                 if let name = p?.imageName, !name.isEmpty {
                     Image(name).resizable().scaledToFill()
                 } else if let urlStr = p?.imageURL, !urlStr.isEmpty, let url = URL(string: urlStr) {
                     AsyncImage(url: url) { phase in
                         if case .success(let img) = phase { img.resizable().scaledToFill() }
-                        else { Image(systemName: "person.fill").font(.system(size: 28)).foregroundStyle(Color(hex: "#999999")) }
+                        else { Image(systemName: "person.fill").font(.system(size: 28)).foregroundStyle(Color(sxHex: "#999999")) }
                     }
                 } else {
-                    Image(systemName: "person.fill").font(.system(size: 28)).foregroundStyle(Color(hex: "#999999"))
+                    Image(systemName: "person.fill").font(.system(size: 28)).foregroundStyle(Color(sxHex: "#999999"))
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    private func paymentBannerBackground(for status: OrderPaymentStatus) -> Color {
+        switch status {
+        case .unpaid:     return Color(sxHex: "#fffbeb")
+        case .processing: return Color(sxHex: "#eff6ff")
+        case .failed:     return Color(sxHex: "#fff0f0")
+        case .refunded, .paid:
+            return Color(sxHex: "#f6f6f6")
+        }
     }
 
     private func cancelOrder() async {
@@ -397,7 +425,7 @@ struct OrderDetailView: View {
             try await orderManager.cancelOrder(order, uid: uid)
             dismiss()
         } catch {
-            cancelError = error.localizedDescription
+            cancelError = UserFacingError.message(from: error)
         }
         isCancelling = false
     }
@@ -408,11 +436,11 @@ private struct StatusBadge: View {
 
     var color: Color {
         switch status {
-        case .pending:    return Color(hex: "#f59e0b")
-        case .confirmed:  return Color(hex: "#20a655")
-        case .inProgress: return Color(hex: "#3b82f6")
-        case .completed:  return Color(hex: "#828282")
-        case .cancelled:  return Color(hex: "#cc3333")
+        case .pending:    return Color(sxHex: "#f59e0b")
+        case .confirmed:  return Color(sxHex: "#20a655")
+        case .inProgress: return Color(sxHex: "#3b82f6")
+        case .completed:  return Color(sxHex: "#828282")
+        case .cancelled:  return Color(sxHex: "#cc3333")
         }
     }
 
@@ -434,7 +462,7 @@ private struct SummaryLine: View {
         HStack {
             Text(label)
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "#828282"))
+                .foregroundStyle(Color(sxHex: "#828282"))
             Spacer()
             Text("$\(String(format: "%.2f", amount))")
                 .font(.system(size: 14))
@@ -470,14 +498,14 @@ struct OrderStatusTimeline: View {
         if status == .cancelled {
             HStack(spacing: 8) {
                 Image(systemName: "xmark.circle.fill")
-                    .foregroundStyle(Color(hex: "#cc3333"))
+                    .foregroundStyle(Color(sxHex: "#cc3333"))
                 Text("Order Cancelled")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color(hex: "#cc3333"))
+                    .foregroundStyle(Color(sxHex: "#cc3333"))
             }
             .padding(.vertical, 10)
             .padding(.horizontal, 14)
-            .background(Color(hex: "#fff0f0"))
+            .background(Color(sxHex: "#fff0f0"))
             .cornerRadius(8)
         } else {
             let current = stepIndex(status)
@@ -487,20 +515,20 @@ struct OrderStatusTimeline: View {
                     VStack(spacing: 4) {
                         ZStack {
                             Circle()
-                                .fill(done ? Color.black : Color(hex: "#e8e8e8"))
+                                .fill(done ? Color.black : Color(sxHex: "#e8e8e8"))
                                 .frame(width: 28, height: 28)
                             Image(systemName: step.1)
                                 .font(.system(size: 12, weight: .semibold))
-                                .foregroundStyle(done ? .white : Color(hex: "#bbbbbb"))
+                                .foregroundStyle(done ? .white : Color(sxHex: "#bbbbbb"))
                         }
                         Text(step.2)
                             .font(.system(size: 10, weight: done ? .semibold : .regular))
-                            .foregroundStyle(done ? .black : Color(hex: "#bbbbbb"))
+                            .foregroundStyle(done ? .black : Color(sxHex: "#bbbbbb"))
                             .multilineTextAlignment(.center)
                     }
                     if i < steps.count - 1 {
                         Rectangle()
-                            .fill(i < current ? Color.black : Color(hex: "#e8e8e8"))
+                            .fill(i < current ? Color.black : Color(sxHex: "#e8e8e8"))
                             .frame(height: 2)
                             .frame(maxWidth: .infinity)
                             .offset(y: -10)
@@ -513,10 +541,22 @@ struct OrderStatusTimeline: View {
 
 #Preview {
     NavigationStack {
-        OrderDetailView(order: MockData.orders[0])
+        OrderDetailView(order: ServiceOrder(
+            id: "preview-order",
+            customerUID: "cust",
+            providerID: "prov",
+            providerName: "Preview Provider",
+            price: 120,
+            scheduledDate: Date(),
+            scheduledTime: "10:00 AM",
+            status: .confirmed,
+            services: [OrderLineItem(name: "Service A", price: 120)],
+            specialInstructions: "",
+            paymentStatus: .paid
+        ))
     }
     .environmentObject(OrderManager())
     .environmentObject(AuthManager())
-    .environmentObject(DataService(client: MockAPIClient.shared))
+    .environmentObject(DataService(client: PreviewAPIClient.shared))
     .environmentObject(UserProfileManager())
 }

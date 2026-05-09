@@ -227,6 +227,51 @@ struct ServiceOrder: Identifiable, Codable {
     }
 }
 
+extension ServiceOrder {
+    /// Extra line on the order list when payment is not fully settled.
+    var customerPaymentSubtitle: String? {
+        switch paymentStatus {
+        case .paid:
+            return nil
+        case .processing:
+            return "Payment processing…"
+        case .unpaid:
+            if status == .pending { return "Awaiting payment" }
+            return "Payment pending"
+        case .failed:
+            return "Payment failed"
+        case .refunded:
+            return "Refunded"
+        }
+    }
+
+    /// Banner on order detail for in-flight or failed payment.
+    var paymentStatusBanner: (title: String, detail: String)? {
+        switch paymentStatus {
+        case .paid:
+            return nil
+        case .processing:
+            return (
+                "Payment processing",
+                "Confirmation usually arrives within a minute. Pull to refresh on Orders if this stays here."
+            )
+        case .unpaid:
+            guard status == .pending else { return nil }
+            return (
+                "Awaiting payment",
+                "Your booking is not confirmed until payment succeeds. If checkout was interrupted, cancel this order and try again, or contact support."
+            )
+        case .failed:
+            return (
+                "Payment did not go through",
+                "You can cancel this booking and try again, or contact support for help."
+            )
+        case .refunded:
+            return ("Refunded", "This booking was refunded to your payment method.")
+        }
+    }
+}
+
 struct OrderLineItem: Identifiable, Codable {
     var id: String
     var name: String

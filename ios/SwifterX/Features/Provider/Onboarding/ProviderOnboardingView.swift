@@ -58,7 +58,7 @@ struct ProviderOnboardingView: View {
             HStack(spacing: 6) {
                 ForEach(0..<totalSteps, id: \.self) { i in
                     Capsule()
-                        .fill(i <= step ? Color.black : Color(hex: "#e0e0e0"))
+                        .fill(i <= step ? Color.black : Color(sxHex: "#e0e0e0"))
                         .frame(height: 4)
                 }
             }
@@ -103,11 +103,11 @@ struct ProviderOnboardingView: View {
                             } else {
                                 Image(systemName: "person.fill")
                                     .font(.system(size: 28))
-                                    .foregroundStyle(Color(hex: "#999999"))
+                                    .foregroundStyle(Color(sxHex: "#999999"))
                             }
                         }
                         .frame(width: 72, height: 72)
-                        .background(Color(hex: "#f2f2f2"))
+                        .background(Color(sxHex: "#f2f2f2"))
                         .clipShape(Circle())
 
                         PhotosPicker(selection: $selectedPhoto, matching: .images) {
@@ -157,7 +157,7 @@ struct ProviderOnboardingView: View {
                     }
                     .padding(.horizontal, 14)
                     .frame(height: 48)
-                    .background(Color(hex: "#f5f5f5"))
+                    .background(Color(sxHex: "#f5f5f5"))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
 
@@ -171,11 +171,11 @@ struct ProviderOnboardingView: View {
                             .sanitized($serviceRadiusText, using: InputSanitizer.serviceRadius)
                         Text("miles")
                             .font(.system(size: 14))
-                            .foregroundStyle(Color(hex: "#888888"))
+                            .foregroundStyle(Color(sxHex: "#888888"))
                     }
                     .padding(.horizontal, 14)
                     .frame(height: 48)
-                    .background(Color(hex: "#f5f5f5"))
+                    .background(Color(sxHex: "#f5f5f5"))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
 
@@ -186,7 +186,7 @@ struct ProviderOnboardingView: View {
                         if bio.isEmpty {
                             Text("Tell customers about yourself and your experience…")
                                 .font(.system(size: 14))
-                                .foregroundStyle(Color(hex: "#bbbbbb"))
+                                .foregroundStyle(Color(sxHex: "#bbbbbb"))
                                 .padding(.horizontal, 14)
                                 .padding(.top, 14)
                         }
@@ -198,7 +198,7 @@ struct ProviderOnboardingView: View {
                             .scrollContentBackground(.hidden)
                             .sanitized($bio, using: InputSanitizer.bio)
                     }
-                    .background(Color(hex: "#f5f5f5"))
+                    .background(Color(sxHex: "#f5f5f5"))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
 
@@ -265,9 +265,9 @@ struct ProviderOnboardingView: View {
                     // Note
                     Text("Background checks are conducted by a third-party partner. You will receive an email with instructions after completing this onboarding.")
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "#888888"))
+                        .foregroundStyle(Color(sxHex: "#888888"))
                         .padding(14)
-                        .background(Color(hex: "#f5f5f5"))
+                        .background(Color(sxHex: "#f5f5f5"))
                         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
                     // Consent toggle
@@ -313,11 +313,11 @@ struct ProviderOnboardingView: View {
                 .foregroundStyle(selected ? .white : .black)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(selected ? Color.black : Color(hex: "#f2f2f2"))
+                .background(selected ? Color.black : Color(sxHex: "#f2f2f2"))
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(selected ? Color.clear : Color(hex: "#e0e0e0"), lineWidth: 1)
+                        .stroke(selected ? Color.clear : Color(sxHex: "#e0e0e0"), lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)
@@ -338,13 +338,13 @@ struct ProviderOnboardingView: View {
                 HStack(spacing: 12) {
                     timePicker(label: "From", hour: day.startHour)
                     Text("→")
-                        .foregroundStyle(Color(hex: "#888888"))
+                        .foregroundStyle(Color(sxHex: "#888888"))
                     timePicker(label: "To", hour: day.endHour)
                 }
             }
         }
         .padding(14)
-        .background(Color(hex: "#f8f8f8"))
+        .background(Color(sxHex: "#f8f8f8"))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
@@ -352,7 +352,7 @@ struct ProviderOnboardingView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
                 .font(.system(size: 11))
-                .foregroundStyle(Color(hex: "#888888"))
+                .foregroundStyle(Color(sxHex: "#888888"))
             Picker("", selection: hour) {
                 ForEach(6..<22, id: \.self) { h in
                     Text(hourLabel(h)).tag(h)
@@ -388,14 +388,14 @@ struct ProviderOnboardingView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(number)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(Color(hex: "#888888"))
+                .foregroundStyle(Color(sxHex: "#888888"))
                 .tracking(0.5)
             Text(title)
                 .font(.system(size: 26, weight: .bold))
                 .foregroundStyle(.black)
             Text(subtitle)
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "#666666"))
+                .foregroundStyle(Color(sxHex: "#666666"))
         }
         .padding(.top, 8)
     }
@@ -403,7 +403,7 @@ struct ProviderOnboardingView: View {
     private func label(_ text: String) -> some View {
         Text(text)
             .font(.system(size: 13, weight: .semibold))
-            .foregroundStyle(Color(hex: "#444444"))
+            .foregroundStyle(Color(sxHex: "#444444"))
     }
 
     private func nextButton(title: String, action: @escaping () -> Void) -> some View {
@@ -423,7 +423,7 @@ struct ProviderOnboardingView: View {
         Button { withAnimation { step -= 1 } } label: {
             Text("Back")
                 .font(.system(size: 15))
-                .foregroundStyle(Color(hex: "#666666"))
+                .foregroundStyle(Color(sxHex: "#666666"))
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)

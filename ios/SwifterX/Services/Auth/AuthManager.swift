@@ -19,7 +19,12 @@ enum AuthError: LocalizedError {
     case networkError
     case googleSignInFailed
     case appleSignInFailed
-    case unknown(String)
+    /// Firebase Auth `operation-not-allowed` — Apple (or other) provider not enabled in console.
+    case signInProviderDisabled
+    /// Account exists with another provider (e.g. Google) for the same email.
+    case accountExistsWithDifferentCredential
+    /// Generic failure — never surface raw `NSError.localizedDescription` to users (can leak internal detail).
+    case unknown
 
     var errorDescription: String? {
         switch self {
@@ -27,16 +32,41 @@ enum AuthError: LocalizedError {
         case .wrongPassword:       return "Incorrect password. Please try again."
         case .userNotFound:        return "No account found with this email."
         case .emailAlreadyInUse:   return "An account with this email already exists."
-        case .weakPassword:        return "Password must be at least 6 characters."
+        case .weakPassword:        return "Password must be at least 8 characters and include a number."
         case .networkError:        return "Network error. Please check your connection."
         case .googleSignInFailed:  return "Google sign-in failed. Please try again."
-        case .appleSignInFailed:   return "Sign in with Apple failed. On a real device, enable Sign in with Apple for this app in Firebase and Apple Developer. If this persists, try again."
-        case .unknown(let msg):    return msg
+        case .appleSignInFailed:   return "Sign in with Apple couldn’t be verified. Try again, or sign in with email or Google if you already use those."
+        case .signInProviderDisabled:
+            return "Sign in with Apple isn’t enabled for this app in Firebase yet. In Firebase Console → Authentication → Sign-in method, turn on Apple and save."
+        case .accountExistsWithDifferentCredential:
+            return "An account already exists with this Apple ID using a different sign-in method. Try Google or email/password instead."
+        case .unknown:             return "Something went wrong. Please try again."
         }
     }
 
+    /// Maps Firebase Auth `NSError` (and common wrappers) to `AuthError`.
     static func from(_ error: Error) -> AuthError {
-        let code = AuthErrorCode(rawValue: (error as NSError).code)
+        let ns = error as NSError
+        if let mapped = mapFirebaseAuth(ns) { return mapped }
+        if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? NSError,
+           let mapped = mapFirebaseAuth(underlying) {
+            return mapped
+        }
+        return .unknown
+    }
+
+    /// FIRAuthErrorDomain numeric codes (stable across SDKs). See `AuthErrors` in Firebase iOS SDK.
+    private static func mapFirebaseAuth(_ ns: NSError) -> AuthError? {
+        guard ns.domain == AuthErrorDomain else { return nil }
+        switch ns.code {
+        case 17005: return .signInProviderDisabled // ERROR_OPERATION_NOT_ALLOWED
+        case 17004: return .appleSignInFailed // ERROR_INVALID_CREDENTIAL (often Apple token / nonce / config)
+        case 17012: return .accountExistsWithDifferentCredential // ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL
+        case 17020: return .networkError // ERROR_NETWORK_REQUEST_FAILED
+        case 17094: return .appleSignInFailed // ERROR_MISSING_OR_INVALID_NONCE
+        default: break
+        }
+        guard let code = AuthErrorCode(rawValue: ns.code) else { return .unknown }
         switch code {
         case .invalidEmail:        return .invalidEmail
         case .wrongPassword:       return .wrongPassword
@@ -44,7 +74,10 @@ enum AuthError: LocalizedError {
         case .emailAlreadyInUse:   return .emailAlreadyInUse
         case .weakPassword:        return .weakPassword
         case .networkError:        return .networkError
-        default:                   return .unknown(error.localizedDescription)
+        case .operationNotAllowed: return .signInProviderDisabled
+        case .invalidCredential:   return .appleSignInFailed
+        case .accountExistsWithDifferentCredential: return .accountExistsWithDifferentCredential
+        default:                   return .unknown
         }
     }
 }
@@ -57,6 +90,8 @@ final class AuthManager: ObservableObject {
     @Published private(set) var isLoading: Bool = true
 
     private var stateListener: AuthStateDidChangeListenerHandle?
+    /// Holds the raw Apple sign-in nonce between `SignInWithAppleButton` `onRequest` and Firebase `signIn` (avoids `@State` timing across callbacks).
+    private var pendingAppleSignInRawNonce: String?
 
     init() {
         stateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
@@ -145,6 +180,22 @@ final class AuthManager: ObservableObject {
         return hash.map { String(format: "%02x", $0) }.joined()
     }
 
+    /// Call from `SignInWithAppleButton` `onRequest` with the same raw nonce you hash into `request.nonce`.
+    func setPendingAppleSignInNonce(_ raw: String) {
+        pendingAppleSignInRawNonce = raw
+    }
+
+    /// Returns the nonce set in `onRequest`, then clears it. Call once when exchanging the Apple token with Firebase.
+    func takePendingAppleSignInNonce() -> String? {
+        let v = pendingAppleSignInRawNonce
+        pendingAppleSignInRawNonce = nil
+        return v
+    }
+
+    func clearPendingAppleSignInNonce() {
+        pendingAppleSignInRawNonce = nil
+    }
+
     func signInWithApple(idToken: String, rawNonce: String, fullName: PersonNameComponents?) async throws {
         guard !idToken.isEmpty, !rawNonce.isEmpty else {
             throw AuthError.appleSignInFailed
@@ -199,6 +250,7 @@ final class AuthManager: ObservableObject {
 
     func signOut() throws {
         do {
+            pendingAppleSignInRawNonce = nil
             try Auth.auth().signOut()
             GIDSignIn.sharedInstance.signOut()
             AnalyticsManager.shared.clearUser()

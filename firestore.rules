@@ -21,6 +21,11 @@ service cloud.firestore {
       return field is string && field.size() <= maxLen;
     }
 
+    // Service catalog price (Firestore may store as int or float; avoid `is number` portability issues).
+    function validServicePrice(p) {
+      return (p is int || p is float) && p > 0 && p < 100000;
+    }
+
     // Public provider listing doc: visible if listingApproved is absent (legacy) or true.
     function providerListingVisible() {
       return !('listingApproved' in resource.data) || resource.data.listingApproved == true;
@@ -36,11 +41,6 @@ service cloud.firestore {
     function providerApprovedForJobs(uid) {
       let p = get(/databases/$(database)/documents/providerProfiles/$(uid));
       return p.exists && (!('approved' in p.data) || p.data.approved == true);
-    }
-
-    // Only approved providers (with a profile doc) may read unclaimed confirmed orders in the job inbox.
-    function canReadUnclaimedConfirmedOrder() {
-      return providerApprovedForJobs(request.auth.uid);
     }
 
     function orderDoc(orderId) {
@@ -125,7 +125,23 @@ service cloud.firestore {
 
       match /services/{serviceID} {
         allow read: if true;
-        allow write: if false;
+        // Provider owns `providers/{uid}` — manage their bookable services (matches app `ServiceItem`: id, name, price).
+        allow create: if isSignedIn()
+          && providerID == request.auth.uid
+          && request.resource.data.id == serviceID
+          && validStr(request.resource.data.name, 120)
+          && validServicePrice(request.resource.data.price)
+          && request.resource.data.keys().hasAll(['id', 'name', 'price'])
+          && request.resource.data.keys().size() == 3;
+        // Update: do not require `resource.data.id == serviceID` (legacy docs may omit `id` or mismatch path).
+        allow update: if isSignedIn()
+          && providerID == request.auth.uid
+          && request.resource.data.id == serviceID
+          && validStr(request.resource.data.name, 120)
+          && validServicePrice(request.resource.data.price)
+          && request.resource.data.keys().hasAll(['id', 'name', 'price'])
+          && request.resource.data.keys().size() == 3;
+        allow delete: if isSignedIn() && providerID == request.auth.uid;
       }
 
       // Reviews — authenticated user, one per order, validated fields
@@ -154,8 +170,9 @@ service cloud.firestore {
       allow read: if isSignedIn() && (
         resource.data.customerUID == request.auth.uid ||
         resource.data.providerUID == request.auth.uid ||
+        // Booked provider can read their own unclaimed confirmed orders (inbox).
         (resource.data.providerUID == "" && resource.data.status == "confirmed"
-          && canReadUnclaimedConfirmedOrder())
+          && resource.data.providerID == request.auth.uid)
       );
 
       // Create: customer creates their own order — validate all fields

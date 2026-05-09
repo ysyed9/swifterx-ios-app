@@ -19,7 +19,7 @@ final class StripeConnectService: ObservableObject {
         let feePercent:    Double
     }
 
-    private let functions = Functions.functions()
+    private let functions = AppFunctions.instance
     private init() {}
 
     // MARK: - Create / retrieve Connect account

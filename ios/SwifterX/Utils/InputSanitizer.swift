@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import FirebaseFirestore
 
 // MARK: - Field-level limits (single source of truth)
 
@@ -153,5 +154,53 @@ extension View {
             let cleaned = sanitizer(newValue)
             if cleaned != newValue { value.wrappedValue = cleaned }
         }
+    }
+}
+
+// MARK: - User-facing error copy (alerts / banners)
+
+/// Maps known app errors to safe strings. Never surfaces raw `NSError.localizedDescription` for unknown types.
+enum UserFacingError {
+    static let defaultMessage = "Something went wrong. Please try again."
+
+    static func message(from error: Error) -> String {
+        if let e = error as? AuthError { return e.errorDescription ?? defaultMessage }
+        if let e = error as? CheckoutPaymentError { return e.errorDescription ?? defaultMessage }
+        if let e = error as? StripeConnectService.ConnectError { return e.errorDescription ?? defaultMessage }
+        if let e = error as? OrderError { return e.errorDescription ?? defaultMessage }
+        return message(fromNSError: error as NSError, depth: 0)
+    }
+
+    /// Unwraps `NSUnderlyingErrorKey` chains so wrapped Firestore “permission denied” still maps correctly.
+    private static func message(fromNSError ns: NSError, depth: Int) -> String {
+        guard depth < 6 else { return defaultMessage }
+
+        if ns.domain == FirestoreErrorDomain {
+            switch ns.code {
+            case FirestoreErrorCode.permissionDenied.rawValue:
+                return "Couldn’t save (permission denied). Deploy firestore.rules from this repo, stay signed in as this provider, and add an App Check debug token if you use the simulator with enforcement on."
+            case FirestoreErrorCode.unavailable.rawValue:
+                return "You appear to be offline. Check your connection and try again."
+            case FirestoreErrorCode.notFound.rawValue:
+                return "We couldn’t reach the server data. Try again in a moment."
+            default:
+                return "Couldn’t save to the server. Please try again."
+            }
+        }
+
+        if ns.domain == NSURLErrorDomain {
+            return "Network error — check your connection and try again."
+        }
+
+        let desc = (ns.userInfo[NSLocalizedDescriptionKey] as? String ?? ns.localizedDescription).lowercased()
+        if desc.contains("permission") || desc.contains("insufficient") {
+            return "Couldn’t save (permission denied). Deploy firestore.rules from this repo, stay signed in as this provider, and add an App Check debug token if you use the simulator with enforcement on."
+        }
+
+        if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? NSError {
+            return message(fromNSError: underlying, depth: depth + 1)
+        }
+
+        return defaultMessage
     }
 }

@@ -17,6 +17,9 @@
 	<string>$(STRIPE_PUBLISHABLE_KEY)</string>
 	<key>FirebaseInAppMessagingAutomaticDataCollectionEnabled</key>
 	<false/>
+	<!-- Must match deployed Cloud Functions region (see Firebase console → Functions). -->
+	<key>FirebaseFunctionsRegion</key>
+	<string>us-central1</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>SwifterX uses your location to show nearby providers and distance on the map. If you are a service provider on an active job, we share your live location with the customer while you are on the way so they can track your arrival.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -24,7 +27,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>SwifterX uses your camera so you can take a profile photo.</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>We use analytics to improve the app experience. No data is shared with advertisers.</string>
+	<string>SwifterX asks for your choice before enabling optional app analytics that may be considered tracking under Apple’s rules. You can allow or decline; core booking features work either way.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>

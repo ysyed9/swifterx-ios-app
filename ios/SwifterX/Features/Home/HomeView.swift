@@ -11,7 +11,32 @@ struct HomeView: View {
     }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
+        VStack(spacing: 0) {
+            if let msg = dataService.lastFetchError {
+                HStack(spacing: 10) {
+                    Image(systemName: "wifi.exclamationmark")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color(sxHex: "#b45309"))
+                    Text(msg)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(sxHex: "#1e1e1e"))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 8)
+                    Button("OK") {
+                        dataService.clearLastFetchError()
+                    }
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.black)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Color(sxHex: "#fff7ed"))
+                .overlay(alignment: .bottom) {
+                    Divider()
+                }
+            }
+
+            ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
 
                 HeroBanner { appState.activeTab = .services }
@@ -107,18 +132,24 @@ struct HomeView: View {
             // This is the one place maxWidth is safe: the direct child of ScrollView.
             // It tells the VStack to fill the scroll view's width (= screen width).
             .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .background(Color.white)
-        .navigationBarHidden(true)
-        .task {
-            if dataService.providers.isEmpty {
+            .background(Color.white)
+            .refreshable {
+                dataService.clearLastFetchError()
                 async let p: () = dataService.loadProviders()
                 async let c: () = dataService.loadCategories()
                 _ = await (p, c)
             }
         }
+        .background(Color.white)
+        .navigationBarHidden(true)
+        .task {
+            async let p: () = dataService.loadProviders()
+            async let c: () = dataService.loadCategories()
+            _ = await (p, c)
+        }
         .onAppear {
             locationManager.requestWhenInUseForCustomerIfNeeded()
+        }
         }
     }
 }
@@ -141,7 +172,7 @@ private struct HeroBanner: View {
                         .font(.system(size: 18))
                         .foregroundStyle(.white)
                     Circle()
-                        .fill(Color(hex: "#f97316"))
+                        .fill(Color(sxHex: "#f97316"))
                         .frame(width: 9, height: 9)
                         .offset(x: 3, y: -3)
                 }
@@ -170,17 +201,17 @@ private struct HeroBanner: View {
                 HStack(spacing: 10) {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(Color(hex: "#666666"))
+                        .foregroundStyle(Color(sxHex: "#666666"))
                     Text("Search services, providers…")
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundStyle(Color(hex: "#999999"))
+                        .foregroundStyle(Color(sxHex: "#999999"))
                     Spacer()
                     Rectangle()
-                        .fill(Color(hex: "#dddddd"))
+                        .fill(Color(sxHex: "#dddddd"))
                         .frame(width: 1, height: 16)
                     Image(systemName: "slider.horizontal.3")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(Color(hex: "#666666"))
+                        .foregroundStyle(Color(sxHex: "#666666"))
                 }
                 .padding(.horizontal, 16)
                 .frame(height: 50)
@@ -243,12 +274,12 @@ private struct CategoryPillView: View {
     var body: some View {
         VStack(spacing: 6) {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color(hex: "#dbdbdb"))
+                .fill(Color(sxHex: "#dbdbdb"))
                 .frame(width: 60, height: 60)
                 .overlay(
                     Image(systemName: icon)
                         .font(.system(size: 22, weight: .light))
-                        .foregroundStyle(Color(hex: "#555555"))
+                        .foregroundStyle(Color(sxHex: "#555555"))
                 )
             Text(name)
                 .font(.system(size: 12, weight: .regular))
@@ -274,7 +305,7 @@ private struct ProviderRowView: View {
                     if provider.showsVerifiedBadge {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.system(size: 11))
-                            .foregroundStyle(Color(hex: "2563eb"))
+                            .foregroundStyle(Color(sxHex: "2563eb"))
                             .accessibilityLabel("Verified")
                     }
                 }
@@ -296,7 +327,7 @@ private struct ProviderRowView: View {
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .regular))
-                .foregroundStyle(Color(hex: "#999999"))
+                .foregroundStyle(Color(sxHex: "#999999"))
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
@@ -315,11 +346,11 @@ private struct FeaturedCardView: View {
                 HStack(spacing: 4) {
                     Text(provider.name)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(Color(hex: "#1e1e1e"))
+                        .foregroundStyle(Color(sxHex: "#1e1e1e"))
                     if provider.showsVerifiedBadge {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.system(size: 13))
-                            .foregroundStyle(Color(hex: "2563eb"))
+                            .foregroundStyle(Color(sxHex: "2563eb"))
                             .accessibilityLabel("Verified")
                     }
                 }
@@ -339,7 +370,7 @@ private struct ProviderThumbView: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .fill(Color(hex: "#dbdbdb"))
+            .fill(Color(sxHex: "#dbdbdb"))
             .overlay { imageContent }
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
@@ -366,29 +397,13 @@ private struct ProviderThumbView: View {
     private var placeholderIcon: some View {
         Image(systemName: "photo")
             .font(.system(size: 22))
-            .foregroundStyle(Color(hex: "#999999"))
-    }
-}
-
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3:  (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6:  (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8:  (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default: (a, r, g, b) = (255, 0, 0, 0)
-        }
-        self.init(.sRGB, red: Double(r)/255, green: Double(g)/255, blue: Double(b)/255, opacity: Double(a)/255)
+            .foregroundStyle(Color(sxHex: "#999999"))
     }
 }
 
 #Preview {
     NavigationStack { HomeView() }
-        .environmentObject(DataService(client: MockAPIClient.shared))
+        .environmentObject(DataService(client: PreviewAPIClient.shared))
         .environmentObject(AppState())
         .environmentObject(GeoSortService.shared)
         .environmentObject(LocationManager.shared)

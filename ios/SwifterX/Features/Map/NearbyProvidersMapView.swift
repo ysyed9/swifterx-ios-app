@@ -68,7 +68,7 @@ struct NearbyProvidersMapView: View {
             Spacer()
             Text("\(providersWithLocation.count) nearby")
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(Color(hex: "#858585"))
+                .foregroundStyle(Color(sxHex: "#858585"))
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)

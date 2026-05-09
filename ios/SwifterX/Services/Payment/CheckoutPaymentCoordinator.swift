@@ -7,6 +7,8 @@ import StripePaymentSheet
 
 enum CheckoutPaymentError: LocalizedError {
     case notSignedIn
+    /// Callable returned UNAUTHENTICATED — no valid Auth context reached Cloud Functions.
+    case serverAuthMissing
     case invalidResponse
     case noPresenter
     case paymentFailed(String)
@@ -15,6 +17,8 @@ enum CheckoutPaymentError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .notSignedIn: return "You must be signed in to pay."
+        case .serverAuthMissing:
+            return "Your session wasn’t accepted by the payment server. Sign out, sign in again, then try checkout once more."
         case .invalidResponse: return "Could not start payment. Deploy Cloud Functions and check logs."
         case .noPresenter: return "Could not show payment screen."
         case .paymentFailed(let m): return m
@@ -27,17 +31,19 @@ enum CheckoutPaymentError: LocalizedError {
 @MainActor
 final class CheckoutPaymentCoordinator: ObservableObject {
 
-    private let functions: Functions = {
-        if let region = Bundle.main.object(forInfoDictionaryKey: "FirebaseFunctionsRegion") as? String,
-           !region.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return Functions.functions(region: region)
+    private let functions = AppFunctions.instance
+
+    /// Ensures a fresh ID token is attached to the next Callable request (avoids `context.auth == null` → UNAUTHENTICATED).
+    private func refreshAuthTokenForCallable() async throws {
+        guard let user = Auth.auth().currentUser else {
+            throw CheckoutPaymentError.notSignedIn
         }
-        return Functions.functions()
-    }()
+        _ = try await user.getIDToken()
+    }
 
     /// Server reads `order.price` from Firestore and creates the PaymentIntent (never trust client totals).
     func fetchPaymentIntentClientSecret(orderId: String) async throws -> String {
-        guard Auth.auth().currentUser != nil else { throw CheckoutPaymentError.notSignedIn }
+        try await refreshAuthTokenForCallable()
         let callable = functions.httpsCallable("createStripePaymentIntent")
         callable.timeoutInterval = 60
         let result: HTTPSCallableResult
@@ -55,6 +61,7 @@ final class CheckoutPaymentCoordinator: ObservableObject {
 
     /// Verifies PaymentIntent status with Stripe and marks the order **paid** + **confirmed**.
     func confirmOrderPayment(orderId: String) async throws {
+        try await refreshAuthTokenForCallable()
         let callable = functions.httpsCallable("confirmOrderPayment")
         callable.timeoutInterval = 60
         let result: HTTPSCallableResult
@@ -81,11 +88,6 @@ final class CheckoutPaymentCoordinator: ObservableObject {
         var configuration = PaymentSheet.Configuration()
         configuration.merchantDisplayName = "SwifterX"
         configuration.allowsDelayedPaymentMethods = true
-        // Apple Pay (PassKit) — shown by Stripe PaymentSheet when Wallet can pay; same merchant as entitlements.
-        configuration.applePay = .init(
-            merchantId: "merchant.com.swifterx.app",
-            merchantCountryCode: "US"
-        )
         let sheet = PaymentSheet(paymentIntentClientSecret: clientSecret, configuration: configuration)
 
         guard let presenter = hostViewController() else {
@@ -99,20 +101,23 @@ final class CheckoutPaymentCoordinator: ObservableObject {
                     continuation.resume(returning: true)
                 case .canceled:
                     continuation.resume(returning: false)
-                case .failed(let error):
-                    continuation.resume(throwing: CheckoutPaymentError.paymentFailed(error.localizedDescription))
+                case .failed:
+                    continuation.resume(throwing: CheckoutPaymentError.paymentFailed(
+                        "Payment couldn’t be completed. Check your card or try another method."
+                    ))
                 }
             }
         }
     }
 
     private func hostViewController() -> UIViewController? {
-        guard let root = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .flatMap({ $0.windows })
-            .first(where: { $0.isKeyWindow })?.rootViewController else {
-            return nil
-        }
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let active = scenes.filter { $0.activationState == .foregroundActive }
+        let pool = active.isEmpty ? scenes : active
+        let windows = pool.flatMap(\.windows)
+        let key = windows.first(where: { $0.isKeyWindow })?.rootViewController
+        let fallback = windows.reversed().first(where: { !$0.isHidden && $0.alpha > 0.01 })?.rootViewController
+        guard let root = key ?? fallback else { return nil }
         return Self.topMost(from: root)
     }
 
@@ -130,12 +135,14 @@ final class CheckoutPaymentCoordinator: ObservableObject {
     }
 
     private func mappedError(_ error: Error) -> CheckoutPaymentError {
-        #if DEBUG
-        guard let fnError = error as NSError? else {
-            return .paymentFailed(error.localizedDescription)
+        let ns = error as NSError
+        if ns.domain == FunctionsErrorDomain,
+           ns.code == FunctionsErrorCode.unauthenticated.rawValue {
+            return .serverAuthMissing
         }
-        let message = fnError.userInfo[NSLocalizedDescriptionKey] as? String ?? fnError.localizedDescription
-        let details = fnError.userInfo[FunctionsErrorDetailsKey]
+        #if DEBUG
+        let message = ns.userInfo[NSLocalizedDescriptionKey] as? String ?? ns.localizedDescription
+        let details = ns.userInfo[FunctionsErrorDetailsKey]
         if let detailsString = details as? String, !detailsString.isEmpty {
             return .paymentFailed("\(message) (\(detailsString))")
         }

@@ -53,7 +53,7 @@ struct ProviderScheduleView: View {
 
                     Text("Today: \(todayString)")
                         .font(.system(size: 20, weight: .medium))
-                        .foregroundStyle(Color(hex: "#a2a2a2"))
+                        .foregroundStyle(Color(sxHex: "#a2a2a2"))
                         .frame(maxWidth: .infinity)
                         .padding(.top, 8)
 
@@ -71,7 +71,7 @@ struct ProviderScheduleView: View {
                     if filteredAppointments.isEmpty {
                         Text("No appointments for this day.")
                             .font(.system(size: 14))
-                            .foregroundStyle(Color(hex: "#828282"))
+                            .foregroundStyle(Color(sxHex: "#828282"))
                             .frame(maxWidth: .infinity)
                             .padding(.top, 24)
                     }
@@ -102,7 +102,7 @@ struct ProviderScheduleView: View {
                         .padding(.top, 24)
                     Text("Schedule a new job from here. (Connect to calendar backend in a future phase.)")
                         .font(.system(size: 14))
-                        .foregroundStyle(Color(hex: "#828282"))
+                        .foregroundStyle(Color(sxHex: "#828282"))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
                     Spacer()
@@ -136,7 +136,7 @@ struct ProviderScheduleView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 Text(apt.detail)
                     .font(.system(size: 12))
-                    .foregroundStyle(Color(hex: "#828282"))
+                    .foregroundStyle(Color(sxHex: "#828282"))
             }
             Spacer()
             Text("More +")
@@ -145,7 +145,7 @@ struct ProviderScheduleView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(Color(hex: "#f0f0f0"))
+        .background(Color(sxHex: "#f0f0f0"))
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .padding(.horizontal, 20)
         .padding(.bottom, 8)

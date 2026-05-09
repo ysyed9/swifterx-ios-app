@@ -11,6 +11,7 @@ struct AccountView: View {
 
     @State private var showPersonalInfo  = false
     @State private var showLogOutAlert   = false
+    @State private var showSwitchAccountAlert = false
     @State private var showHelpSheet     = false
     @State private var showTermsSheet    = false
     @State private var showDeleteAlert   = false
@@ -39,10 +40,10 @@ struct AccountView: View {
     }
 
     let quickActions: [(title: String, icon: String, color: Color)] = [
-        ("Favourite\nServices", "heart.fill",     Color(hex: "#093dc2")),
-        ("Bookmark",            "bookmark.fill",   Color(hex: "#db4500")),
-        ("Wallet",              "creditcard.fill", Color(hex: "#704127")),
-        ("Orders",              "doc.text.fill",   Color(hex: "#e6b70b"))
+        ("Favourite\nServices", "heart.fill",     Color(sxHex: "#093dc2")),
+        ("Bookmark",            "bookmark.fill",   Color(sxHex: "#db4500")),
+        ("Wallet",              "creditcard.fill", Color(sxHex: "#704127")),
+        ("Orders",              "doc.text.fill",   Color(sxHex: "#e6b70b"))
     ]
 
     var body: some View {
@@ -180,7 +181,7 @@ struct AccountView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .frame(height: 84)
-                            .background(Color(hex: "#f7f7f7"))
+                            .background(Color(sxHex: "#f7f7f7"))
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         }
                         .buttonStyle(.plain)
@@ -227,7 +228,7 @@ struct AccountView: View {
                             }
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 13))
-                                .foregroundStyle(Color(hex: "#cccccc"))
+                                .foregroundStyle(Color(sxHex: "#cccccc"))
                         }
                     }
                     .buttonStyle(.plain)
@@ -248,9 +249,8 @@ struct AccountView: View {
                 // MARK: Accounts Center
                 AccountSection(title: "Accounts Center") {
                     VStack(spacing: 20) {
-                        // "Add more accounts" opens login screen
-                        Button { try? authManager.signOut() } label: {
-                            ChevronRow(label: "Add more accounts")
+                        Button { showSwitchAccountAlert = true } label: {
+                            ChevronRow(label: "Switch account")
                         }
                         .buttonStyle(.plain)
 
@@ -309,6 +309,12 @@ struct AccountView: View {
             }
         } message: {
             Text("This will permanently delete your account and all data. This cannot be undone.")
+        }
+        .alert("Switch account?", isPresented: $showSwitchAccountAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Continue", role: .destructive) { try? authManager.signOut() }
+        } message: {
+            Text("You’ll return to the sign-in screen so you can use a different Apple, Google, or email account.")
         }
         .alert("Log Out?", isPresented: $showLogOutAlert) {
             Button("Cancel", role: .cancel) {}
@@ -390,7 +396,7 @@ private struct AccountSection<Content: View>: View {
                 .padding(.horizontal, 30)
             content()
                 .padding(10)
-                .background(Color(hex: "#f9f9f9"))
+                .background(Color(sxHex: "#f9f9f9"))
                 .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 .padding(.horizontal, 20)
         }

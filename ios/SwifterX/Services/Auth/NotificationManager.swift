@@ -53,7 +53,8 @@ final class NotificationManager: NSObject, ObservableObject {
     func didReceiveFCMToken(_ token: String) {
         fcmToken = token
         #if DEBUG
-        print("[Notifications] FCM token: \(token)")
+        let prefix = token.prefix(6)
+        print("[Notifications] FCM token updated (prefix \(prefix)…, length \(token.count))")
         #endif
         saveTokenToFirestore(token: token)
     }
@@ -66,7 +67,7 @@ final class NotificationManager: NSObject, ObservableObject {
             do {
                 let db = FirebaseHelper.firestore
                 try await db.collection("users").document(uid).setData(
-                    ["fcmToken": token, "fcmTokenUpdatedAt": Date()],
+                    ["fcmToken": token, "fcmTokenUpdatedAt": FieldValue.serverTimestamp()],
                     merge: true
                 )
             } catch {

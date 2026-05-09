@@ -51,7 +51,7 @@ struct SkeletonBlock: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .fill(Color(hex: "#e8e8e8"))
+            .fill(Color(sxHex: "#e8e8e8"))
             .frame(width: width, height: height)
             .shimmer()
     }
@@ -142,7 +142,7 @@ struct SkeletonOrderCard: View {
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
-            .stroke(Color(hex: "#eeeeee"), lineWidth: 1))
+            .stroke(Color(sxHex: "#eeeeee"), lineWidth: 1))
         .padding(.horizontal, 20)
     }
 }

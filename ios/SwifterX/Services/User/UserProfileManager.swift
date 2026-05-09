@@ -38,7 +38,7 @@ final class UserProfileManager: ObservableObject {
         self.profile = profile
     }
 
-    // Update editable fields
+    // Update editable fields (merge write: creates the doc if missing; rules require `photoURL` etc. on every write)
     func updateProfile(uid: String,
                        name: String,
                        phone: String,
@@ -46,15 +46,28 @@ final class UserProfileManager: ObservableObject {
                        city: String,
                        state: String,
                        zip: String) async throws {
+        let existingPhoto = (profile?.uid == uid) ? (profile?.photoURL ?? "") : ""
         let data: [String: Any] = [
             "name": InputSanitizer.name(name),
             "phone": InputSanitizer.phone(phone),
             "addressLine": InputSanitizer.address(addressLine),
             "city": InputSanitizer.clean(city, limit: 60),
             "state": InputSanitizer.clean(state, limit: 30),
-            "zip": InputSanitizer.clean(zip, limit: FieldLimit.zipCode)
+            "zip": InputSanitizer.clean(zip, limit: FieldLimit.zipCode),
+            "photoURL": InputSanitizer.photoURL(existingPhoto)
         ]
-        try await db.collection("users").document(uid).updateData(data)
+        try await db.collection("users").document(uid).setData(data, merge: true)
+
+        if var p = profile, p.uid == uid {
+            p.name = data["name"] as? String ?? p.name
+            p.phone = data["phone"] as? String ?? p.phone
+            p.addressLine = data["addressLine"] as? String ?? p.addressLine
+            p.city = data["city"] as? String ?? p.city
+            p.state = data["state"] as? String ?? p.state
+            p.zip = data["zip"] as? String ?? p.zip
+            p.photoURL = data["photoURL"] as? String ?? p.photoURL
+            profile = p
+        }
     }
 
     func updatePhotoURL(uid: String, url: String) async throws {

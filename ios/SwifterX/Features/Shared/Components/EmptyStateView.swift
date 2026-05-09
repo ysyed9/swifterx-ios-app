@@ -11,7 +11,7 @@ struct EmptyStateView: View {
     var action: (() -> Void)? = nil
 
     // Visual accent colour for the icon circle
-    var accentColor: Color = Color(hex: "#111111")
+    var accentColor: Color = Color(sxHex: "#111111")
 
     var body: some View {
         VStack(spacing: 0) {
@@ -44,7 +44,7 @@ struct EmptyStateView: View {
 
             Text(subtitle)
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "#888888"))
+                .foregroundStyle(Color(sxHex: "#888888"))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
 

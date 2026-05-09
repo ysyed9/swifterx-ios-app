@@ -1,3 +1,4 @@
+import AuthenticationServices
 import SwiftUI
 
 struct LoginView: View {
@@ -93,6 +94,7 @@ struct LoginView: View {
                     SxInputField(title: "Email", placeholder: "example@gmail.com", text: $email) {
                         TextField("", text: $email)
                             .keyboardType(.emailAddress)
+                            .textContentType(authScreen == .signIn ? .username : .emailAddress)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                             .focused($focusedField, equals: .email)
@@ -103,6 +105,7 @@ struct LoginView: View {
 
                     SxInputField(title: "Password", placeholder: "••••••••••", text: $password) {
                         SecureField("", text: $password)
+                            .textContentType(authScreen == .signIn ? .password : .newPassword)
                             .textInputAutocapitalization(.never)
                             .focused($focusedField, equals: .password)
                             .submitLabel(authScreen == .signIn ? .go : .done)
@@ -136,9 +139,11 @@ struct LoginView: View {
                         .frame(height: 40)
                         .background(Color.black)
                         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .contentTransition(.opacity)
                     }
                     .buttonStyle(.plain)
                     .disabled(isLoading)
+                    .animation(.easeInOut(duration: 0.2), value: isLoading)
 
                     if authScreen == .signIn {
                         Button {
@@ -166,12 +171,25 @@ struct LoginView: View {
 
                 Spacer().frame(height: 24)
 
-                socialButton(
-                    title: authScreen == .signIn ? "Sign In With Apple" : "Sign Up With Apple",
-                    systemImage: "apple.logo"
-                ) {
-                    Task { await signInWithApple() }
-                }
+                SignInWithAppleButton(
+                    authScreen == .signIn ? .signIn : .signUp,
+                    onRequest: { request in
+                        errorMessage = nil
+                        let raw = AuthManager.newAppleSignInRawNonce()
+                        authManager.setPendingAppleSignInNonce(raw)
+                        request.requestedScopes = [.fullName, .email]
+                        request.nonce = AuthManager.sha256HexForAppleNonce(raw)
+                    },
+                    onCompletion: { result in
+                        Task { @MainActor in
+                            await handleAppleSignInCompletion(result)
+                        }
+                    }
+                )
+                .signInWithAppleButtonStyle(.black)
+                .frame(width: 272, height: 44)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .disabled(isLoading)
 
                 Spacer().frame(height: 12)
 
@@ -190,6 +208,7 @@ struct LoginView: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .background(Color.white)
         .animation(.easeInOut(duration: 0.25), value: errorMessage)
@@ -284,26 +303,26 @@ struct LoginView: View {
             try await authManager.signIn(email: cleanEmail, password: cleanPassword)
             onSignedIn()
         } catch {
-            errorMessage = (error as? AuthError)?.errorDescription ?? error.localizedDescription
+            errorMessage = (error as? AuthError)?.errorDescription ?? "Something went wrong. Please try again."
         }
         isLoading = false
     }
 
     private func signUp() async {
-        let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanName = InputSanitizer.name(name)
         let cleanEmail = InputSanitizer.email(email)
         let cleanPassword = InputSanitizer.password(password)
 
-        guard !cleanName.isEmpty else {
-            errorMessage = "Please enter your name."
+        if let err = InputSanitizer.validateName(cleanName) {
+            errorMessage = err
             return
         }
         if let err = InputSanitizer.validateEmail(cleanEmail) {
             errorMessage = err
             return
         }
-        guard cleanPassword.count >= 6 else {
-            errorMessage = AuthError.weakPassword.errorDescription
+        if let err = InputSanitizer.validatePassword(cleanPassword) {
+            errorMessage = err
             return
         }
         isLoading = true
@@ -313,23 +332,40 @@ struct LoginView: View {
             try await authManager.createAccount(email: cleanEmail, password: cleanPassword, name: cleanName)
             onSignedIn()
         } catch {
-            errorMessage = (error as? AuthError)?.errorDescription ?? error.localizedDescription
+            errorMessage = (error as? AuthError)?.errorDescription ?? "Something went wrong. Please try again."
         }
         isLoading = false
     }
 
-    private func signInWithApple() async {
-        isLoading = true
-        errorMessage = nil
-        do {
-            try await authManager.signInWithAppleUsingSystemPrompt()
-            onSignedIn()
-        } catch is CancellationError {
-            ()
-        } catch {
-            errorMessage = (error as? AuthError)?.errorDescription ?? error.localizedDescription
+    @MainActor
+    private func handleAppleSignInCompletion(_ result: Result<ASAuthorization, Error>) async {
+        switch result {
+        case .success(let authorization):
+            isLoading = true
+            defer { isLoading = false }
+            guard let cred = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let tokenData = cred.identityToken,
+                  let idToken = String(data: tokenData, encoding: .utf8),
+                  !idToken.isEmpty else {
+                authManager.clearPendingAppleSignInNonce()
+                errorMessage = AuthError.appleSignInFailed.errorDescription
+                return
+            }
+            guard let raw = authManager.takePendingAppleSignInNonce(), !raw.isEmpty else {
+                errorMessage = AuthError.appleSignInFailed.errorDescription
+                return
+            }
+            do {
+                try await authManager.signInWithApple(idToken: idToken, rawNonce: raw, fullName: cred.fullName)
+                onSignedIn()
+            } catch {
+                errorMessage = (error as? AuthError)?.errorDescription ?? "Something went wrong. Please try again."
+            }
+        case .failure(let error):
+            authManager.clearPendingAppleSignInNonce()
+            if let authErr = error as? ASAuthorizationError, authErr.code == .canceled { return }
+            errorMessage = AuthError.appleSignInFailed.errorDescription
         }
-        isLoading = false
     }
 
     private func signInWithGoogle() async {
@@ -339,7 +375,7 @@ struct LoginView: View {
             try await authManager.signInWithGoogle()
             onSignedIn()
         } catch {
-            errorMessage = (error as? AuthError)?.errorDescription ?? error.localizedDescription
+            errorMessage = (error as? AuthError)?.errorDescription ?? "Something went wrong. Please try again."
         }
         isLoading = false
     }
@@ -402,6 +438,7 @@ private struct ForgotPasswordView: View {
                         .foregroundStyle(.black)
                     TextField("example@gmail.com", text: $email)
                         .keyboardType(.emailAddress)
+                        .textContentType(.emailAddress)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .padding(12)
@@ -442,13 +479,18 @@ private struct ForgotPasswordView: View {
     }
 
     private func sendReset() async {
+        let cleanEmail = InputSanitizer.email(email)
+        if let err = InputSanitizer.validateEmail(cleanEmail) {
+            errorMessage = err
+            return
+        }
         isSending = true
         errorMessage = nil
         do {
-            try await authManager.sendPasswordReset(to: email)
+            try await authManager.sendPasswordReset(to: cleanEmail)
             didSend = true
         } catch {
-            errorMessage = (error as? AuthError)?.errorDescription ?? error.localizedDescription
+            errorMessage = (error as? AuthError)?.errorDescription ?? "Something went wrong. Please try again."
         }
         isSending = false
     }

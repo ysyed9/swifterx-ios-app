@@ -2,6 +2,7 @@ import SwiftUI
 import FirebaseAnalytics
 import FirebaseAppCheck
 import FirebaseCore
+import FirebaseCrashlytics
 import FirebaseFirestore
 import FirebaseMessaging
 import GoogleSignIn
@@ -25,6 +26,19 @@ enum AppCheckBootstrap {
         AppCheck.setAppCheckProviderFactory(SwifterXDeviceCheckProviderFactory())
         #endif
     }
+
+    #if DEBUG
+    /// One-shot async check: if App Check token fails, Xcode console shows what to fix before turning on enforcement.
+    static func logDebugSetupHintIfNeeded() {
+        Task {
+            do {
+                _ = try await AppCheck.appCheck().token(forcingRefresh: false)
+            } catch {
+                print("[AppCheck] Debug token / registration: \(error.localizedDescription). Add the **Firebase App Check debug token** from the console to Firebase Console → App Check → Manage debug tokens, or verify the iOS app is registered.")
+            }
+        }
+    }
+    #endif
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -37,6 +51,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         // Hold Analytics until ATT completes on first launch (see TrackingTransparencyCoordinator).
         Analytics.setAnalyticsCollectionEnabled(false)
+        // Same policy for crash reports (non-exempt encryption / data collection posture).
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(false)
+
+        #if DEBUG
+        AppCheckBootstrap.logDebugSetupHintIfNeeded()
+        #endif
 
         // Disable In-App Messaging auto-init (not used in this app)
         FirebaseApp.app()?.isDataCollectionDefaultEnabled = true

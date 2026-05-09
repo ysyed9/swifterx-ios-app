@@ -56,6 +56,13 @@ struct ServiceDetailView: View {
 
 #Preview {
     NavigationStack {
-        ServiceDetailView(provider: MockData.providers[0])
+        ServiceDetailView(provider: ServiceProvider(
+            id: "p1",
+            name: "Preview Provider",
+            category: "Repairing",
+            description: "Preview",
+            rating: 4.5,
+            distanceMi: 1.2
+        ))
     }
 }

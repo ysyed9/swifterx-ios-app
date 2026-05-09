@@ -26,12 +26,13 @@ end
 platform :ios do
 
   # ── Increment build number ──────────────────────────────────────────────────
-  desc "Bump build number using App Store Connect latest"
+  desc "Bump build number to latest TestFlight + 1 (or 1 if none yet)"
   lane :bump_build do
     api_key = app_store_api_key
     latest  = latest_testflight_build_number(
-      api_key:    api_key,
-      app_identifier: BUNDLE_ID
+      api_key:          api_key,
+      app_identifier:   BUNDLE_ID,
+      initial_build_number: 0
     )
     increment_build_number(
       build_number:   (latest + 1).to_s,
@@ -53,9 +54,8 @@ platform :ios do
   end
 
   # ── Build (archive for distribution) ────────────────────────────────────────
-  desc "Build and archive for TestFlight / App Store"
+  desc "Archive Release IPA (does not bump build — run `bump_build` before this in beta/release lanes)"
   lane :build_release do
-    increment_build_number(xcodeproj: "ios/SwifterX/SwifterX.xcodeproj")
     build_app(
       project:                 "ios/SwifterX/SwifterX.xcodeproj",
       scheme:                  SCHEME,
@@ -104,7 +104,8 @@ platform :ios do
       ipa:                              "#{OUTPUT_DIR}/SwifterX.ipa",
       metadata_path:                    "fastlane/metadata",
       screenshots_path:                 "fastlane/screenshots",
-      skip_screenshots:                 false,
+      # Set false once `fastlane/screenshots` has captures (see Snapfile + SwifterXUITests).
+      skip_screenshots:                 true,
       skip_metadata:                    false,
       submit_for_review:                false,   # flip to true when ready
       automatic_release:                false,
@@ -114,11 +115,11 @@ platform :ios do
   end
 
   # ── Screenshots ──────────────────────────────────────────────────────────────
-  desc "Capture App Store screenshots on all required device sizes"
+  desc "Capture App Store screenshots (requires SwifterXUITests scheme + UI tests; see Snapfile)"
   lane :screenshots do
     capture_screenshots(
       project:        "ios/SwifterX/SwifterX.xcodeproj",
-      scheme:         "SwifterX",
+      scheme:         "SwifterXUITests",
       output_directory: "fastlane/screenshots",
       clear_previous_screenshots: true,
       devices: [
@@ -129,7 +130,8 @@ platform :ios do
       ],
       languages: ["en-US"]
     )
-    frame_screenshots(white: true)
+    # Optional: requires `gem install frameit` + Framefile; uncomment when configured.
+    # frame_screenshots(white: true)
   end
 
   # ── Sync certs (optional — use match for team codesigning) ───────────────────

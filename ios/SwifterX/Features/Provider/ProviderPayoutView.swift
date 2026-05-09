@@ -26,7 +26,7 @@ struct ProviderPayoutView: View {
                 Spacer().frame(height: 40)
             }
         }
-        .background(Color(hex: "#f7f7f7"))
+        .background(Color(sxHex: "#f7f7f7"))
         .navigationBarHidden(true)
         .task { await loadEarnings() }
         .sheet(isPresented: $showSafari) {
@@ -77,7 +77,7 @@ struct ProviderPayoutView: View {
                     earningsRow(label: "Gross Earnings",  value: String(format: "$%.2f", e.grossEarnings))
                     earningsRow(label: "SwifterX fee (\(Int(e.feePercent))%)",
                                 value: String(format: "-$%.2f", e.platformFee),
-                                valueColor: Color(hex: "#e53e3e"))
+                                valueColor: Color(sxHex: "#e53e3e"))
                     Divider()
                     HStack {
                         Text("Your Earnings")
@@ -109,7 +109,7 @@ struct ProviderPayoutView: View {
         HStack {
             Text(label)
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "#666666"))
+                .foregroundStyle(Color(sxHex: "#666666"))
             Spacer()
             Text(value)
                 .font(.system(size: 14, weight: .semibold))
@@ -133,13 +133,13 @@ struct ProviderPayoutView: View {
                         .frame(width: 10, height: 10)
                     Text("Connected to Stripe")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(Color(hex: "#333333"))
+                        .foregroundStyle(Color(sxHex: "#333333"))
                     Spacer()
                 }
 
                 Text("Funds are automatically transferred to your bank account after each completed job.")
                     .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#888888"))
+                    .foregroundStyle(Color(sxHex: "#888888"))
 
                 actionButton(title: "View Payout Dashboard", icon: "arrow.up.right") {
                     await openDashboard()
@@ -152,12 +152,12 @@ struct ProviderPayoutView: View {
                         .frame(width: 10, height: 10)
                     Text("Onboarding incomplete")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(Color(hex: "#333333"))
+                        .foregroundStyle(Color(sxHex: "#333333"))
                     Spacer()
                 }
                 Text("Complete the setup to start receiving payouts for your jobs.")
                     .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#888888"))
+                    .foregroundStyle(Color(sxHex: "#888888"))
                 actionButton(title: "Complete Setup", icon: "arrow.up.right") {
                     await openOnboarding()
                 }
@@ -165,7 +165,7 @@ struct ProviderPayoutView: View {
                 // No account yet
                 Text("Set up your bank account to receive payouts. SwifterX uses Stripe to securely process all transfers.")
                     .font(.system(size: 13))
-                    .foregroundStyle(Color(hex: "#888888"))
+                    .foregroundStyle(Color(sxHex: "#888888"))
                     .lineSpacing(3)
 
                 actionButton(title: "Set Up Payouts", icon: "creditcard") {
@@ -209,7 +209,7 @@ struct ProviderPayoutView: View {
 
     private func loadEarnings() async {
         do { earnings = try await connectService.fetchEarnings() }
-        catch { errorMessage = error.localizedDescription }
+        catch { errorMessage = UserFacingError.message(from: error) }
     }
 
     private func setupAccount() async {
@@ -221,7 +221,7 @@ struct ProviderPayoutView: View {
             safariURL = url
             showSafari = true
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = UserFacingError.message(from: error)
         }
     }
 
@@ -233,7 +233,7 @@ struct ProviderPayoutView: View {
             safariURL = url
             showSafari = true
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = UserFacingError.message(from: error)
         }
     }
 
@@ -245,7 +245,7 @@ struct ProviderPayoutView: View {
             safariURL = url
             showSafari = true
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = UserFacingError.message(from: error)
         }
     }
 }

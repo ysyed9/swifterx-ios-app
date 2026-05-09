@@ -1,10 +1,9 @@
 import Foundation
+import FirebaseAuth
 import FirebaseFirestore
 
 // MARK: - FirestoreAPIClient
 // Production implementation of APIClient backed by Cloud Firestore.
-// Falls back to MockData for providers/categories if Firestore collections are empty
-// (useful during development before the database is seeded).
 //
 // Firestore collections:
 //   /categories/{id}                     — service categories
@@ -30,9 +29,35 @@ final class FirestoreAPIClient: APIClient {
     func fetchProviders() async throws -> [ServiceProvider] {
         let snapshot = try await db.collection("providers").getDocuments()
         let providers: [ServiceProvider] = snapshot.documents.compactMap { doc in
-            try? doc.data(as: ServiceProvider.self)
+            // Prefer the `id` field stored in the document; fall back to the document ID so
+            // providers whose Cloud Function hasn't synced yet are still decoded correctly.
+            if var provider = try? doc.data(as: ServiceProvider.self) {
+                if provider.id.isEmpty { provider.id = doc.documentID }
+                return provider
+            }
+            // Manual fallback: decode required fields tolerantly so a single bad doc
+            // doesn't silently drop the whole provider from the customer browse list.
+            let data = doc.data()
+            guard let name = data["name"] as? String, !name.isEmpty else { return nil }
+            let category = data["category"] as? String ?? "Services"
+            let description = data["description"] as? String ?? ""
+            let rating = (data["rating"] as? Double) ?? (data["rating"] as? NSNumber).map(\.doubleValue) ?? 0
+            let distanceMi = (data["distanceMi"] as? Double) ?? (data["distanceMi"] as? NSNumber).map(\.doubleValue) ?? 0
+            return ServiceProvider(
+                id: (data["id"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? doc.documentID,
+                name: name,
+                category: category,
+                description: description,
+                rating: rating,
+                distanceMi: distanceMi,
+                imageName: data["imageName"] as? String ?? "",
+                imageURL: data["imageURL"] as? String ?? "",
+                reviewCount: (data["reviewCount"] as? Int) ?? (data["reviewCount"] as? NSNumber).map(\.intValue) ?? 0,
+                providerLat: (data["providerLat"] as? Double) ?? (data["providerLat"] as? NSNumber).map(\.doubleValue) ?? 0,
+                providerLng: (data["providerLng"] as? Double) ?? (data["providerLng"] as? NSNumber).map(\.doubleValue) ?? 0,
+                listingApproved: data["listingApproved"] as? Bool
+            )
         }
-        if providers.isEmpty { return MockData.providers }
         return providers.filter(\.isVisibleToCustomers)
     }
 
@@ -48,7 +73,50 @@ final class FirestoreAPIClient: APIClient {
                   let icon = data["icon"] as? String else { return nil }
             return (name: name, icon: icon)
         }
-        return categories.isEmpty ? MockData.categories : categories
+        return categories
+    }
+
+    // MARK: - Provider services (customer browse + provider CRUD)
+
+    func fetchServices(for providerID: String) async throws -> [ServiceItem] {
+        let snapshot = try await db.collection("providers").document(providerID)
+            .collection("services").getDocuments()
+        return ServiceItemFirestore.sortedItems(from: snapshot.documents)
+    }
+
+    func saveProviderService(providerID: String, item: ServiceItem) async throws {
+        // Rules: `providers/{providerID}` must match signed-in uid; payload must be exactly id, name, price.
+        guard let user = Auth.auth().currentUser else {
+            throw NSError(domain: FirestoreErrorDomain, code: FirestoreErrorCode.permissionDenied.rawValue,
+                          userInfo: [NSLocalizedDescriptionKey: "Sign in to save services."])
+        }
+        guard user.uid == providerID else {
+            throw NSError(domain: FirestoreErrorDomain, code: FirestoreErrorCode.permissionDenied.rawValue,
+                          userInfo: [NSLocalizedDescriptionKey: "Account mismatch — sign out and back in, then try again."])
+        }
+        // Avoid forcing refresh on every save — it often fails offline and surfaces as a non-Firestore NSError.
+        _ = try await user.getIDToken()
+        let ref = db.collection("providers").document(providerID).collection("services").document(item.id)
+        let payload: [String: Any] = [
+            "id": item.id,
+            "name": item.name,
+            "price": NSNumber(value: item.price)
+        ]
+        try await ref.setData(payload, merge: false)
+    }
+
+    func deleteProviderService(providerID: String, serviceId: String) async throws {
+        guard let user = Auth.auth().currentUser else {
+            throw NSError(domain: FirestoreErrorDomain, code: FirestoreErrorCode.permissionDenied.rawValue,
+                          userInfo: [NSLocalizedDescriptionKey: "Sign in to delete services."])
+        }
+        guard user.uid == providerID else {
+            throw NSError(domain: FirestoreErrorDomain, code: FirestoreErrorCode.permissionDenied.rawValue,
+                          userInfo: [NSLocalizedDescriptionKey: "Account mismatch — sign out and back in."])
+        }
+        _ = try await user.getIDToken()
+        try await db.collection("providers").document(providerID)
+            .collection("services").document(serviceId).delete()
     }
 
     // MARK: - Orders
